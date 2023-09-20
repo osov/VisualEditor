@@ -6,6 +6,9 @@ import { VuePlugin, VueArea2D, Presets as VuePresets } from 'rete-vue-plugin'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 import { ContextMenuPlugin, ContextMenuExtra, Presets as ContextMenuPresets } from 'rete-context-menu-plugin'
 import { MinimapExtra, MinimapPlugin } from 'rete-minimap-plugin'
+import { HistoryPlugin, HistoryActions, HistoryExtensions, Presets as HistoryPreset } from "rete-history-plugin";
+import { CommentPlugin, CommentExtensions } from "rete-comment-plugin";
+
 import CustomBtn from "./CustomBtn.vue";
 
 type Node = NumberNode | AddNode
@@ -21,6 +24,10 @@ const render = new VuePlugin<Schemes, AreaExtra>()
 const area = new AreaPlugin<Schemes, AreaExtra>(document.getElementById("app")!)
 const connection = new ConnectionPlugin<Schemes, AreaExtra>()
 const arrange = new AutoArrangePlugin<Schemes>()
+const history = new HistoryPlugin<Schemes, HistoryActions<Schemes>>()
+HistoryExtensions.keyboard(history)
+const comment = new CommentPlugin<Schemes, AreaExtra>()
+
 
 const contextMenu = new ContextMenuPlugin<Schemes>({
   items: ContextMenuPresets.classic.setup([
@@ -36,17 +43,23 @@ area.use(connection)
 area.use(contextMenu)
 area.use(minimap)
 area.use(arrange)
+area.use(history)
+area.use(comment)
 
 connection.addPreset(ConnectionPresets.classic.setup())
 render.addPreset(VuePresets.classic.setup())
 render.addPreset(VuePresets.contextMenu.setup())
 render.addPreset(VuePresets.minimap.setup())
 arrange.addPreset(ArrangePresets.classic.setup())
+history.addPreset(HistoryPreset.classic.setup())
 
-AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
-  accumulating: AreaExtensions.accumulateOnCtrl()
-});
+const selector = AreaExtensions.selector()
+const accumulating = AreaExtensions.accumulateOnCtrl()
+
+AreaExtensions.selectableNodes(area, selector, { accumulating })
 AreaExtensions.simpleNodesOrder(area)
+
+CommentExtensions.selectable(comment, selector, accumulating)
 
 
 
@@ -115,6 +128,7 @@ await editor.addNode(add)
 await editor.addConnection(new Connection(a, 'value', add, 'a'))
 await editor.addConnection(new Connection(b, 'value', add, 'b'))
 
+comment.addFrame("Тут переменные", [a.id, b.id]);
 // ------------------------------
 
 
