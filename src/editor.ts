@@ -13,6 +13,9 @@ import { Modules } from "./utils/modules";
 import { createNode, exportEditor, importEditor } from './utils/import'
 import { clearEditor } from './/utils/utils'
 
+import { TwoButtonControl } from "./controls"
+import CustomTwoBtn from "./components/CustomTwoBtn.vue"
+
 export type Schemes = GetSchemes<Nodes, Conn>
 export type AreaExtra = Area2D<Schemes> | VueArea2D<Schemes> | ContextMenuExtra | MinimapExtra
 
@@ -82,6 +85,7 @@ export async function createEditor(container: HTMLElement) {
                     list: [
                         { label: 'Number', key: '1', handler: () => addNode("Number", { value: 5 }) },
                         { label: 'Add', key: '1', handler: () => addNode("Add", {}) },
+                        { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
                         {
                             label: 'Module', key: '1', handler: () => null,
                             subitems: [
@@ -133,7 +137,17 @@ export async function createEditor(container: HTMLElement) {
     area.use(comment)
 
     connection.addPreset(ConnectionPresets.classic.setup())
-    render.addPreset(VuePresets.classic.setup())
+    render.addPreset(
+      VuePresets.classic.setup({
+        customize: {
+          control(data) {
+            if (data.payload instanceof TwoButtonControl) {
+              return CustomTwoBtn
+            }
+          }
+        }
+      })
+    )
     render.addPreset(VuePresets.contextMenu.setup())
     render.addPreset(VuePresets.minimap.setup())
     arrange.addPreset(ArrangePresets.classic.setup())
