@@ -8,6 +8,7 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "Sequence") return new SequenceNode()
   if (name === "Input") return new InputNode(data.key);
   if (name === "Output") return new OutputNode(data.key);
+  if (name === "Последовательность") return new SequenceNode(data.value);
   if (name === "Module") {
     const node = new ModuleNode(
       data.name,
@@ -18,10 +19,20 @@ export async function createNode({ editor, area, modules }: Context, name: strin
     await node.update();
     return node;
   }
-  throw new Error("Unsupported node");
+  throw new Error("Unsupported node:" + name);
 }
 
-export async function importEditor(context: Context, data: any) {
+export async function importPositions(context: Context, data: any) {
+  const { nodes } = data;
+  // nodes
+  for (const n of nodes) {
+    const node = context.editor.getNode(n.id);
+    if (n.x && n.y)
+      await context.area.translate(node.id, { x: n.x, y: n.y })
+  }
+}
+
+export async function importEditor(context: Context, data: any, cur_module = true) {
   const { nodes, connections, comments } = data;
   // nodes
   for (const n of nodes) {
@@ -36,24 +47,14 @@ export async function importEditor(context: Context, data: any) {
     const source = context.editor.getNode(c.source);
     const target = context.editor.getNode(c.target);
 
-    if (
-      source &&
-      target &&
-      (source.outputs as any)[c.sourceOutput] &&
-      (target.inputs as any)[c.targetInput]
-    ) {
-      const conn = new Connection(
-        source,
-        c.sourceOutput as never,
-        target,
-        c.targetInput as never
-      );
+    if (source && target && (source.outputs as any)[c.sourceOutput] && (target.inputs as any)[c.targetInput]) {
+      const conn = new Connection(source, c.sourceOutput as never, target, c.targetInput as never);
 
       await context.editor.addConnection(conn);
     }
   }
   // comments
-  if (comments) {
+  if (cur_module && comments) {
     for (const c of comments) {
       context.comment.addFrame(c.text, c.links);
     }

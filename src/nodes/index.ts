@@ -6,7 +6,7 @@ import { ModuleNode } from '.';
 import { InputNode } from './module/input';
 import { OutputNode } from './module/output';
 
-export { AddNode, } from "./add";
+export { AddNode } from "./add";
 export { NumberNode } from "./number";
 export { SequenceNode } from "./sequence"
 export { InputNode } from "./module/input";

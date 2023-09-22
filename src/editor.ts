@@ -1,16 +1,16 @@
-import { GetSchemes, NodeEditor } from 'rete'
+import { GetSchemes, NodeEditor, ClassicPreset } from 'rete'
 import { Area2D, AreaExtensions, AreaPlugin } from 'rete-area-plugin'
 import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin'
 import { VuePlugin, VueArea2D, Presets as VuePresets } from 'rete-vue-plugin'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 import { ContextMenuPlugin, ContextMenuExtra } from 'rete-context-menu-plugin'
 import { MinimapExtra, MinimapPlugin } from 'rete-minimap-plugin'
-import { HistoryPlugin, HistoryActions, HistoryExtensions, Presets as HistoryPreset } from "rete-history-plugin";
-import { CommentPlugin, CommentExtensions } from "rete-comment-plugin";
+import { HistoryPlugin, HistoryActions, HistoryExtensions, Presets as HistoryPreset } from "rete-history-plugin"
+import { CommentPlugin, CommentExtensions } from "rete-comment-plugin"
 
 import { Nodes, Conn, } from "./nodes"
-import { Modules } from "./utils/modules";
-import { createNode, exportEditor, importEditor } from './utils/import'
+import { Modules } from "./utils/modules"
+import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
 import { CommentDeleteAction, clearEditor } from './/utils/utils'
 
 import { TwoButtonControl } from "./controls"
@@ -20,25 +20,27 @@ export type Schemes = GetSchemes<Nodes, Conn>
 export type AreaExtra = Area2D<Schemes> | VueArea2D<Schemes> | ContextMenuExtra | MinimapExtra
 
 export type Context = {
-    modules: Modules<Schemes>;
-    editor: NodeEditor<Schemes>;
-    area: AreaPlugin<Schemes, any>;
+    modules: Modules<Schemes>
+    editor: NodeEditor<Schemes>
+    area: AreaPlugin<Schemes, any>
     comment: CommentPlugin<Schemes, AreaExtra>
-};
+}
 
-import rootModule from "./modules/root.json";
-import transitModule from "./modules/transit.json";
-import doubleModule from "./modules/double.json";
+import rootModule from "./modules/root.json"
+import transitModule from "./modules/transit.json"
+import doubleModule from "./modules/double.json"
+import { reOrderEditor } from './utils/debug'
 
 const modulesData: { [key in string]: any } = {
     root: rootModule,
     transit: transitModule,
     double: doubleModule
-};
-(window as any).modulesData = modulesData;
+}
+
 
 export async function createEditor(container: HTMLElement) {
-    const editor = new NodeEditor<Schemes>(); (window as any).nEditor = editor
+
+    const editor = new NodeEditor<Schemes>()
     const render = new VuePlugin<Schemes, AreaExtra>()
     const area = new AreaPlugin<Schemes, AreaExtra>(container)
     const connection = new ConnectionPlugin<Schemes, AreaExtra>()
@@ -48,8 +50,8 @@ export async function createEditor(container: HTMLElement) {
     const comment = new CommentPlugin<Schemes, AreaExtra>()
 
     const addNode = async (name: string, data: any) => {
-        const node = await createNode(context, name, data);
-        await context.editor.addNode(node);
+        const node = await createNode(context, name, data)
+        await context.editor.addNode(node)
         await area.translate(node.id, area.area.pointer)
     }
 
@@ -70,9 +72,7 @@ export async function createEditor(container: HTMLElement) {
                 'elk.layered.spacing.nodeNodeBetweenLayers': '100'
             }
         })
-
     }
-
 
     const ZoomNodes = async () => {
         AreaExtensions.zoomAt(area, editor.getNodes())
@@ -101,7 +101,6 @@ export async function createEditor(container: HTMLElement) {
                     ]
                 }
             }
-            console.log(selector.entities);
             return {
                 searchBar: false,
                 list: [
@@ -109,18 +108,15 @@ export async function createEditor(container: HTMLElement) {
                         label: 'Delete',
                         key: 'delete',
                         handler: async () => {
-                            await deleteNode(ctx.id);
+                            await deleteNode(ctx.id)
                         }
                     },
-                    // {
-                    //     label: 'Clone', key: '1',
-                    //     handler: async () => {
-                    //         const node = (ctx as any).clone()
-                    //         await editor.addNode(node)
-                    //         area.translate(node.id, area.area.pointer)
-                    //     }
-                    // },
-                    { label: 'Comment', key: '1', handler: () => console.log('cm', ctx) },
+                    {
+                        label: 'Clone', key: '1',
+                        handler: async () => {
+                            const node = addNode(ctx.label, {}) // todo params
+                        }
+                    },
                 ]
             }
         }
@@ -145,6 +141,8 @@ export async function createEditor(container: HTMLElement) {
                     if (data.payload instanceof TwoButtonControl) {
                         return CustomTwoBtn
                     }
+                    if (data.payload)
+                        return VuePresets.classic.Control
                 }
             }
         })
@@ -154,11 +152,8 @@ export async function createEditor(container: HTMLElement) {
     arrange.addPreset(ArrangePresets.classic.setup())
     history.addPreset(HistoryPreset.classic.setup())
 
-
-
     const selector = AreaExtensions.selector()
     const accumulating = AreaExtensions.accumulateOnCtrl()
-
 
     AreaExtensions.selectableNodes(area, selector, { accumulating })
     AreaExtensions.simpleNodesOrder(area)
@@ -169,49 +164,42 @@ export async function createEditor(container: HTMLElement) {
     const modules = new Modules<Schemes>(
         (path) => modulesData[path],
         async (path, editor) => {
-            const data = modulesData[path];
-
-            if (!data) throw new Error("cannot find module");
-            await importEditor(
-                {
-                    ...context,
-                    editor
-                },
-                data
-            );
+            const data = modulesData[path]
+            if (!data) throw new Error("cannot find module")
+            await importEditor({ ...context, editor }, data, path == currentModulePath)
         }
-    );
-    const context: Context = {
-        editor,
-        area,
-        modules,
-        comment
-    };
+    )
+    const context: Context = { editor, area, modules, comment }
 
-
-    let currentModulePath: null | string = null;
+    let currentModulePath: null | string = null
 
     async function openModule(path: string) {
-        currentModulePath = null;
+        currentModulePath = null
 
-        await clearEditor(editor);
-        comment.clear();
-
-        const module = modules.findModule(path);
+        await clearEditor(editor)
+        comment.clear()
+        const module = modules.findModule(path)
 
         if (module) {
-            currentModulePath = path;
-            await module.apply(editor);
-            ZoomNodes();
+            currentModulePath = path
+            await module.apply(editor)
+            const data = modulesData[path]
+            await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
+            await ZoomNodes()
+
         }
-
-
     }
+
+    // debug
+    (window as any).nEditor = editor;
+    (window as any).modulesData = modulesData;
     (window as any).area = area;
+    (window as any).order = () => reOrderEditor(editor, area as any, comment as any);
+
 
     document.addEventListener('mousedown', async (e: MouseEvent) => {
         if (e.button == 1)
-            ZoomNodes();
+            ZoomNodes()
     })
 
     document.addEventListener('keydown', async (e: KeyboardEvent) => {
@@ -219,57 +207,60 @@ export async function createEditor(container: HTMLElement) {
         if (e.key == 'Delete') {
             for (const entity of selector.entities) {
                 if (entity[1].label == 'comment') {
-                    const data = comment.comments.get(entity[1].id);
+                    const data = comment.comments.get(entity[1].id)
                     if (data)
-                        history.add(new CommentDeleteAction(comment, data.id, data.text, data.links));
-                    comment.delete(entity[1].id);
+                        history.add(new CommentDeleteAction(comment, data.id, data.text, data.links))
+                    comment.delete(entity[1].id)
                 }
                 else
-                    await deleteNode(entity[1].id);
+                    await deleteNode(entity[1].id)
             }
-            selector.unselectAll();
+            selector.unselectAll()
             return;
         }
         if (e.shiftKey) {
             // comment
             if (e.code == 'KeyC') {
-                const nodes_ids = [];
+                const nodes_ids = []
                 for (const entity of selector.entities) {
-                    nodes_ids.push(entity[1].id);
+                    nodes_ids.push(entity[1].id)
                 }
                 const pn = prompt('Ввод комментария', 'Комментарий')
                 if (pn)
-                    comment.addFrame(pn, nodes_ids);
+                    comment.addFrame(pn, nodes_ids)
             }
             if (e.code == 'KeyR') {
-                await ArrangeNodes();
-                ZoomNodes();
+                await ArrangeNodes()
+                await ZoomNodes()
             }
         }
-        // console.log(e);
     })
+
+
 
     return {
         getModules() {
-            return Object.keys(modulesData);
+            return Object.keys(modulesData)
         },
         saveModule: () => {
             if (currentModulePath) {
-                const data = exportEditor(context);
-                modulesData[currentModulePath] = data;
+                const data = exportEditor(context)
+                modulesData[currentModulePath] = data
+                return data
             }
         },
         restoreModule: () => {
-            if (currentModulePath) openModule(currentModulePath);
+            if (currentModulePath) openModule(currentModulePath)
         },
         newModule: (path: string) => {
-            modulesData[path] = { nodes: [], connections: [] };
+            modulesData[path] = { nodes: [], connections: [] }
         },
         openModule,
         destroy: () => {
-            console.log("area.destroy", area.nodeViews.size);
+            console.log("area.destroy", area.nodeViews.size)
 
-            area.destroy();
+            area.destroy()
         }
-    };
+    }
 }
+

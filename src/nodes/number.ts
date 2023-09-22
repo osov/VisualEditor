@@ -21,7 +21,6 @@ export class NumberNode
     }
     data() {
         const value = this.controls["value"].value;
-
         return {
             value
         };

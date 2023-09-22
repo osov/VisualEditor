@@ -16,7 +16,7 @@ export default {
     name: "CustomTwoBtn",
   props: ["data"],
   created() {
-    console.log(this.data)
+   // console.log(this.data)
   },
   components: {
     CustomBtn: Button

@@ -16,7 +16,6 @@ export class Modules<S extends Schemes> {
 
   public findModule = (path: string): null | Module<S> => {
     if (!this.has(path)) return null;
-
     return {
       apply: (editor: NodeEditor<S>) => this.graph(path, editor),
 

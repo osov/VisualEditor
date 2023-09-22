@@ -1,4 +1,4 @@
-import { ClassicPreset as Classic, GetSchemes, NodeEditor } from 'rete'
+import { ClassicPreset as Classic, NodeEditor } from 'rete'
 import { socket } from '../../sockets'
 import { Module, Modules } from "../../utils/modules";
 import { Schemes } from "../../editor";
@@ -66,12 +66,6 @@ export class ModuleNode
         this.height =
             110 +
             25 * (Object.keys(this.inputs).length + Object.keys(this.outputs).length);
-    }
-
-    async data(inputs: Record<string, any>) {
-        // const data = await this.module?.exec(inputs);
-
-        return {};
     }
 
     serialize() {
