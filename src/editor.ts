@@ -11,7 +11,7 @@ import { CommentPlugin, CommentExtensions } from "rete-comment-plugin";
 import { Nodes, Conn, } from "./nodes"
 import { Modules } from "./utils/modules";
 import { createNode, exportEditor, importEditor } from './utils/import'
-import { clearEditor } from './/utils/utils'
+import { CommentDeleteAction, clearEditor } from './/utils/utils'
 
 import { TwoButtonControl } from "./controls"
 import CustomTwoBtn from "./components/CustomTwoBtn.vue"
@@ -43,7 +43,7 @@ export async function createEditor(container: HTMLElement) {
     const area = new AreaPlugin<Schemes, AreaExtra>(container)
     const connection = new ConnectionPlugin<Schemes, AreaExtra>()
     const arrange = new AutoArrangePlugin<Schemes>()
-    const history = new HistoryPlugin<Schemes, HistoryActions<Schemes>>()
+    const history = new HistoryPlugin<Schemes, HistoryActions<Schemes> | CommentDeleteAction>()
     HistoryExtensions.keyboard(history)
     const comment = new CommentPlugin<Schemes, AreaExtra>()
 
@@ -72,6 +72,7 @@ export async function createEditor(container: HTMLElement) {
         })
 
     }
+
 
     const ZoomNodes = async () => {
         AreaExtensions.zoomAt(area, editor.getNodes())
@@ -138,15 +139,15 @@ export async function createEditor(container: HTMLElement) {
 
     connection.addPreset(ConnectionPresets.classic.setup())
     render.addPreset(
-      VuePresets.classic.setup({
-        customize: {
-          control(data) {
-            if (data.payload instanceof TwoButtonControl) {
-              return CustomTwoBtn
+        VuePresets.classic.setup({
+            customize: {
+                control(data) {
+                    if (data.payload instanceof TwoButtonControl) {
+                        return CustomTwoBtn
+                    }
+                }
             }
-          }
-        }
-      })
+        })
     )
     render.addPreset(VuePresets.contextMenu.setup())
     render.addPreset(VuePresets.minimap.setup())
@@ -217,8 +218,12 @@ export async function createEditor(container: HTMLElement) {
         // delete
         if (e.key == 'Delete') {
             for (const entity of selector.entities) {
-                if (entity[1].label == 'comment')
+                if (entity[1].label == 'comment') {
+                    const data = comment.comments.get(entity[1].id);
+                    if (data)
+                        history.add(new CommentDeleteAction(comment, data.id, data.text, data.links));
                     comment.delete(entity[1].id);
+                }
                 else
                     await deleteNode(entity[1].id);
             }
