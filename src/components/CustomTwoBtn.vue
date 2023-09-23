@@ -32,5 +32,8 @@ export default {
 }
 .btns button {
   margin: 0 5px;
+  border: 1px solid var(--nodeChildrenBorderColor);
+  background: var(--nodeChildrenBg);
+  color: var(--nodeChildrenColor);
 }
 </style>

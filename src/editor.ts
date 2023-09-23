@@ -13,7 +13,7 @@ import { Modules } from "./utils/modules"
 import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
 import { CommentDeleteAction, clearEditor } from './/utils/utils'
 
-import { TwoButtonControl } from "./controls"
+import { TwoButtonControl, addCustomBackground } from "./controls"
 import CustomTwoBtn from "./components/CustomTwoBtn.vue"
 
 export type Schemes = GetSchemes<Nodes, Conn>
@@ -122,6 +122,8 @@ export async function createEditor(container: HTMLElement) {
         }
     })
     const minimap = new MinimapPlugin<Schemes>()
+
+    addCustomBackground(area)
 
     editor.use(area)
     area.use(render)
