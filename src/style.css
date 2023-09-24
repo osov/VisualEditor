@@ -23,7 +23,7 @@ body {
 
 .fill-area {
   display: table;
-  z-index: -1;
+  z-index: -11;
   position: absolute;
   top: -320000px;
   left: -320000px;
@@ -39,6 +39,14 @@ body {
   background-position: -1.5px -1.5px,-1.5px -1.5px,-1.5px -1.5px,-1.5px -1.5px
 }
 
+.frame-comment{
+  background-color: #ffffff0f;
+  border: 3px solid #ffd92c17;
+}
+.frame-comment.selected{
+  border-color: transparent;
+  box-shadow: rgb(152, 87, 0) 0px 2px 6px 2px, rgb(201, 177, 68) 0px 0px 0px 5px;
+}
 .node[data-testid]{
   box-shadow: rgba(0, 0, 0, 0.3) 0px 5px 5px 1px;
   border: 1px solid #000;
@@ -98,6 +106,34 @@ body {
   border-color: var(--nodeChildrenColor);
 }
 
+.minimap[data-testid]{
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #00ff1f5c;
+}
+.minimap[data-testid] .mini-viewport{
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid #ffe52b75;
+}
+.minimap[data-testid] .mini-node{
+  background: rgb(0, 149, 26,  0.12);
+  border: 1px solid #00ff1f5c;
+}
+
+.menu[data-testid]{
+  width: auto;
+  
+}
+.menu[data-testid] .block{
+  border-bottom: 1px solid var(--nodeChildrenBorderColor);
+  background-color: var(--nodeBg);
+}
+.menu[data-testid] .block:hover{
+  background-color: var(--nodeChildrenBg)
+}
+.menu[data-testid] .block input{
+  background-color: var(--nodeChildrenBg);
+}
+
 svg[data-testid="connection"] path{
   /* stroke-width: 10px!important; */
   stroke-width: 0.12em!important;
@@ -112,4 +148,4 @@ svg[data-testid="connection"] path{
   100% {
     stroke-dashoffset: 0;
   }
-}
+} 
