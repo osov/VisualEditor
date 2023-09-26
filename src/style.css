@@ -52,6 +52,8 @@ body {
   border: 1px solid #000;
   border-radius: 20px ;
   background-color: var(--nodeBg);
+  display: flex;
+  flex-direction: column;
 }
 .node[data-testid]:hover{
   box-shadow: rgb(152, 87, 0) 0px 2px 6px 2px, rgb(201, 177, 68) 0px 0px 0px 5px;
@@ -134,30 +136,56 @@ body {
   background-color: var(--nodeChildrenBg);
 }
 
+.title[data-testid]{
+  order: 0;
+}
+.input[data-testid]{
+  order: 1;
+}
+.control[data-testid]{
+  order: 2;
+}
+.output[data-testid]{
+  order: 3;
+}
+
 .node[data-testid] .socket[title="action"] {
-  border: 0!important;
-  width: 20px!important;
-  border-radius: 0px 10px 10px 0px!important;
-  background: #fff!important;
+  /* border: 0;
+  width: 20px;
+  border-radius: 0px 10px 10px 0px;
+  background: #fff; */
+  border: none;
+  width: 20px;
+  border-radius: 0px;
+  height: 20px;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 -2 25 24' width='20' height='20' stroke='%23fff' stroke-width='1' fill='%238080807d'%3e%3cpath d='M0,0 L10,0 L20,10 L10,20 L0,20 Z'%3e%3c/path%3e%3c/svg%3e");
+  /* stroke: white!important;
+    fill: rgba(255, 255, 255, 0.28)!important;
+    stroke-width: 1px;
+    stroke-linejoin: round; */
+}
+.node[data-testid] .socket[title="action"]:hover{
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 -2 25 24' width='20' height='20' stroke='%23fff' stroke-width='3' fill='%238080807d'%3e%3cpath d='M0,0 L10,0 L20,10 L10,20 L0,20 Z'%3e%3c/path%3e%3c/svg%3e");
 }
 
 .node[data-testid] .socket[title="string"]{
-	background: #ffffff!important;
+	background: #ffffff;
 }
 
 .node[data-testid] .socket[title="number"]{
-	background: #3dd13f!important;
-  /*background: #d33396!important;*/
+	background: #3dd13f;
+  /*background: #d33396;*/
 }
 
 .node[data-testid] .socket[title="boolean"]{
-	background: #220dff!important;
+	background: #220dff;
 }
 
 .node[data-testid] .socket[title="any"]{
-	background: #ff9999!important;
+	background: #ff9999;
 }
 
 .node[data-testid] .socket[title="color"]{
-	    background: #b4e13b!important;
+	    background: #b4e13b;
 }
