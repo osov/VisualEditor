@@ -3,11 +3,11 @@ import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, Seq
 import { removeConnections } from "./utils";
 
 export async function createNode({ editor, area, modules }: Context, name: string, data: any) {
-  if (name === "Number") return new NumberNode(data.value);
+  if (name === "Number") return new NumberNode(data.val);
   if (name === "Add") return new AddNode(() => { }, data);
   if (name === "Input") return new InputNode(data.key);
   if (name === "Output") return new OutputNode(data.key);
-  if (name === "Sequence") return new SequenceNode(data.value);
+  if (name === "Sequence") return new SequenceNode(data.val);
   if (name === "Module") {
     const node = new ModuleNode(
       data.name,

@@ -61,7 +61,7 @@ export class SequenceNode extends Classic.Node {
 
   serialize() {
     return {
-      value: Object.keys(this.outputs).length
+      val: Object.keys(this.outputs).length
     }
   }
 }
