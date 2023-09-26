@@ -3,7 +3,7 @@ import { socketAny } from '../../sockets'
 
 export class OutputNode
     extends Classic.Node<
-        { value: Classic.Socket },
+        { val: Classic.Socket },
         {},
         { key: Classic.InputControl<"text"> }
     >
@@ -15,11 +15,7 @@ export class OutputNode
         super("Output");
 
         this.addControl("key", new Classic.InputControl("text", { initial }));
-        this.addInput("value", new Classic.Input(socketAny, "Any"));
-    }
-
-    data() {
-        return {};
+        this.addInput("val", new Classic.Input(socketAny, "Любой"));
     }
 
     serialize() {

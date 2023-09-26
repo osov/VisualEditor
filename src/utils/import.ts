@@ -5,10 +5,9 @@ import { removeConnections } from "./utils";
 export async function createNode({ editor, area, modules }: Context, name: string, data: any) {
   if (name === "Number") return new NumberNode(data.value);
   if (name === "Add") return new AddNode(() => { }, data);
-  if (name === "Sequence") return new SequenceNode()
   if (name === "Input") return new InputNode(data.key);
   if (name === "Output") return new OutputNode(data.key);
-  if (name === "Последовательность") return new SequenceNode(data.value);
+  if (name === "Sequence") return new SequenceNode(data.value);
   if (name === "Module") {
     const node = new ModuleNode(
       data.name,

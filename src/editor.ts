@@ -1,4 +1,4 @@
-import { GetSchemes, NodeEditor, ClassicPreset } from 'rete'
+import { GetSchemes, NodeEditor } from 'rete'
 import { Area2D, AreaExtensions, AreaPlugin } from 'rete-area-plugin'
 import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin'
 import { VuePlugin, VueArea2D, Presets as VuePresets } from 'rete-vue-plugin'
@@ -79,7 +79,7 @@ export async function createEditor(container: HTMLElement) {
     }
 
     const contextMenu = new ContextMenuPlugin<Schemes>({
-        items(ctx, plugin) {
+        items(ctx, _) {
             if (ctx === 'root') {
                 return {
                     searchBar: true,

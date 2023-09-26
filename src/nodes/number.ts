@@ -17,12 +17,6 @@ export class NumberNode
         this.addControl("val", new Classic.InputControl("number", { initial, change })
         );
     }
-    data() {
-        const value = this.controls["val"].value;
-        return {
-            value
-        };
-    }
 
     serialize() {
         return {

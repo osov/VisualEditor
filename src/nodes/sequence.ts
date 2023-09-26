@@ -10,22 +10,22 @@ export class SequenceNode extends Classic.Node {
 
   async makeOutputs(cnt: number) {
     for (let i = 1; i <= cnt; i++) {
-      const out = new Classic.Output(socketAction, `Out${i}`)
-      this.addOutput(`o${i}`, out)
+      const out = new Classic.Output(socketAction, `Выход ${i}`)
+      this.addOutput(`out${i}`, out)
       this.height += this.heightOut
     }
     await this.area.update("node", this.id)
   }
 
   async incrementOutput(cnt: number) {
-    const out = new Classic.Output(socketAction, `Out${cnt}`)
-    this.addOutput(`o${cnt}`, out)
+    const out = new Classic.Output(socketAction, `Выход ${cnt}`)
+    this.addOutput(`out${cnt}`, out)
     this.height += this.heightOut
     await this.area.update("node", this.id)
   }
 
   async decrementOutput(cnt: number) {
-    const indexOut = `o${cnt}`
+    const indexOut = `out${cnt}`
     // get id connection this output
     const itemCon = this.area.parent.connections.find((el: any) => el.source === this.id && el.sourceOutput === indexOut)
     // delete connection если есть
@@ -37,10 +37,10 @@ export class SequenceNode extends Classic.Node {
   }
 
   constructor(num_outputs = 2) {
-    super("Последовательность")
+    super("Sequence")
     this.area = (window as any).area;
 
-    this.addInput("val", new Classic.Input(socketAction, "Inp"))
+    this.addInput("in", new Classic.Input(socketAction, ""))
     this.makeOutputs(num_outputs);
     this.addControl(
       "TwoBtn",
