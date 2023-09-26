@@ -13,8 +13,10 @@ import { Modules } from "./utils/modules"
 import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
 import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './/utils/utils'
 
-import { TwoButtonControl, addCustomBackground } from "./controls"
+import { TitleNodeControl, OneButtonControl, TwoButtonControl, addCustomBackground } from "./controls"
+import CustomOneBtn from "./components/CustomOneBtn.vue"
 import CustomTwoBtn from "./components/CustomTwoBtn.vue"
+import TitleNode from "./components/TitleNode.vue"
 import ActionConnection from "./components/ActionConnection.vue";
 import DataConnection from "./components/DataConnection.vue";
 
@@ -173,8 +175,14 @@ export async function createEditor(container: HTMLElement) {
         VuePresets.classic.setup({
             customize: {
                 control(data) {
+                    if (data.payload instanceof TitleNodeControl) {
+                        return TitleNode
+                    }
                     if (data.payload instanceof TwoButtonControl) {
                         return CustomTwoBtn
+                    }
+                    if (data.payload instanceof OneButtonControl) {
+                        return CustomOneBtn
                     }
                     if (data.payload)
                         return VuePresets.classic.Control

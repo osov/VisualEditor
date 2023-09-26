@@ -1,5 +1,6 @@
 import { ClassicPreset as Classic } from 'rete'
 import { socketAny } from '../../sockets'
+import { TitleNodeControl } from "../../controls"
 
 export class OutputNode
     extends Classic.Node<
@@ -14,6 +15,7 @@ export class OutputNode
     constructor(initial: string) {
         super("Output");
 
+        this.addControl("TitleNode", new TitleNodeControl("Аутпут"))
         this.addControl("key", new Classic.InputControl("text", { initial }));
         this.addInput("val", new Classic.Input(socketAny, "Любой"));
     }

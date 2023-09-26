@@ -1,5 +1,6 @@
 import { ClassicPreset as Classic } from 'rete'
 import { socketNumber } from '../sockets'
+import { TitleNodeControl } from "../controls"
 
 
 export class AddNode
@@ -17,6 +18,8 @@ export class AddNode
         super("Add");
         const left = new Classic.Input(socketNumber, "A");
         const right = new Classic.Input(socketNumber, "B");
+
+        this.addControl("TitleNode", new TitleNodeControl("Добавить"))
 
         left.addControl(
             new Classic.InputControl("number", {
