@@ -1,5 +1,5 @@
 import { ClassicPreset as Classic, NodeEditor } from 'rete'
-import { socket } from '../../sockets'
+import { socketAny } from '../../sockets'
 import { Module, Modules } from "../../utils/modules";
 import { Schemes } from "../../editor";
 
@@ -58,10 +58,10 @@ export class ModuleNode
         );
 
         inputs.forEach((key) => {
-            this.addInput(key, new Classic.Input(socket, key));
+            this.addInput(key, new Classic.Input(socketAny, key));
         });
         outputs.forEach((key) => {
-            this.addOutput(key, new Classic.Output(socket, key));
+            this.addOutput(key, new Classic.Output(socketAny, key));
         });
         this.height =
             110 +

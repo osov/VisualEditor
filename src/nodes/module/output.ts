@@ -1,5 +1,5 @@
-import { ClassicPreset as Classic, GetSchemes, NodeEditor } from 'rete'
-import { socket } from '../../sockets'
+import { ClassicPreset as Classic } from 'rete'
+import { socketAny } from '../../sockets'
 
 export class OutputNode
     extends Classic.Node<
@@ -15,7 +15,7 @@ export class OutputNode
         super("Output");
 
         this.addControl("key", new Classic.InputControl("text", { initial }));
-        this.addInput("value", new Classic.Input(socket, "Number"));
+        this.addInput("value", new Classic.Input(socketAny, "Any"));
     }
 
     data() {

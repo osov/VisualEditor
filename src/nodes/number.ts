@@ -1,26 +1,24 @@
-import { ClassicPreset as Classic, GetSchemes, NodeEditor } from 'rete'
-import { socket } from '../sockets'
+import { ClassicPreset as Classic } from 'rete'
+import { socketNumber } from '../sockets'
 
 export class NumberNode
     extends Classic.Node<
-        { value: Classic.Socket },
-        { value: Classic.Socket },
-        { value: Classic.InputControl<"number"> }
+        { _: Classic.Socket },
+        { out: Classic.Socket },
+        { val: Classic.InputControl<"number"> }
     >
 {
     width = 180;
     height = 140;
-    constructor(initial: number, change?: (value: number) => void) {
+    constructor(initial: number, change?: (val: number) => void) {
         super("Number");
 
-        this.addOutput("value", new Classic.Output(socket, "Number"));
-        this.addControl(
-            "value",
-            new Classic.InputControl("number", { initial, change })
+        this.addOutput("out", new Classic.Output(socketNumber, "Число"));
+        this.addControl("val", new Classic.InputControl("number", { initial, change })
         );
     }
     data() {
-        const value = this.controls["value"].value;
+        const value = this.controls["val"].value;
         return {
             value
         };
@@ -28,7 +26,7 @@ export class NumberNode
 
     serialize() {
         return {
-            value: this.controls.value.value
+            val: this.controls.val.value
         };
     }
 }

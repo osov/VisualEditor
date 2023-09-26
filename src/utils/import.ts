@@ -71,7 +71,7 @@ export function exportEditor(context: Context) {
     nodes.push({
       id: n.id,
       name: n.label,
-      x: p.x, y: p.y,
+      x: Math.round(p.x), y: Math.round(p.y),
       data: n.serialize(),
     });
   }

@@ -1,68 +1,48 @@
-import { ClassicPreset as Classic, GetSchemes, NodeEditor } from 'rete'
-import { socket } from '../sockets'
+import { ClassicPreset as Classic } from 'rete'
+import { socketNumber } from '../sockets'
 
 
 export class AddNode
     extends Classic.Node<
-        { left: Classic.Socket; right: Classic.Socket },
-        { value: Classic.Socket },
-        { result: Classic.InputControl<"number"> }
+        { A: Classic.Socket; B: Classic.Socket },
+        { value: Classic.Socket }
     >
 {
     width = 180;
     height = 190;
     constructor(
         change?: (value: number) => void,
-        initial?: { left?: number; right?: number }
+        initial?: { A?: number; B?: number }
     ) {
         super("Add");
-        const left = new Classic.Input(socket, "Left");
-        const right = new Classic.Input(socket, "Right");
+        const left = new Classic.Input(socketNumber, "A");
+        const right = new Classic.Input(socketNumber, "B");
 
         left.addControl(
             new Classic.InputControl("number", {
-                initial: initial?.left || 0,
+                initial: initial?.A || 0,
                 change
             })
         );
         right.addControl(
             new Classic.InputControl("number", {
-                initial: initial?.right || 0,
+                initial: initial?.B || 0,
                 change
             })
         );
 
-        this.addInput("left", left);
-        this.addInput("right", right);
-        this.addOutput("value", new Classic.Output(socket, "Number"));
-        this.addControl(
-            "result",
-            new Classic.InputControl("number", { initial: 0, readonly: true })
-        );
-    }
-    data(inputs: { left?: number[]; right?: number[] }) {
-        const { left = [], right = [] } = inputs;
-
-        const leftControl = this.inputs["left"]?.control;
-        const rightControl = this.inputs["right"]?.control;
-        const sum =
-            (left[0] || (leftControl as Classic.InputControl<"number">).value || 0) +
-            (right[0] || (rightControl as Classic.InputControl<"number">).value || 0);
-
-        (this.controls["result"] as Classic.InputControl<"number">).setValue(sum);
-
-        return {
-            value: sum
-        };
+        this.addInput("A", left);
+        this.addInput("B", right);
+        this.addOutput("value", new Classic.Output(socketNumber, "A + B"));
     }
 
     serialize() {
-        const leftControl = this.inputs["left"]?.control;
-        const rightControl = this.inputs["right"]?.control;
+        const leftControl = this.inputs["A"]?.control;
+        const rightControl = this.inputs["B"]?.control;
 
         return {
-            left: (leftControl as Classic.InputControl<"number">).value,
-            right: (rightControl as Classic.InputControl<"number">).value
+            A: (leftControl as Classic.InputControl<"number">).value,
+            B: (rightControl as Classic.InputControl<"number">).value
         };
     }
 }

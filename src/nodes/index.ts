@@ -1,4 +1,4 @@
-import { ClassicPreset, GetSchemes, NodeEditor } from 'rete'
+import { ClassicPreset } from 'rete'
 import { AddNode } from "./add";
 import { NumberNode } from "./number";
 import { SequenceNode } from "./sequence"

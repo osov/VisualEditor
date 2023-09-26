@@ -149,3 +149,32 @@ svg[data-testid="connection"] path{
     stroke-dashoffset: 0;
   }
 } 
+
+
+.node[data-testid] .socket[title="action"] {
+  border: 0!important;
+  width: 20px!important;
+  border-radius: 0px 10px 10px 0px!important;
+  background: #fff!important;
+}
+
+.node[data-testid] .socket[title="string"]{
+	background: #ffffff!important;
+}
+
+.node[data-testid] .socket[title="number"]{
+	background: #3dd13f!important;
+  /*background: #d33396!important;*/
+}
+
+.node[data-testid] .socket[title="boolean"]{
+	background: #220dff!important;
+}
+
+.node[data-testid] .socket[title="any"]{
+	background: #ff9999!important;
+}
+
+.node[data-testid] .socket[title="color"]{
+	    background: #b4e13b!important;
+}
