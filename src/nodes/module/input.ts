@@ -3,11 +3,7 @@ import { socketAny } from '../../sockets'
 import { TitleNodeControl } from "../../controls"
 
 export class InputNode
-    extends Classic.Node<
-        {},
-        { val: Classic.Socket },
-        { key: Classic.InputControl<"text"> }
-    >
+    extends Classic.Node<{}, { val: Classic.Socket }, { TitleNode: TitleNodeControl, key: Classic.InputControl<"text"> }>
 {
     width = 180;
     height = 140;

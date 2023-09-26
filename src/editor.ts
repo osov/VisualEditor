@@ -99,7 +99,7 @@ export async function createEditor(container: HTMLElement) {
             { label: 'Новый', key: '1', handler: () => makeModule() },
         ]
 
-        if (currentModulePath != 'root') {
+        if (currentModulePath != 'global') {
             module_sub_items.push({
                 label: 'Создать', key: '1', handler: () => null, subitems: [
                     { label: 'Вход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },

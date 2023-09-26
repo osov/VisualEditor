@@ -10,7 +10,7 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "Output") return new OutputNode(data.key);
   if (name === "Sequence") return new SequenceNode(data.val);
   if (name === "Module") {
-    const node = new ModuleNode(data.name, modules.findModule, (id) => removeConnections(editor, id), (id) => area.update("node", id));
+    const node = new ModuleNode(data.name, modules.findModule, (id) => removeConnections(editor, id) /*, (id) => area.update("node", id)*/);
     await node.update();
     return node;
   }

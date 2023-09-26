@@ -3,18 +3,11 @@ import { socketNumber } from '../sockets'
 import { TitleNodeControl } from "../controls"
 
 
-export class AddNode
-    extends Classic.Node<
-        { A: Classic.Socket; B: Classic.Socket },
-        { value: Classic.Socket }
-    >
+export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { value: Classic.Socket }>
 {
     width = 180;
     height = 190;
-    constructor(
-        change?: (value: number) => void,
-        initial?: { A?: number; B?: number }
-    ) {
+    constructor(change?: (value: number) => void, initial?: { A?: number; B?: number }) {
         super("Add");
         const left = new Classic.Input(socketNumber, "A");
         const right = new Classic.Input(socketNumber, "B");

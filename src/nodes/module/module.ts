@@ -6,11 +6,7 @@ import { OneButtonControl } from "../../controls"
 import { TitleNodeControl } from "../../controls"
 
 export class ModuleNode
-    extends Classic.Node<
-        Record<string, Classic.Socket>,
-        Record<string, Classic.Socket>,
-        { module: Classic.InputControl<"text"> }
-    >
+    extends Classic.Node<Record<string, Classic.Socket>, Record<string, Classic.Socket>, { TitleNode: TitleNodeControl, module: Classic.InputControl<"text">, OneBtn: OneButtonControl }>
 {
     width = 180;
     height = 160;
@@ -40,13 +36,13 @@ export class ModuleNode
         this.addControl(
             "OneBtn",
             new OneButtonControl("Изменить",
-              async () => { 
-                console.log('click one btn')
-              }
+                async () => {
+                    console.log('click one btn')
+                }
             )
-          )
+        )
         this.update();
-        
+
     }
 
     async update() {
