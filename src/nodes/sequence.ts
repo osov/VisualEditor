@@ -1,4 +1,4 @@
-import { ClassicPreset as Classic, ClassicPreset } from "rete"
+import { ClassicPreset as Classic } from "rete"
 import { socketAction } from "../sockets"
 import { TwoButtonControl } from "../controls"
 
@@ -40,7 +40,7 @@ export class SequenceNode extends Classic.Node {
     super("Sequence")
     this.area = (window as any).area;
 
-    this.addInput("in", new Classic.Input(socketAction, ""))
+    this.addInput("in", new Classic.Input(socketAction, "", true))
     this.makeOutputs(num_outputs);
     this.addControl(
       "TwoBtn",

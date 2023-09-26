@@ -1,6 +1,6 @@
 import { GetSchemes, NodeEditor } from 'rete'
 import { Area2D, AreaExtensions, AreaPlugin } from 'rete-area-plugin'
-import { ClassicFlow, ConnectionPlugin, Presets as ConnectionPresets, getSourceTarget } from 'rete-connection-plugin'
+import { ClassicFlow, ConnectionPlugin, getSourceTarget } from 'rete-connection-plugin'
 import { VuePlugin, VueArea2D, Presets as VuePresets } from 'rete-vue-plugin'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 import { ContextMenuPlugin, ContextMenuExtra } from 'rete-context-menu-plugin'
@@ -11,7 +11,7 @@ import { CommentPlugin, CommentExtensions } from "rete-comment-plugin"
 import { Nodes, Conn, Connection, } from "./nodes"
 import { Modules } from "./utils/modules"
 import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
-import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './/utils/utils'
+import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './utils/utils'
 
 import { TwoButtonControl, addCustomBackground } from "./controls"
 import CustomTwoBtn from "./components/CustomTwoBtn.vue"
@@ -35,11 +35,11 @@ import { reOrderEditor } from './utils/debug'
 
 
 const modulesData: { [key in string]: any } = {
-    root: rootModule,
+    global: rootModule,
     transit: transitModule,
     double: doubleModule
 }
-
+let currentModulePath: null | string = null
 
 export async function createEditor(container: HTMLElement) {
 
@@ -81,43 +81,121 @@ export async function createEditor(container: HTMLElement) {
         AreaExtensions.zoomAt(area, editor.getNodes())
     }
 
+    const makeModule = async () => {
+        const name = prompt('Ввод имени модуля');
+        if (!name)
+            return;
+        if (modulesData[name])
+            return toastr.error('Модуль с таким именем уже существует:' + name);
+        modulesData[name] = { "nodes": [], "connections": [], "comments": [] };
+        openModule(name);
+    }
+
+    const context_menu_items: any[] = [];
+    const updateItemsMenu = () => {
+        const module_sub_items: any[] = [
+            { label: 'Новый', key: '1', handler: () => makeModule() },
+        ]
+
+        if (currentModulePath != 'root') {
+            module_sub_items.push({
+                label: 'Создать', key: '1', handler: () => null, subitems: [
+                    { label: 'Вход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
+                    { label: 'Выход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
+                ]
+            })
+        }
+
+
+        const modules_list = [];
+        const list = Object.keys(modulesData);
+        for (let i = 0; i < list.length; i++) {
+            const it = list[i];
+            if (it != currentModulePath)
+                modules_list.push({ label: it, key: '1', handler: () => openModule(it) })
+        }
+        module_sub_items.push({ label: 'Открыть', key: '1', handler: () => null, subitems: modules_list })
+
+        context_menu_items.splice(0, context_menu_items.length);
+        context_menu_items.push(
+            {
+                label: 'События', key: '1', handler: () => null,
+                subitems: [
+                    { label: 'Движок загружен', key: '1', handler: () => addNode("EngineReady", {}) },
+                ]
+            },
+            {
+                label: 'Операторы', key: '1', handler: () => null,
+                subitems: [
+                    { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
+                ]
+            },
+            {
+                label: 'Константы', key: '1', handler: () => null,
+                subitems: [
+                    { label: 'Число', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                    { label: 'Строка', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                    { label: 'Логическое', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                    { label: 'Цвет', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                    { label: 'Вектор3', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                ]
+            },
+            {
+                label: 'Преобразования', key: '1', handler: () => null,
+                subitems: [
+                    { label: 'В число', key: '1', handler: () => { } },
+                    { label: 'В строку', key: '1', handler: () => { } },
+                    { label: 'В логическое', key: '1', handler: () => { } },
+                    { label: 'В цвет', key: '1', handler: () => { } },
+                    { label: 'В вектор', key: '1', handler: () => { } },
+                    { label: 'Соединить строки', key: '1', handler: () => { } },
+                ]
+            },
+            {
+                label: 'Математика', key: '1', handler: () => null,
+                subitems: [
+                    { label: 'Сложить', key: '1', handler: () => addNode("Add", { A: 1, B: 2 }) },
+                    { label: 'Вычесть', key: '1', handler: () => { } },
+                    { label: 'Умножить', key: '1', handler: () => { } },
+                    { label: 'Разделить', key: '1', handler: () => { } },
+                    { label: 'Сменить знак', key: '1', handler: () => { } },
+                    { label: 'Случайное целое', key: '1', handler: () => { } },
+                    { label: 'Случайное число', key: '1', handler: () => { } },
+                ]
+            },
+            {
+                label: 'Модуль', key: '1', handler: () => null,
+                subitems: module_sub_items
+            }
+
+        );
+    }
+
+
+
     const contextMenu = new ContextMenuPlugin<Schemes>({
         items(ctx, _) {
             if (ctx === 'root') {
+                updateItemsMenu();
                 return {
-                    searchBar: true,
-                    list: [
-                        { label: 'Number', key: '1', handler: () => addNode("Number", { value: 5 }) },
-                        { label: 'Add', key: '1', handler: () => addNode("Add", {}) },
-                        { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
-                        {
-                            label: 'Module', key: '1', handler: () => null,
-                            subitems: [
-                                { label: 'New', key: '1', handler: () => addNode("Module", {}) },
-                                { label: 'Input', key: '1', handler: () => addNode("Input", { key: "key" }) },
-                                { label: 'Output', key: '1', handler: () => addNode("Input", { key: "key" }) },
-                                { label: ' -> Root', key: '1', handler: () => openModule("root") },
-                                { label: ' -> Transit', key: '1', handler: () => openModule("transit") },
-                                { label: ' -> Double', key: '1', handler: () => openModule("double") },
-                            ]
-                        }
-                    ]
+                    searchBar: false,
+                    list: context_menu_items
                 }
             }
             return {
                 searchBar: false,
                 list: [
                     {
-                        label: 'Delete',
+                        label: 'Удалить',
                         key: 'delete',
                         handler: async () => {
                             await deleteNode(ctx.id)
                         }
                     },
                     {
-                        label: 'Clone', key: '1',
+                        label: 'Клонировать', key: '1',
                         handler: async () => {
-                            const node = addNode(ctx.label, {}) // todo params
+                            addNode(ctx.label, { ...ctx.serialize() })
                         }
                     },
                 ]
@@ -188,7 +266,7 @@ export async function createEditor(container: HTMLElement) {
             }
         })
     )
-    render.addPreset(VuePresets.contextMenu.setup())
+    render.addPreset(VuePresets.contextMenu.setup({ delay: 100 }))
     render.addPreset(VuePresets.minimap.setup())
     arrange.addPreset(ArrangePresets.classic.setup())
     history.addPreset(HistoryPreset.classic.setup())
@@ -201,15 +279,6 @@ export async function createEditor(container: HTMLElement) {
     AreaExtensions.showInputControl(area,)
     CommentExtensions.selectable(comment, selector, accumulating)
 
-    //editor.addPipe(ctx => {
-    //    if (ctx.type === 'connectioncreate') {
-    //        return;
-    //     // if (canCreateConnection(context.data)) return false
-    //    }
-    //    return context
-    //  })
-
-
     const modules = new Modules<Schemes>(
         (path) => modulesData[path],
         async (path, editor) => {
@@ -219,8 +288,6 @@ export async function createEditor(container: HTMLElement) {
         }
     )
     const context: Context = { editor, area, modules, comment }
-
-    let currentModulePath: null | string = null
 
     async function openModule(path: string) {
         currentModulePath = null

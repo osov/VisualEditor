@@ -1,4 +1,4 @@
-import { ClassicPreset as Classic, ClassicPreset } from 'rete'
+import { ClassicPreset as Classic } from 'rete'
 import { socketNumber } from '../sockets'
 
 export class NumberNode
