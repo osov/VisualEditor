@@ -1,6 +1,6 @@
 import { GetSchemes, NodeEditor } from 'rete'
 import { Area2D, AreaExtensions, AreaPlugin } from 'rete-area-plugin'
-import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin'
+import { ClassicFlow, ConnectionPlugin, Presets as ConnectionPresets, getSourceTarget } from 'rete-connection-plugin'
 import { VuePlugin, VueArea2D, Presets as VuePresets } from 'rete-vue-plugin'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 import { ContextMenuPlugin, ContextMenuExtra } from 'rete-context-menu-plugin'
@@ -8,13 +8,15 @@ import { MinimapExtra, MinimapPlugin } from 'rete-minimap-plugin'
 import { HistoryPlugin, HistoryActions, HistoryExtensions, Presets as HistoryPreset } from "rete-history-plugin"
 import { CommentPlugin, CommentExtensions } from "rete-comment-plugin"
 
-import { Nodes, Conn, } from "./nodes"
+import { Nodes, Conn, Connection, } from "./nodes"
 import { Modules } from "./utils/modules"
 import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
-import { CommentDeleteAction, clearEditor } from './/utils/utils'
+import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './/utils/utils'
 
 import { TwoButtonControl, addCustomBackground } from "./controls"
 import CustomTwoBtn from "./components/CustomTwoBtn.vue"
+import ActionConnection from "./components/ActionConnection.vue";
+import DataConnection from "./components/DataConnection.vue";
 
 export type Schemes = GetSchemes<Nodes, Conn>
 export type AreaExtra = Area2D<Schemes> | VueArea2D<Schemes> | ContextMenuExtra | MinimapExtra
@@ -30,6 +32,7 @@ import rootModule from "./modules/root.json"
 import transitModule from "./modules/transit.json"
 import doubleModule from "./modules/double.json"
 import { reOrderEditor } from './utils/debug'
+
 
 const modulesData: { [key in string]: any } = {
     root: rootModule,
@@ -135,7 +138,37 @@ export async function createEditor(container: HTMLElement) {
     area.use(history)
     area.use(comment)
 
-    connection.addPreset(ConnectionPresets.classic.setup())
+    connection.addPreset(
+        () =>
+            new ClassicFlow({
+                canMakeConnection(from, to) {
+                    // this function checks if the old connection should be removed
+                    const [source, target] = getSourceTarget(from, to) || [null, null];
+
+                    if (!source || !target || from === to) return false;
+
+                    const sockets = getConnectionSockets(editor, new Connection(editor.getNode(source.nodeId), source.key as never, editor.getNode(target.nodeId), target.key as never));
+
+                    if (!isCompatibleSockets(sockets.source, sockets.target)) {
+                        console.warn("Sockets are not compatible", sockets);
+                        connection.drop();
+                        return false;
+                    }
+
+                    return Boolean(source && target);
+                },
+                makeConnection(from, to, context) {
+                    const [source, target] = getSourceTarget(from, to) || [null, null];
+                    const { editor } = context;
+
+                    if (source && target) {
+                        editor.addConnection(new Connection(editor.getNode(source.nodeId), source.key as never, editor.getNode(target.nodeId), target.key as never));
+                        return true;
+                    }
+                }
+            })
+    );
+
     render.addPreset(
         VuePresets.classic.setup({
             customize: {
@@ -145,6 +178,12 @@ export async function createEditor(container: HTMLElement) {
                     }
                     if (data.payload)
                         return VuePresets.classic.Control
+                },
+                connection(data) {
+                    const { source, target } = getConnectionSockets(editor, data.payload);
+                    if ((source && source.name == 'action') || (target && target.name == 'action'))
+                        return ActionConnection;
+                    return DataConnection;
                 }
             }
         })
@@ -161,6 +200,14 @@ export async function createEditor(container: HTMLElement) {
     AreaExtensions.simpleNodesOrder(area)
     AreaExtensions.showInputControl(area,)
     CommentExtensions.selectable(comment, selector, accumulating)
+
+    //editor.addPipe(ctx => {
+    //    if (ctx.type === 'connectioncreate') {
+    //        return;
+    //     // if (canCreateConnection(context.data)) return false
+    //    }
+    //    return context
+    //  })
 
 
     const modules = new Modules<Schemes>(

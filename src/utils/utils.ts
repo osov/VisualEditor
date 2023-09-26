@@ -1,6 +1,9 @@
-import { BaseSchemes, NodeEditor, NodeId } from "rete";
+import { Input } from "ant-design-vue";
+import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor, NodeId } from "rete";
 import { CommentPlugin } from "rete-comment-plugin";
 import { HistoryAction } from "rete-history-plugin";
+import { Output } from "rete/_types/presets/classic";
+import { Nodes, Conn } from "../nodes";
 
 export async function removeConnections(
     editor: NodeEditor<BaseSchemes>,
@@ -44,4 +47,30 @@ export class CommentDeleteAction implements HistoryAction {
     redo(): void | Promise<void> {
         this._comment?.delete(this._id);
     }
+}
+
+type Schemes = GetSchemes<Nodes, Conn>
+export function getConnectionSockets(editor: NodeEditor<Schemes>, connection: Schemes["Connection"]) {
+    const source = editor.getNode(connection.source);
+    const target = editor.getNode(connection.target);
+
+    const output =
+        source &&
+        (source.outputs as Record<string, any>)[connection.sourceOutput];
+    const input =
+        target && (target.inputs as Record<string, any>)[connection.targetInput];
+
+    return {
+        source: output?.socket,
+        target: input?.socket
+    };
+}
+
+export function isCompatibleSockets(s1: ClassicPreset.Socket, s2: ClassicPreset.Socket) {
+    if (s1.name == s2.name)
+        return true;
+    // В any можно подключить любой кроме действия
+    if (s2.name == 'any' && s1.name != 'action')
+        return true;
+    return false;
 }

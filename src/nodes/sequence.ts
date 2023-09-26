@@ -1,4 +1,4 @@
-import { ClassicPreset as Classic } from "rete"
+import { ClassicPreset as Classic, ClassicPreset } from "rete"
 import { socketAction } from "../sockets"
 import { TwoButtonControl } from "../controls"
 

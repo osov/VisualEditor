@@ -134,8 +134,8 @@ body {
   background-color: var(--nodeChildrenBg);
 }
 
+/*
 svg[data-testid="connection"] path{
-  /* stroke-width: 10px!important; */
   stroke-width: 0.12em!important;
   pointer-events: auto;
   stroke-dasharray: 1.5em, 0.5em;
@@ -149,7 +149,7 @@ svg[data-testid="connection"] path{
     stroke-dashoffset: 0;
   }
 } 
-
+*/
 
 .node[data-testid] .socket[title="action"] {
   border: 0!important;

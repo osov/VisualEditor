@@ -24,3 +24,10 @@ export class TwoButtonControl extends Classic.Control {
     super()
   }
 }
+
+/*
+export class ActionConnectionComponent<Source extends Node, Target extends Node> extends Classic.Connection{
+
+}
+
+*/
