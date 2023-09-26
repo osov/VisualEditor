@@ -34,6 +34,7 @@ export class TwoButtonControl extends Classic.Control {
   }
 }
 
+
 export class OneButtonControl extends Classic.Control {
   constructor(
     public label: string,
@@ -42,10 +43,3 @@ export class OneButtonControl extends Classic.Control {
     super()
   }
 }
-
-/*
-export class ActionConnectionComponent<Source extends Node, Target extends Node> extends Classic.Connection{
-
-}
-
-*/
