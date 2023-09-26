@@ -1,5 +1,6 @@
 import { ClassicPreset as Classic } from 'rete'
 import { socketNumber } from '../sockets'
+import { TitleNodeControl } from "../controls"
 
 export class NumberNode
     extends Classic.Node<
@@ -13,6 +14,7 @@ export class NumberNode
     constructor(initial: number, change?: (val: number) => void) {
         super("Number");
 
+        this.addControl("TitleNode", new TitleNodeControl("Число"))
         this.addOutput("out", new Classic.Output(socketNumber, "Число"));
         this.addControl("val", new Classic.InputControl("number", { initial, change })
         );

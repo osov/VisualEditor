@@ -1,9 +1,10 @@
 import { ClassicPreset as Classic } from "rete"
 import { socketAction } from "../sockets"
 import { TwoButtonControl } from "../controls"
+import { TitleNodeControl } from "../controls"
 
 export class SequenceNode extends Classic.Node {
-  width = 200
+  width = 210
   height = 140
   private area: any;
   private heightOut = 36;
@@ -39,6 +40,7 @@ export class SequenceNode extends Classic.Node {
   constructor(num_outputs = 2) {
     super("Sequence")
     this.area = (window as any).area;
+    this.addControl("TitleNode", new TitleNodeControl("Последовательность", "red"))
 
     this.addInput("in", new Classic.Input(socketAction, "", true))
     this.makeOutputs(num_outputs);
