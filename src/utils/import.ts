@@ -1,20 +1,23 @@
 import { Context } from "../editor";
-import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, EngineReadyNode } from "../nodes";
+import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, EngineReadyNode, StringNode, LogNode } from "../nodes";
 import { removeConnections } from "./utils";
 
 export async function createNode({ editor, area, modules }: Context, name: string, data: any) {
-  if (name === "EngineReady") return new EngineReadyNode();
-  if (name === "Number") return new NumberNode(data.val);
-  if (name === "Add") return new AddNode(() => { }, data);
-  if (name === "Input") return new InputNode(data.key);
-  if (name === "Output") return new OutputNode(data.key);
-  if (name === "Sequence") return new SequenceNode(data.val);
   if (name === "Module") {
-    const node = new ModuleNode(data.name, modules.findModule, (id) => removeConnections(editor, id) /*, (id) => area.update("node", id)*/);
-    await node.update();
-    return node;
+    const node = new ModuleNode(data.name, modules.findModule, (id) => removeConnections(editor, id))
+    await node.update()
+    return node
   }
-  throw new Error("Unsupported node:" + name);
+  if (name === "Input") return new InputNode(data.key)
+  if (name === "Output") return new OutputNode(data.key)
+  if (name === "EngineReady") return new EngineReadyNode()
+  if (name === "Number") return new NumberNode(data.val)
+  if (name === "String") return new StringNode(data.val)
+  if (name === "Sequence") return new SequenceNode(data.val)
+  if (name === "Add") return new AddNode(() => { }, data)
+  if (name === "Log") return new LogNode(data.val)
+  toastr.error('Нода не поддерживается:' + name)
+  throw new Error("Unsupported node:" + name)
 }
 
 export async function importPositions(context: Context, data: any) {
@@ -34,7 +37,7 @@ export async function importEditor(context: Context, data: any, cur_module = tru
     const node = await createNode(context, n.name, n.data);
     node.id = n.id;
     await context.editor.addNode(node);
-    if (n.x && n.y)
+    if (n.x && n.y && cur_module)
       await context.area.translate(node.id, { x: n.x, y: n.y })
   }
   // connections

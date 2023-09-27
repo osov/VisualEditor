@@ -40,7 +40,7 @@ export class SequenceNode extends Classic.Node {
   constructor(num_outputs = 2) {
     super("Sequence")
     this.area = (window as any).area;
-    this.addControl("TitleNode", new TitleNodeControl("Последовательность", "red"))
+    this.addControl("TitleNode", new TitleNodeControl("Последов..."))
 
     this.addInput("in", new Classic.Input(socketAction, "", true))
     this.makeOutputs(num_outputs);

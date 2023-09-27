@@ -33,7 +33,7 @@ export type Context = {
 import rootModule from "./modules/root.json"
 import transitModule from "./modules/transit.json"
 import doubleModule from "./modules/double.json"
-import { reOrderEditor } from './utils/debug'
+import { reOrderEditor, showIds } from './utils/debug'
 
 
 const modulesData: { [key in string]: any } = {
@@ -101,7 +101,7 @@ export async function createEditor(container: HTMLElement) {
 
         if (currentModulePath != 'global') {
             module_sub_items.push({
-                label: 'Создать', key: '1', handler: () => null, subitems: [
+                label: 'Создать вход/выход', key: '1', handler: () => null, subitems: [
                     { label: 'Вход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
                     { label: 'Выход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
                 ]
@@ -109,14 +109,20 @@ export async function createEditor(container: HTMLElement) {
         }
 
 
-        const modules_list = [];
+        const modules_list_open = [];
+        const modules_list_add = [];
         const list = Object.keys(modulesData);
         for (let i = 0; i < list.length; i++) {
             const it = list[i];
-            if (it != currentModulePath)
-                modules_list.push({ label: it, key: '1', handler: () => openModule(it) })
+            if (it != currentModulePath) {
+                modules_list_open.push({ label: it, key: '1', handler: () => openModule(it) })
+                modules_list_add.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
+            }
         }
-        module_sub_items.push({ label: 'Открыть', key: '1', handler: () => null, subitems: modules_list })
+        module_sub_items.push({ label: 'Добавить', key: '1', handler: () => null, subitems: modules_list_add })
+        module_sub_items.push({ label: 'Редактировать', key: '1', handler: () => null, subitems: modules_list_open })
+
+
 
         context_menu_items.splice(0, context_menu_items.length);
         context_menu_items.push(
@@ -127,19 +133,20 @@ export async function createEditor(container: HTMLElement) {
                 ]
             },
             {
-                label: 'Операторы', key: '1', handler: () => null,
-                subitems: [
-                    { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
-                ]
-            },
-            {
                 label: 'Константы', key: '1', handler: () => null,
                 subitems: [
                     { label: 'Число', key: '1', handler: () => addNode("Number", { val: 1 }) },
-                    { label: 'Строка', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                    { label: 'Строка', key: '1', handler: () => addNode("String", { val: 'text' }) },
                     { label: 'Логическое', key: '1', handler: () => addNode("Number", { val: 1 }) },
                     { label: 'Цвет', key: '1', handler: () => addNode("Number", { val: 1 }) },
                     { label: 'Вектор3', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                ]
+            },
+            {
+                label: 'Операторы', key: '1', handler: () => null,
+                subitems: [
+                    { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
+                    { label: 'Логировать', key: '1', handler: () => addNode("Log", {}) },
                 ]
             },
             {
@@ -168,6 +175,12 @@ export async function createEditor(container: HTMLElement) {
             {
                 label: 'Модуль', key: '1', handler: () => null,
                 subitems: module_sub_items
+            },
+            {
+                label: 'Отладка', key: '1', handler: () => null,
+                subitems: [
+                    { label: 'Show IDs', key: '1', handler: () => showIds(editor, area) },
+                ]
             }
 
         );
@@ -230,7 +243,7 @@ export async function createEditor(container: HTMLElement) {
                     const sockets = getConnectionSockets(editor, new Connection(editor.getNode(source.nodeId), source.key as never, editor.getNode(target.nodeId), target.key as never));
 
                     if (!isCompatibleSockets(sockets.source, sockets.target)) {
-                        console.warn("Sockets are not compatible", sockets);
+                        toastr.error('Входы не совместимы:' + sockets.source.name + ' и ' + sockets.target.name);
                         connection.drop();
                         return false;
                     }
@@ -314,7 +327,9 @@ export async function createEditor(container: HTMLElement) {
         }
     }
 
+
     // debug
+    (window as any).openModule = openModule;
     (window as any).nEditor = editor;
     (window as any).modulesData = modulesData;
     (window as any).area = area;
@@ -366,6 +381,9 @@ export async function createEditor(container: HTMLElement) {
         getModules() {
             return Object.keys(modulesData)
         },
+        getModuleString(name: string) {
+            return JSON.stringify(modulesData[name])
+        },
         saveModule: () => {
             if (currentModulePath) {
                 const data = exportEditor(context)
@@ -382,7 +400,6 @@ export async function createEditor(container: HTMLElement) {
         openModule,
         destroy: () => {
             console.log("area.destroy", area.nodeViews.size)
-
             area.destroy()
         }
     }

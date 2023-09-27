@@ -1,15 +1,15 @@
 import { ClassicPreset as Classic } from 'rete'
-import { socketAction } from '../sockets'
-import { TitleNodeControl } from '../controls';
+import { socketAction } from '../../sockets'
+import { TitleNodeControl } from '../../controls';
 
 export class EngineReadyNode extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }>
 {
     width = 180;
-    height = 140;
+    height = 90;
 
     constructor() {
         super("EngineReady");
-        this.addControl("TitleNode", new TitleNodeControl("Движок загружен"))
+        this.addControl("TitleNode", new TitleNodeControl("Движок загружен", 'red'))
         this.addOutput("out", new Classic.Output(socketAction, ""));
     }
 

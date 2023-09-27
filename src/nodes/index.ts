@@ -1,27 +1,36 @@
 import { ClassicPreset } from 'rete'
 
-export { InputNode } from "./module/input";
-export { OutputNode } from "./module/output";
-export { ModuleNode } from "./module/module";
-import { ModuleNode } from '.';
-import { InputNode } from './module/input';
-import { OutputNode } from './module/output';
+// const
+import { NumberNode } from "./constants/number"
+import { StringNode } from "./constants/string"
 
-import { EngineReadyNode } from './engineReady';
+// modules
+import { ModuleNode } from "./module/module"
+import { InputNode } from "./module/input"
+import { OutputNode } from "./module/output"
+
+// events
+import { EngineReadyNode } from './events/engineReady'
+
+// 
 import { AddNode } from "./add";
-import { NumberNode } from "./number";
 import { SequenceNode } from "./sequence"
+import { LogNode } from "./log"
 
 
-export { AddNode } from "./add";
-export { NumberNode } from "./number";
-export { SequenceNode } from "./sequence"
-export { EngineReadyNode } from './engineReady';
+
+export {
+    NumberNode, StringNode,
+    EngineReadyNode,
+    ModuleNode, InputNode, OutputNode,
+    AddNode, SequenceNode, LogNode,
+}
 
 
 export type Nodes = InputNode | OutputNode | ModuleNode | //  modules
     EngineReadyNode | // events
-    NumberNode | AddNode | SequenceNode
+    NumberNode | StringNode | //
+    AddNode | SequenceNode | LogNode
 
 export class Connection<A extends Nodes, B extends Nodes> extends ClassicPreset.Connection<A, B> { }
 export type Conn = Connection<NumberNode, AddNode>
