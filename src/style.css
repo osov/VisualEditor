@@ -40,6 +40,7 @@ body {
   padding: 7px 20px;
   background-color: var(--nodeBg);
   cursor: pointer;
+  text-decoration: none;
 }
 .main_menu > li:hover > a,
 .submenu li:hover a {
@@ -63,6 +64,74 @@ body {
 }
 .submenu li:not(:last-child){
   border-bottom: 1px solid var(--nodeChildrenBorderColor);
+}
+
+.mmodal{
+  column-gap: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  background-color: #0f0f0f;
+  color: #fff;
+  width: 100%;
+  display: none;
+}
+.mmodal.active{
+  display: flex;
+}
+.mmodal__close{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 22px;
+}
+.mmodal__close:hover{
+  color: red;
+}
+.mmodal__left{
+  padding: 20px;
+  border-right: 2px solid red;
+}
+.mmodal__right{
+  padding: 20px;
+  min-width: 555px;
+}
+.mmodal__menu{
+  display: flex;
+  flex-direction: column;
+  padding-top: 15px;
+}
+.mmodal__menu a{
+  display: block;
+  padding: 5px 10px;
+  background-color: var(--nodeBg);
+  color: #fff;
+  text-decoration: none;
+  
+}
+.mmodal__menu a:hover{
+  background-color: var(--nodeChildrenBg);
+}
+.mmodal__menu a.active{
+  color: red;
+}
+
+div[data-swb]{display: none;}
+div[data-swb]:nth-child(1){display: block;}
+
+.tbl{
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  width: 100%;
+  text-align: center;
+}
+.tbl td,
+.tbl th{
+  border: 1px solid #ccc;
+  padding: 5px;
 }
 
 .fill-area {

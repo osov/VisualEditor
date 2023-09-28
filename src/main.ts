@@ -1,6 +1,7 @@
 import { createEditor } from "./editor"
 import { iEngine } from "./engine/iEngine";
 import "./style.css"
+import  "./script.ts"
 
 // todo insert node, magnetic connection, selectable connections
 
