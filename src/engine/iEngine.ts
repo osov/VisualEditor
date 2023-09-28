@@ -1,5 +1,6 @@
 import { iNode } from "./iNode"
-import { IInputData, INode, IOutputData, JsonData } from "./types"
+import { base_tasks } from "./tasks/base_tasks"
+import { IInputData, INode, IOutputData, ITaskInfo, JsonData } from "./types"
 
 export function iEngine() {
     const nodes: { [k: string]: INode } = {}
@@ -25,18 +26,25 @@ export function iEngine() {
 
         for (let i = 0; i < nodes_data.length; i++) {
             const node_data = nodes_data[i]
-            const node = iNode(node_data.name, node_data.id, outputs[node_data.id] || [], node_data.data, get_node)
+            const node = iNode(node_data.id, node_data.data, outputs[node_data.id] || [], get_node)
             nodes[node_data.id] = node
+            attach_task(node, node_data.name)
         }
 
         for (const key in nodes) {
             const node = nodes[key]
             node.init()
         }
-        //console.log('outputs', outputs)
-        //console.log('inputs', inputs)
+        (window as any).nodes = nodes
+    }
 
-        console.log(nodes)
+    function attach_task(node: INode, name_node: string) {
+        if (name_node in base_tasks) {
+            const task_info: ITaskInfo = (base_tasks as any)[name_node]
+            node.set_task_info(task_info)
+        }
+        else
+            console.error('Задача не подключена:', name_node)
     }
 
     function get_node(id: string) {

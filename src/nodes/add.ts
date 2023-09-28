@@ -3,7 +3,7 @@ import { socketNumber } from '../sockets'
 import { TitleNodeControl } from "../controls"
 
 
-export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { value: Classic.Socket }>
+export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { sum: Classic.Socket }>
 {
     width = 180;
     height = 190;
@@ -29,7 +29,7 @@ export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket
 
         this.addInput("A", left);
         this.addInput("B", right);
-        this.addOutput("value", new Classic.Output(socketNumber, "A + B"));
+        this.addOutput("sum", new Classic.Output(socketNumber, "A + B"));
     }
 
     serialize() {

@@ -329,6 +329,14 @@ export async function createEditor(container: HTMLElement) {
 
 
     // debug
+
+    editor.addPipe((context) => {
+        if (["connectioncreated", "connectionremoved", 'nodecreated', 'noderemoved'].includes(context.type)) {
+            (window as any).editor.saveModule(); (window as any).e.init((window as any).editor.getModuleString('global'))
+        }
+        return context;
+    });
+
     (window as any).openModule = openModule;
     (window as any).nEditor = editor;
     (window as any).modulesData = modulesData;
