@@ -1,5 +1,13 @@
 export type GetNodeFnc = (id: string) => INode | undefined
 
+export type INodeGraph = { [k: string]: INode }
+
+export interface GraphInfo {
+    nodes: { [k: string]: INode }
+    connections: IConnectionData[]
+    nodes_data: INodeData[]
+}
+
 export interface IEngine {
 }
 
@@ -27,6 +35,8 @@ export interface IInOutConfig {
 }
 
 export interface INode {
+    name: string
+    node_data: DictAny
     init: () => void
     run: () => void
     set_task_info: (task: ITaskInfo) => void
@@ -34,19 +44,20 @@ export interface INode {
     get_in_data(): DictAny
     get_out_data: () => DictAny
     connections_data: INodeConfigData
+    config_in_out: IInOutConfig // debug
 }
 
 export type IOutputData = { output: string, target: string, targetInput: string }[]
 export type IInputData = { input: string, source: string, sourceOutput: string }[]
 
-interface IConnectionData {
+export interface IConnectionData {
     source: string
     sourceOutput: string
     target: string
     targetInput: string
 }
 
-interface INodeData {
+export interface INodeData {
     id: string
     name: string
     x: number

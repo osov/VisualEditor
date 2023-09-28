@@ -1,1 +1,1 @@
-{"nodes":[{"id":"n0","name":"Input","x":12,"y":67,"data":{"key":"input"}},{"id":"n1","name":"Output","x":322,"y":12,"data":{"key":"output"}}],"connections":[{"source":"n0","sourceOutput":"val","target":"n1","targetInput":"val"}],"comments":[{"text":"Transit","links":["n0","n1"]}]}
+{"nodes":[{"id":"n0","name":"Input","x":12,"y":67,"data":{"key":"v1"}},{"id":"n1","name":"Output","x":322,"y":12,"data":{"key":"o1"}}],"connections":[{"source":"n0","sourceOutput":"m","target":"n1","targetInput":"m"}],"comments":[{"text":"Transit","links":["n0","n1"]}]}

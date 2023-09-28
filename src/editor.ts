@@ -114,10 +114,9 @@ export async function createEditor(container: HTMLElement) {
         const list = Object.keys(modulesData);
         for (let i = 0; i < list.length; i++) {
             const it = list[i];
-            if (it != currentModulePath) {
+            if (it != currentModulePath)
                 modules_list_open.push({ label: it, key: '1', handler: () => openModule(it) })
-                modules_list_add.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
-            }
+            modules_list_add.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
         }
         module_sub_items.push({ label: 'Добавить', key: '1', handler: () => null, subitems: modules_list_add })
         module_sub_items.push({ label: 'Редактировать', key: '1', handler: () => null, subitems: modules_list_open })
@@ -180,6 +179,7 @@ export async function createEditor(container: HTMLElement) {
                 label: 'Отладка', key: '1', handler: () => null,
                 subitems: [
                     { label: 'Show IDs', key: '1', handler: () => showIds(editor, area) },
+                    { label: 'Update Code', key: '1', handler: () => update_code_editor() },
                 ]
             }
 
@@ -323,6 +323,7 @@ export async function createEditor(container: HTMLElement) {
             const data = modulesData[path]
             await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
             await ZoomNodes()
+            //update_code_editor()
 
         }
     }
@@ -330,9 +331,14 @@ export async function createEditor(container: HTMLElement) {
 
     // debug
 
+    const update_code_editor = () => {
+        const str = JSON.stringify(exportEditor(context));
+        (window as any).e.init(str)
+    }
+
     editor.addPipe((context) => {
         if (["connectioncreated", "connectionremoved", 'nodecreated', 'noderemoved'].includes(context.type)) {
-            (window as any).editor.saveModule(); (window as any).e.init((window as any).editor.getModuleString('global'))
+            // update_code_editor()
         }
         return context;
     });

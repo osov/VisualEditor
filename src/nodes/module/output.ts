@@ -3,7 +3,7 @@ import { socketAny } from '../../sockets'
 import { TitleNodeControl } from "../../controls"
 
 export class OutputNode
-    extends Classic.Node<{ val: Classic.Socket }, {}, { TitleNode: TitleNodeControl, key: Classic.InputControl<"text"> }>
+    extends Classic.Node<{ m: Classic.Socket }, {}, { TitleNode: TitleNodeControl, key: Classic.InputControl<"text"> }>
 {
     width = 180;
     height = 140;
@@ -11,9 +11,9 @@ export class OutputNode
     constructor(initial: string) {
         super("Output");
 
-        this.addControl("TitleNode", new TitleNodeControl("Аутпут"))
+        this.addControl("TitleNode", new TitleNodeControl("Вывод"))
         this.addControl("key", new Classic.InputControl("text", { initial }));
-        this.addInput("val", new Classic.Input(socketAny, "Любой"));
+        this.addInput("m", new Classic.Input(socketAny, "Любой"));
     }
 
     serialize() {

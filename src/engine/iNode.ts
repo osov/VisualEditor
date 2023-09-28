@@ -2,7 +2,7 @@ import { DictAny, DictInNode, GetNodeFnc, IInOutConfig, INode, INodeConfigData, 
 
 
 
-export function iNode(id_current_node: string, node_data: DictAny, outputs: IOutputData, get_node: GetNodeFnc): INode {
+export function iNode(id_current_node: string, node_data: DictAny, outputs: IOutputData, get_node: GetNodeFnc, name: string): INode {
 
     const connections_data: INodeConfigData = {
         data_in: {},
@@ -114,5 +114,5 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
     }
 
 
-    return { init, set_task_info, connections_data, run, get_in_data_nodes, get_in_data, get_out_data, }
+    return { init, set_task_info, connections_data, run, get_in_data_nodes, get_in_data, get_out_data, config_in_out, name, node_data }
 }

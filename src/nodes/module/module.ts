@@ -5,7 +5,7 @@ import { Schemes } from "../../editor"
 import { OneButtonControl, TitleNodeControl } from "../../controls"
 
 export class ModuleNode
-    extends Classic.Node<Record<string, Classic.Socket>, Record<string, Classic.Socket>, { TitleNode: TitleNodeControl, module: Classic.InputControl<"text">, OneBtn: OneButtonControl }>
+    extends Classic.Node<Record<string, Classic.Socket>, Record<string, Classic.Socket>, { TitleNode: TitleNodeControl, name: Classic.InputControl<"text">, OneBtn: OneButtonControl }>
 {
     width = 180
     height = 160
@@ -16,7 +16,7 @@ export class ModuleNode
 
         this.addControl("TitleNode", new TitleNodeControl("Модуль", 'blue'))
 
-        this.addControl("module", new Classic.InputControl("text", { initial: path, readonly: true }))
+        this.addControl("name", new Classic.InputControl("text", { initial: path, readonly: true }))
         this.addControl("OneBtn", new OneButtonControl("Изменить", async () => (window as any).openModule(path)))
         this.update()
     }
@@ -55,7 +55,7 @@ export class ModuleNode
 
     serialize() {
         return {
-            name: this.controls.module.value
+            name: this.controls.name.value
         }
     }
 }

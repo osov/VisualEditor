@@ -1,6 +1,28 @@
 import { ITaskInfo } from "../types";
 
 export const base_tasks: { [k: string]: ITaskInfo } = {
+    'Input': {
+        in_actions: [],
+        in_data: ['m'],
+        out_actions: [],
+        out_data: ['m'],
+        get_out_data: (_, get_in_data) => {
+            const d = get_in_data()
+            // console.log('IN', d)
+            return d
+        }
+    },
+    'Output': {
+        in_actions: [],
+        in_data: ['m'],
+        out_actions: [],
+        out_data: ['m'],
+        get_out_data: (_, get_in_data) => {
+            const d = get_in_data()
+            //console.log('OUT', d)
+            return d
+        }
+    },
     'Number': {
         in_actions: [],
         in_data: [],
