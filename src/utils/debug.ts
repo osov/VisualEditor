@@ -13,17 +13,6 @@ function getNodeId(editor: NodeEditor<any>) {
     }
 }
 
-function getConnectionId(editor: NodeEditor<any>) {
-    let index = 0
-    while (true) {
-        const k = 'c' + index
-        const node = editor.getConnection(k)
-        if (!node)
-            return k
-        index++
-    }
-}
-
 export function reOrderEditor(editor: NodeEditor<any>, area: AreaPlugin<any>, comment: CommentPlugin<any>) {
     const nodes = editor.getNodes()
     const rNodes: { [k: string]: string } = {}
@@ -40,8 +29,6 @@ export function reOrderEditor(editor: NodeEditor<any>, area: AreaPlugin<any>, co
     const connections = editor.getConnections()
     for (let i = 0; i < connections.length; i++) {
         const c = connections[i]
-        // if (c.id.length == 16)
-        //    c.id = getConnectionId(editor)
         if (rNodes[c.source])
             c.source = rNodes[c.source]
         if (rNodes[c.target])
@@ -55,8 +42,6 @@ export function reOrderEditor(editor: NodeEditor<any>, area: AreaPlugin<any>, co
             if (rNodes[l])
                 links[j] = rNodes[l]
         }
-
-
     }
 }
 
@@ -68,6 +53,11 @@ export function showIds(editor: NodeEditor<any>, area: any) {
         let title: string = n.controls.TitleNode.title;
         title = title.split('[')[0];
         n.controls.TitleNode.title = title + '[' + n.id + ']';
-        area.update('node', n.id);
+        //area.update('node', n.id);
+    }
+
+    for (let k of area.nodeViews) {
+        const nid = k[0]
+        area.update('node', nid);
     }
 }

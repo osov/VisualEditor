@@ -18,6 +18,9 @@ import { EngineReadyNode } from './events/engineReady'
 import { AddNode } from "./add";
 import { SequenceNode } from "./sequence"
 import { LogNode } from "./log"
+import { DelayNode } from "./delay"
+import { AnyToNumberNode } from './converts/any_number'
+import { AnyToStringNode } from './converts/any_string'
 
 
 
@@ -25,14 +28,16 @@ export {
     NumberNode, StringNode,
     EngineReadyNode,
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
-    AddNode, SequenceNode, LogNode,
+    AddNode, SequenceNode, LogNode, DelayNode,
+    AnyToNumberNode, AnyToStringNode
 }
 
 
 export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode | ModuleNode | //  modules
     EngineReadyNode | // events
-    NumberNode | StringNode | //
-    AddNode | SequenceNode | LogNode
+    NumberNode | StringNode | // const
+    AnyToNumberNode | AnyToStringNode | // converts
+    AddNode | SequenceNode | LogNode | DelayNode
 
 export class Connection<A extends Nodes, B extends Nodes> extends ClassicPreset.Connection<A, B> { }
 export type Conn = Connection<NumberNode, AddNode>

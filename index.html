@@ -14,23 +14,33 @@
       <li>
         <a>Файл</a>
         <ul class="submenu">
-          <li><a href="javascript:void(0);">save as</a></li>
-          <li><a>save</a></li>
+        	<li><a class="debug_btn" data-id="save_module">Сохранить</a></li>
+          <li><a class="debug_btn" data-id="save_all">Сохранить всё</a></li>
+
         </ul>
       </li>
       <li><a>Вид</a></li>
       <li><a class="open_mmodal">open modal</a></li>
       <li>
-        <a>Объекты</a>
-        <ul class="submenu">
+        <a>Сцены</a>
+        <ul class="submenu menu_scenes">
           <li><a>object 1</a></li>
           <li><a>object 2</a></li>
           <li><a>object 3</a></li>
         </ul>
       </li>
-      <li><a>Справка</a></li>
-      <li><a>Выход</a></li>
+      <li><a>Отладка</a>
+      <ul class="submenu ">
+          <li><a class="debug_btn" data-id="show_ids">Show IDs</a></li>
+          <li><a class="debug_btn" data-id="order">Order</a></li>
+          <li><a class="debug_btn" data-id="save_code">Сохранить</a></li>
+          <li><a class="debug_btn" data-id="load_code">Загрузить</a></li>
+        </ul>
+    </li>
+      <li><a class="btn_back" style='display:none'>Назад</a></li>
     </ul>
+
+    <div class="title_win">Title</div>
 
     <div class="mmodal ">
       <a href="javascript:void(0);" class="mmodal__close">x</a>

@@ -26,8 +26,12 @@
         pointer-events: auto;
         stroke-dasharray: 1.5em, 0.5em;
         stroke: rgba(255, 255, 255, 0.78)!important;
-        animation: 0.4s linear 0s infinite normal none running dash;
+       
         stroke-dashoffset: 2em;
+    }
+
+    svg path.animated{
+      animation: 0.4s linear 0s infinite normal none running dash;
     }
 
     @keyframes dash {

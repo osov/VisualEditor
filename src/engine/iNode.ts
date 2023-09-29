@@ -1,3 +1,4 @@
+import { delay } from "../utils/utils";
 import { DictAny, DictInNode, GetNodeFnc, IInOutConfig, INode, INodeConfigData, IOutputData, ITaskInfo, OutNodeInfo } from "./types";
 
 
@@ -89,7 +90,7 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         return list;
     }
 
-    function call_action(id_out: string) {
+    async function call_action(id_out: string) {
         if (!config_in_out.out_actions.includes(id_out))
             return console.error("Выход не найден:", id_out, id_current_node)
         const { data_out } = connections_data
@@ -99,17 +100,18 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         const out_connections: OutNodeInfo[] = data_out[id_out]
         for (let i = 0; i < out_connections.length; i++) {
             const connection = out_connections[i]
-            const node = get_node(connection.target)
-            node?.run()
+            const node = get_node(connection.target);
+            (window as any).activate_node_animation(id_current_node, connection.target, id_out, connection.targetInput) // todo debug
+            await node?.run()
         }
-
     }
 
     function get_out_data() {
         return task_info.get_out_data!(node_data, get_in_data)
     }
 
-    function run() {
+    async function run() {
+        await delay(500) // todo debug
         return task_info.run!(node_data, get_in_data, call_action)
     }
 

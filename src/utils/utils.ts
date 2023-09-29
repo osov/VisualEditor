@@ -1,9 +1,10 @@
-import { Input } from "ant-design-vue";
 import { BaseSchemes, ClassicPreset, GetSchemes, NodeEditor, NodeId } from "rete";
 import { CommentPlugin } from "rete-comment-plugin";
 import { HistoryAction } from "rete-history-plugin";
-import { Output } from "rete/_types/presets/classic";
 import { Nodes, Conn } from "../nodes";
+
+
+export function delay(ms: number) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 export async function removeConnections(
     editor: NodeEditor<BaseSchemes>,

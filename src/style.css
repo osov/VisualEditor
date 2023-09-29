@@ -294,3 +294,13 @@ div[data-swb]:nth-child(1){display: block;}
 .node[data-testid] .socket[title="color"]{
 	    background: #b4e13b;
 }
+
+
+.title_win{
+	    position: fixed;
+    top: 10px;
+    left: 50%;
+    z-index: 111;
+    font-size: 24px;
+    color: #49a3ff;
+}

@@ -5,7 +5,7 @@ import { TitleNodeControl } from '../../controls';
 export class EngineReadyNode extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }>
 {
     width = 180;
-    height = 90;
+    height = 80;
 
     constructor() {
         super("EngineReady");
