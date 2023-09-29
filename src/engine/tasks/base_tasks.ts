@@ -23,6 +23,20 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             return d
         }
     },
+    'InputAction': {
+        in_actions: ['m'],
+        in_data: [],
+        out_actions: ['m'],
+        out_data: [],
+        run: (_, __, call_action) => call_action('m')
+    },
+    'OutputAction': {
+        in_actions: ['m'],
+        in_data: [],
+        out_actions: ['m'],
+        out_data: [],
+        run: (_, __, call_action) => call_action('m')
+    },
     'Number': {
         in_actions: [],
         in_data: [],

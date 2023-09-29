@@ -1,5 +1,5 @@
 import { Context } from "../editor";
-import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, EngineReadyNode, StringNode, LogNode } from "../nodes";
+import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, EngineReadyNode, StringNode, LogNode, InputActionNode, OutputActionNode } from "../nodes";
 import { removeConnections } from "./utils";
 
 export async function createNode({ editor, area, modules }: Context, name: string, data: any) {
@@ -10,6 +10,8 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   }
   if (name === "Input") return new InputNode(data.key)
   if (name === "Output") return new OutputNode(data.key)
+  if (name === "InputAction") return new InputActionNode(data.key)
+  if (name === "OutputAction") return new OutputActionNode(data.key)
   if (name === "EngineReady") return new EngineReadyNode()
   if (name === "Number") return new NumberNode(data.val)
   if (name === "String") return new StringNode(data.val)
@@ -85,8 +87,6 @@ export function exportEditor(context: Context) {
   for (const c of context.comment.comments) {
     comments.push({ text: c[1].text, links: c[1].links });
   }
-
-
 
   return {
     nodes,

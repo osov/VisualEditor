@@ -84,5 +84,6 @@ export interface OutNodeInfo {
 export type DictOutNodes = { [k: string]: OutNodeInfo[] }
 export type DictInNode = { [k: string]: InNodeInfo }
 
+export interface DictString { [k: string]: string }
 export interface DictAny { [k: string]: any }
 export interface DictINodes { [k: string]: INode[] }

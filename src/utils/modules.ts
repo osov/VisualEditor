@@ -1,5 +1,5 @@
 import { ClassicPreset, GetSchemes, NodeEditor } from "rete";
-import { InputNode, OutputNode } from "../nodes";
+import { InputNode, OutputNode, InputActionNode, OutputActionNode } from "../nodes";
 
 
 export type Schemes = GetSchemes<ClassicPreset.Node, any>;
@@ -25,16 +25,25 @@ export class Modules<S extends Schemes> {
 
   public static getPorts(editor: NodeEditor<Schemes>) {
     const nodes = editor.getNodes();
-    const inputs = nodes
+    const inputs_data = nodes
       .filter((n): n is InputNode => n instanceof InputNode)
       .map((n) => n.controls.key.value as string);
-    const outputs = nodes
+    const outputs_data = nodes
       .filter((n): n is OutputNode => n instanceof OutputNode)
       .map((n) => n.controls.key.value as string);
 
+    const inputs_actions = nodes
+      .filter((n): n is InputNode => n instanceof InputActionNode)
+      .map((n) => n.controls.key.value as string);
+    const outputs_actions = nodes
+      .filter((n): n is OutputNode => n instanceof OutputActionNode)
+      .map((n) => n.controls.key.value as string);
+
     return {
-      inputs,
-      outputs
+      inputs_data,
+      outputs_data,
+      inputs_actions,
+      outputs_actions
     };
   }
 }

@@ -34,6 +34,7 @@ import rootModule from "./modules/root.json"
 import transitModule from "./modules/transit.json"
 import doubleModule from "./modules/double.json"
 import { reOrderEditor, showIds } from './utils/debug'
+import { DictString } from './engine/types'
 
 
 const modulesData: { [key in string]: any } = {
@@ -103,7 +104,9 @@ export async function createEditor(container: HTMLElement) {
             module_sub_items.push({
                 label: 'Создать вход/выход', key: '1', handler: () => null, subitems: [
                     { label: 'Вход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
-                    { label: 'Выход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
+                    { label: 'Выход данные', key: '1', handler: () => addNode("Output", { key: "key" }) },
+                    { label: 'Вход действие', key: '1', handler: () => addNode("InputAction", { key: "key" }) },
+                    { label: 'Выход действие', key: '1', handler: () => addNode("OutputAction", { key: "key" }) },
                 ]
             })
         }
@@ -114,9 +117,10 @@ export async function createEditor(container: HTMLElement) {
         const list = Object.keys(modulesData);
         for (let i = 0; i < list.length; i++) {
             const it = list[i];
-            if (it != currentModulePath)
+            if (it != currentModulePath) {
                 modules_list_open.push({ label: it, key: '1', handler: () => openModule(it) })
-            modules_list_add.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
+                modules_list_add.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
+            }
         }
         module_sub_items.push({ label: 'Добавить', key: '1', handler: () => null, subitems: modules_list_add })
         module_sub_items.push({ label: 'Редактировать', key: '1', handler: () => null, subitems: modules_list_open })
@@ -323,7 +327,7 @@ export async function createEditor(container: HTMLElement) {
             const data = modulesData[path]
             await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
             await ZoomNodes()
-            //update_code_editor()
+            update_code_editor()
 
         }
     }
@@ -331,8 +335,16 @@ export async function createEditor(container: HTMLElement) {
 
     // debug
 
+    const update_modules_editor = () => {
+        let modules: DictString = {};
+        for (const k in modulesData)
+            modules[k] = JSON.stringify(modulesData[k]);
+        (window as any).e.set_dc_modules(modules)
+    }
+
     const update_code_editor = () => {
         const str = JSON.stringify(exportEditor(context));
+        update_modules_editor();
         (window as any).e.init(str)
     }
 

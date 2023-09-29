@@ -7,7 +7,9 @@ import { StringNode } from "./constants/string"
 // modules
 import { ModuleNode } from "./module/module"
 import { InputNode } from "./module/input"
+import { InputActionNode } from "./module/input_action"
 import { OutputNode } from "./module/output"
+import { OutputActionNode } from "./module/output_action"
 
 // events
 import { EngineReadyNode } from './events/engineReady'
@@ -22,12 +24,12 @@ import { LogNode } from "./log"
 export {
     NumberNode, StringNode,
     EngineReadyNode,
-    ModuleNode, InputNode, OutputNode,
+    ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
     AddNode, SequenceNode, LogNode,
 }
 
 
-export type Nodes = InputNode | OutputNode | ModuleNode | //  modules
+export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode | ModuleNode | //  modules
     EngineReadyNode | // events
     NumberNode | StringNode | //
     AddNode | SequenceNode | LogNode

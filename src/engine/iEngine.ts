@@ -1,36 +1,34 @@
 import { iNode } from "./iNode"
 import { base_tasks } from "./tasks/base_tasks"
-import { GraphInfo, IConnectionData, IInputData, INode, INodeData, INodeGraph, IOutputData, ITaskInfo, JsonData } from "./types"
+import { DictString, GraphInfo, IConnectionData, INode, INodeData, INodeGraph, IOutputData, ITaskInfo, JsonData } from "./types"
 
-export function iEngine(dc_modules: { [k: string]: string }) {
+export function iEngine() {
+    let dc_modules: DictString = {}
 
-    // const all_nodes: INodeGraph = {}
+    function set_dc_modules(dc: DictString) {
+        dc_modules = dc
+    }
 
     function init(str: string) {
         const graph = init_graph(str);
         (window as any).nodes = graph;
     }
 
-
-
     function merge_graph(nodes: INodeGraph, connections: IConnectionData[], nodes_data: INodeData[], ext: GraphInfo) {
-
         for (let k in ext.nodes) {
             const node = ext.nodes[k]
             nodes[k] = node
         }
 
         for (let i = 0; i < ext.connections.length; i++) {
-            const con = ext.connections[i];
+            const con = ext.connections[i]
             connections.push(con)
         }
 
         for (let i = 0; i < ext.nodes_data.length; i++) {
-            const nd = ext.nodes_data[i];
+            const nd = ext.nodes_data[i]
             nodes_data.push(nd)
         }
-
-
     }
 
     function init_graph(str: string, sub_module = false) {
@@ -47,30 +45,28 @@ export function iEngine(dc_modules: { [k: string]: string }) {
         const connections = data.connections
         // сначала надо создать все модули
         const modules: { [k: string]: GraphInfo } = {}
-        const modules_ids_input: { [k: string]: { [k: string]: string } } = {}
-        const modules_ids_output: { [k: string]: { [k: string]: string } } = {}
+        const modules_ids_input: { [k: string]: DictString } = {}
+        const modules_ids_output: { [k: string]: DictString } = {}
+
         for (let i = 0; i < nodes_data.length; i++) {
             const node_data = nodes_data[i]
             if (node_data.name == 'Module') {
                 modules[node_data.id] = make_module(node_data.data.name, node_data.id)
-                const mi_nodes = modules[node_data.id].nodes
-
-                const arr_in: { [k: string]: string } = {}
-                const arr_out: { [k: string]: string } = {}
-                for (const module_id_node in mi_nodes) {
-                    const module_node = mi_nodes[module_id_node]
-                    if (module_node.name == 'Input')
+                const m_nodes = modules[node_data.id].nodes
+                const arr_in: DictString = {}
+                const arr_out: DictString = {}
+                for (const module_id_node in m_nodes) {
+                    const module_node = m_nodes[module_id_node]
+                    if (module_node.name == 'Input' || module_node.name == 'InputAction')
                         arr_in[module_node.node_data.key] = module_id_node
-                    if (module_node.name == 'Output')
+                    if (module_node.name == 'Output' || module_node.name == 'OutputAction')
                         arr_out[module_node.node_data.key] = module_id_node
-
                 }
                 modules_ids_input[node_data.id] = arr_in
                 modules_ids_output[node_data.id] = arr_out
                 merge_graph(nodes, connections, nodes_data, modules[node_data.id])
             }
         }
-
 
         // а теперь переназначить входы у данных о соединениях
         for (let i = 0; i < connections.length; i++) {
@@ -87,14 +83,15 @@ export function iEngine(dc_modules: { [k: string]: string }) {
             }
         }
 
-        const outputs: { [k: string]: IOutputData } = {}
         // информация о соединениях
+        const outputs: { [k: string]: IOutputData } = {}
         for (let i = 0; i < connections.length; i++) {
             const cd = connections[i]
             if (!outputs[cd.source])
                 outputs[cd.source] = []
             outputs[cd.source].push({ output: cd.sourceOutput, target: cd.target, targetInput: cd.targetInput })
         }
+
 
         for (let i = 0; i < nodes_data.length; i++) {
             const node_data = nodes_data[i]
@@ -103,16 +100,17 @@ export function iEngine(dc_modules: { [k: string]: string }) {
             else {
                 const node = iNode(node_data.id, node_data.data, outputs[node_data.id] || [], get_node, node_data.name)
                 nodes[node_data.id] = node
-                attach_task(node, node_data.name)
+                if (!sub_module)
+                    attach_task(node, node_data.name)
             }
         }
 
-        for (const key in nodes) {
-            const node = nodes[key]
-            // чтобы не было задвоенного инита
-            if (sub_module && (node.name == 'Output' || node.name == 'Input')) { }
-            else
+        // чтобы не было задвоенного инита
+        if (!sub_module) {
+            for (const key in nodes) {
+                const node = nodes[key]
                 node.init()
+            }
         }
         return { nodes, connections, nodes_data }
     }
@@ -122,22 +120,21 @@ export function iEngine(dc_modules: { [k: string]: string }) {
             console.error('Модуль не найден:', name)
         // нужно переназначить все входы/выходы на новые ИДы чтобы не было конфликтов
         const data: JsonData = JSON.parse(dc_modules[name])
-        const nodes_data = data.nodes
         // сначала ноды
+        const nodes_data = data.nodes
         for (let i = 0; i < nodes_data.length; i++) {
             const nd = nodes_data[i];
-            nd.id = 'module_' + id + '_' + nd.id
+            nd.id = id + '_' + 'module_' + nd.id
         }
         // и соединения тоже
         const connections_data = data.connections
         for (let i = 0; i < connections_data.length; i++) {
             const cd = connections_data[i];
-            cd.source = 'module_' + id + '_' + cd.source
-            cd.target = 'module_' + id + '_' + cd.target
+            cd.source = id + '_' + 'module_' + cd.source
+            cd.target = id + '_' + 'module_' + cd.target
         }
         const str = JSON.stringify(data)
-        const graph = init_graph(str, true)
-        return graph
+        return init_graph(str, true)
     }
 
     function attach_task(node: INode, name_node: string) {
@@ -151,5 +148,5 @@ export function iEngine(dc_modules: { [k: string]: string }) {
 
 
 
-    return { init }
+    return { init, set_dc_modules }
 }

@@ -1,5 +1,5 @@
 import { ClassicPreset as Classic, NodeEditor } from 'rete'
-import { socketAny } from '../../sockets'
+import { socketAction, socketAny } from '../../sockets'
 import { Module, Modules } from "../../utils/modules"
 import { Schemes } from "../../editor"
 import { OneButtonControl, TitleNodeControl } from "../../controls"
@@ -29,12 +29,12 @@ export class ModuleNode
             const editor = new NodeEditor<Schemes>()
             await this.module.apply(editor)
 
-            const { inputs, outputs } = Modules.getPorts(editor)
-            this.syncPorts(inputs, outputs)
-        } else this.syncPorts([], [])
+            const { inputs_data, outputs_data, inputs_actions, outputs_actions } = Modules.getPorts(editor)
+            this.syncPorts(inputs_data, inputs_actions, outputs_data, outputs_actions)
+        } else this.syncPorts([], [], [], [])
     }
 
-    syncPorts(inputs: string[], outputs: string[]) {
+    syncPorts(inputs_data: string[], inputs_actions: string[], outputs_data: string[], outputs_actions: string[]) {
         Object.keys(this.inputs).forEach((key: keyof typeof this.inputs) =>
             this.removeInput(key)
         )
@@ -42,15 +42,22 @@ export class ModuleNode
             this.removeOutput(key)
         )
 
-        inputs.forEach((key) => {
+        inputs_data.forEach((key) => {
             this.addInput(key, new Classic.Input(socketAny, key))
         })
-        outputs.forEach((key) => {
+        outputs_data.forEach((key) => {
             this.addOutput(key, new Classic.Output(socketAny, key))
         })
-        this.height =
-            110 + 40 +
-            25 * (Object.keys(this.inputs).length + Object.keys(this.outputs).length)
+
+        inputs_actions.forEach((key) => {
+            this.addInput(key, new Classic.Input(socketAction, key))
+        })
+        outputs_actions.forEach((key) => {
+            this.addOutput(key, new Classic.Output(socketAction, key))
+        })
+
+
+        this.height = 150 + 33 * (Object.keys(this.inputs).length + Object.keys(this.outputs).length)
     }
 
     serialize() {
