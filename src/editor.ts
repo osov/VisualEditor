@@ -391,6 +391,8 @@ export async function createEditor(container: HTMLElement) {
                 return;
             }
         }
+        if (source.includes('module') || target.includes('module'))
+            return;
         return console.warn('Данные не найдены', source, target, sourceOutput, targetInput)
     }
 
