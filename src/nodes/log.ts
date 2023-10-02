@@ -1,13 +1,14 @@
 import { ClassicPreset as Classic } from "rete"
 import { socketAction, socketAny } from "../sockets"
 
-export class LogNode extends Classic.Node<{ in: Classic.Socket, data: Classic.Socket }, {}, { TitleNode: TitleNodeControl, val: Classic.InputControl<"text"> }> {
+export class LogNode extends Classic.Node<{ in: Classic.Socket, data: Classic.Socket }, {}, { val: Classic.InputControl<"text"> }> {
     width = 180
     height = 140
+    nodeTitle: { ru: string, type: string }
 
     constructor(text = '') {
         super("Log")
-        this.nodeTitle = {ru: "Логировать", type: "green"}
+        this.nodeTitle = { ru: "Логировать", type: "green" }
         this.addInput("in", new Classic.Input(socketAction, "", true))
 
         const data = new Classic.Input(socketAny, "данные");

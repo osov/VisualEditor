@@ -7,6 +7,8 @@ export class SequenceNode extends Classic.Node {
   height = 140
   private area: any;
   private heightOut = 36;
+  nodeTitle: { ru: string, type: string }
+  outputs2: any;
 
   async makeOutputs(cnt: number) {
     for (let i = 1; i <= cnt; i++) {
@@ -41,7 +43,7 @@ export class SequenceNode extends Classic.Node {
 
   constructor(num_outputs = 2) {
     super("Sequence")
-    this.nodeTitle = {ru: "Последовательность", type: "green"}
+    this.nodeTitle = { ru: "Последовательность", type: "green" }
     this.area = (window as any).area;
 
     this.addInput("in", new Classic.Input(socketAction, "", true))

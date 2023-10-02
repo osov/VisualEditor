@@ -10,12 +10,11 @@ export class ModuleNode
     width = 180
     height = 160
     module: null | Module<Schemes> = null
+    nodeTitle: { ru: string, type: string, module: string }
 
     constructor(public path: string, private findModule: (path: string) => null | Module<Schemes>, private reset: (nodeId: string) => Promise<void>) {
         super("Module")
-        this.nodeTitle = {ru: "Модуль", type: "blue", module: path}
-
-        this.addControl("name", new Classic.InputControl("text", { initial: path, readonly: true }))
+        this.nodeTitle = { ru: "Модуль", type: "blue", module: path }
         this.addControl("OneBtn", new OneButtonControl("Изменить", async () => openModule(path)))
         this.update()
     }
@@ -61,7 +60,7 @@ export class ModuleNode
 
     serialize() {
         return {
-            name: this.controls.name.value
+            name: this.path
         }
     }
 }

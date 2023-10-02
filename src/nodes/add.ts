@@ -6,25 +6,17 @@ export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket
 {
     width = 180;
     height = 190;
-    constructor(change?: (value: number) => void, initial?: { A?: number; B?: number }) {
+    nodeTitle: { ru: string, type: string }
+
+    constructor(initial?: { A?: number; B?: number }) {
         super("Add");
-        this.nodeTitle = {ru: "Добавить", type: "green"}
+        this.nodeTitle = { ru: "Добавить", type: "green" }
 
         const left = new Classic.Input(socketNumber, "A");
         const right = new Classic.Input(socketNumber, "B");
 
-        left.addControl(
-            new Classic.InputControl("number", {
-                initial: initial?.A || 0,
-                change
-            })
-        );
-        right.addControl(
-            new Classic.InputControl("number", {
-                initial: initial?.B || 0,
-                change
-            })
-        );
+        left.addControl(new Classic.InputControl("number", { initial: initial?.A || 0, }));
+        right.addControl(new Classic.InputControl("number", { initial: initial?.B || 0 }));
 
         this.addInput("A", left);
         this.addInput("B", right);

@@ -6,9 +6,11 @@ import { socketAction, socketNumber } from '../sockets';
 export class DelayNode extends Classic.Node {
     width = 180;
     height = 160;
+    nodeTitle: { ru: string, type: string }
+
     constructor(delay = 500) {
         super("Delay");
-        this.nodeTitle = {ru: "Задержка", type: "green"}
+        this.nodeTitle = { ru: "Задержка", type: "green" }
 
         this.addInput("in", new Classic.Input(socketAction, ""));
         this.addOutput("out", new Classic.Output(socketAction, ""));
