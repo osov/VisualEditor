@@ -2,10 +2,10 @@ import { ClassicPreset as Classic, NodeEditor } from 'rete'
 import { socketAction, socketAny } from '../../sockets'
 import { Module, Modules } from "../../utils/modules"
 import { Schemes } from "../../editor"
-import { OneButtonControl, TitleNodeControl } from "../../controls"
+import { OneButtonControl } from "../../controls"
 
 export class ModuleNode
-    extends Classic.Node<Record<string, Classic.Socket>, Record<string, Classic.Socket>, { TitleNode: TitleNodeControl, name: Classic.InputControl<"text">, OneBtn: OneButtonControl }>
+    extends Classic.Node<Record<string, Classic.Socket>, Record<string, Classic.Socket>, { name: Classic.InputControl<"text">, OneBtn: OneButtonControl }>
 {
     width = 180
     height = 160
@@ -13,8 +13,7 @@ export class ModuleNode
 
     constructor(public path: string, private findModule: (path: string) => null | Module<Schemes>, private reset: (nodeId: string) => Promise<void>) {
         super("Module")
-
-        this.addControl("TitleNode", new TitleNodeControl("Модуль", 'blue'))
+        this.nodeTitle = {ru: "Модуль", type: "blue", module: path}
 
         this.addControl("name", new Classic.InputControl("text", { initial: path, readonly: true }))
         this.addControl("OneBtn", new OneButtonControl("Изменить", async () => (window as any).openModule(path)))

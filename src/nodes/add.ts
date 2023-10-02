@@ -1,6 +1,5 @@
 import { ClassicPreset as Classic } from 'rete'
 import { socketNumber } from '../sockets'
-import { TitleNodeControl } from "../controls"
 
 
 export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { sum: Classic.Socket }>
@@ -9,10 +8,10 @@ export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket
     height = 190;
     constructor(change?: (value: number) => void, initial?: { A?: number; B?: number }) {
         super("Add");
+        this.nodeTitle = {ru: "Добавить", type: "green"}
+
         const left = new Classic.Input(socketNumber, "A");
         const right = new Classic.Input(socketNumber, "B");
-
-        this.addControl("TitleNode", new TitleNodeControl("Добавить"))
 
         left.addControl(
             new Classic.InputControl("number", {

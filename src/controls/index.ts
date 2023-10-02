@@ -14,15 +14,6 @@ export function addCustomBackground<S extends BaseSchemes, K>(area: AreaPlugin<S
   area.area.content.add(background)
 }
 
-export class TitleNodeControl extends Classic.Control {
-  constructor(
-    public title: string,
-    public type: string = 'green',
-  ) {
-    super()
-  }
-}
-
 export class TwoButtonControl extends Classic.Control {
   constructor(
     public label1: string,
