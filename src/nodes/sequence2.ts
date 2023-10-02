@@ -5,28 +5,9 @@ import { TitleNodeControl } from "../controls"
 
 export class SequenceNode2 extends Classic.Node {
   width = 240
-  // height = 140
-  height = 320
+  height = 170
   private area: any;
   private heightOut = 36;
-  list:any = {
-    "out1": {
-        "socket": {
-            "name": "action"
-        },
-        "label": "Выход 1",
-        "multipleConnections": true,
-        "id": "1f36e9e5642720c9"
-    },
-    "out2": {
-        "socket": {
-            "name": "action"
-        },
-        "label": "Выход 2",
-        "multipleConnections": true,
-        "id": "8fe6170d532702bd"
-    }
-}
 
 
   async makeOutputs(cnt: number) {
@@ -35,6 +16,7 @@ export class SequenceNode2 extends Classic.Node {
       this.addOutput(`out${i}`, out)
       this.height += this.heightOut
     }
+    this.outputs2 = Object.entries(this.outputs)
     await this.area.update("node", this.id)
     console.log(this);
     
@@ -43,11 +25,8 @@ export class SequenceNode2 extends Classic.Node {
   async incrementOutput(cnt: number) {
     const out = new Classic.Output(socketAction, `Выход ${cnt}`)
     this.addOutput(`out${cnt}`, out)
+    this.outputs2 = Object.entries(this.outputs)
     this.height += this.heightOut
-    // this.list.push({id: this.list.length+1, name: `name${this.list.length+1}`, age: 55})
-    const count = Object.keys(this.list).length
-    this.list[`out${count+1}`] = {"socket": {"name": "action"},"label": `Выход ${count+1}`,"multipleConnections": true,"id": "8fe6170d532702bd"}
-    console.table(this.list)
     await this.area.update("node", this.id)
   }
 
@@ -59,8 +38,8 @@ export class SequenceNode2 extends Classic.Node {
     if (itemCon)
       await this.area.removeConnectionView(itemCon.id)
     this.removeOutput(indexOut)
+    this.outputs2 = Object.entries(this.outputs)
     this.height -= this.heightOut
-    // this.list.pop()
     await this.area.update("node", this.id)
   }
 
