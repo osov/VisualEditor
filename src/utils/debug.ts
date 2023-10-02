@@ -50,9 +50,9 @@ export function showIds(editor: NodeEditor<any>, area: any) {
     const nodes = editor.getNodes()
     for (let i = 0; i < nodes.length; i++) {
         const n = nodes[i]
-        let title: string = n.controls.TitleNode.title;
+        let title: string = n.nodeTitle.ru;
         title = title.split('[')[0];
-        n.controls.TitleNode.title = title + '[' + n.id + ']';
+        n.nodeTitle.ru = title + '[' + n.id + ']';
         //area.update('node', n.id);
     }
 
