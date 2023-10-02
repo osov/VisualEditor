@@ -21,8 +21,17 @@ import TitleNode from "./components/TitleNode.vue"
 import ActionConnection from "./components/ActionConnection.vue";
 import DataConnection from "./components/DataConnection.vue";
 
+
+declare global {
+    const e: ReturnType<typeof iEngine>;
+    const activate_node_animation: (source: string, sourceOutput: string, target: string, targetInput: string, source_key?: string, target_key?: string) => void;
+    const openModule: (path: string, add_stack?: boolean) => Promise<void>;
+}
+
+
 export type Schemes = GetSchemes<Nodes, Conn>
 export type AreaExtra = Area2D<Schemes> | VueArea2D<Schemes> | ContextMenuExtra | MinimapExtra
+
 
 export type Context = {
     modules: Modules<Schemes>
@@ -33,6 +42,7 @@ export type Context = {
 
 import { reOrderEditor, showIds } from './utils/debug'
 import { DictString } from './engine/types'
+import { iEngine } from './engine/iEngine'
 
 let modulesData: { [key in string]: any } = {}
 let currentModulePath: null | string = null
@@ -257,8 +267,8 @@ export async function createEditor(container: HTMLElement) {
     render.addPreset(
         VuePresets.classic.setup({
             customize: {
-                node(context){
-                // node(){
+                node(context) {
+                    // node(){
                     if (context.payload.label === 'Sequence2') {
                         return CustomNode;
                     }
@@ -360,13 +370,13 @@ export async function createEditor(container: HTMLElement) {
         let modules: DictString = {};
         for (const k in modulesData)
             modules[k] = JSON.stringify(modulesData[k]);
-        (window as any).e.set_dc_modules(modules)
+        e.set_dc_modules(modules)
     }
 
     const update_code_editor = () => {
         const str = JSON.stringify(exportEditor(context));
         update_modules_editor();
-        (window as any).e.init(str)
+        e.init(str)
     }
 
     const save_module = (is_notify = false) => {
@@ -391,10 +401,24 @@ export async function createEditor(container: HTMLElement) {
         }
     }
 
-    const activate_node_animation = (source: string, target: string, sourceOutput: string, targetInput: string) => {
+    const covert_node_data = (node: string, input: string, key: string) => {
+        if (node.includes('module')) {
+            const tmp = node.split('_module_');
+            if (key != '') {
+                node = tmp[0];
+                input = key;
+            }
+        }
+        return [node, input]
+    }
+
+    const activate_node_animation = (source: string, sourceOutput: string, target: string, targetInput: string, source_key = '', target_key = '') => {
         const connections = editor.getConnections()
+        //console.log("Activate:", source, sourceOutput, target, targetInput, source_key, target_key)
         for (let i = 0; i < connections.length; i++) {
             const con = connections[i];
+            [source, sourceOutput] = covert_node_data(source, sourceOutput, source_key);
+            [target, targetInput] = covert_node_data(target, targetInput, target_key);
             if (con.source == source && con.target == target && con.sourceOutput == sourceOutput && con.targetInput == targetInput) {
                 $(area.connectionViews.get(con.id)!.element).find('path').attr('class', 'animated')
                 return;
@@ -402,16 +426,15 @@ export async function createEditor(container: HTMLElement) {
         }
         if (source.includes('module') || target.includes('module'))
             return;
-        return console.warn('Данные не найдены', source, target, sourceOutput, targetInput)
+        return console.warn('Данные не найдены', source, sourceOutput, target, targetInput)
     }
 
 
-    (window as any).openModule = openModule;
     (window as any).nEditor = editor;
     (window as any).modulesData = modulesData;
     (window as any).area = area;
     (window as any).modules_stack = modules_stack;
-    (window as any).order = () => reOrderEditor(editor, area as any, comment as any);
+    (window as any).openModule = openModule;
     (window as any).activate_node_animation = activate_node_animation;
 
     $('.btn_back').click(function () {

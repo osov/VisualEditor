@@ -100,9 +100,18 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         const out_connections: OutNodeInfo[] = data_out[id_out]
         for (let i = 0; i < out_connections.length; i++) {
             const connection = out_connections[i]
-            const node = get_node(connection.target);
-            (window as any).activate_node_animation(id_current_node, connection.target, id_out, connection.targetInput) // todo debug
-            await node?.run()
+            const node = get_node(connection.target)!;
+            // debug info
+            const cur_node = get_node(id_current_node)!;
+            let source_key = '';
+            let target_key = '';
+            if (["Input", "InputAction", "Output", "OutputAction"].includes(cur_node.name))
+                source_key = cur_node.node_data.key;
+            if (["Input", "InputAction", "Output", "OutputAction"].includes(node.name))
+                target_key = node.node_data.key;
+            activate_node_animation(id_current_node, id_out, connection.target, connection.targetInput, source_key, target_key)
+            // ----
+            await node.run()
         }
     }
 

@@ -13,7 +13,7 @@ export class OutputActionNode
 
         this.addControl("TitleNode", new TitleNodeControl("Выход действие"))
         this.addControl("key", new Classic.InputControl("text", { initial }));
-        this.addInput("m", new Classic.Input(socketAction, "Любой"));
+        this.addInput("m", new Classic.Input(socketAction, ""));
     }
 
     serialize() {

@@ -11,7 +11,7 @@ export function iEngine() {
 
     function init(str: string) {
         const graph = init_graph(str);
-        (window as any).nodes = graph;
+        (window as any).nodes = graph; // todo debug
     }
 
     function merge_graph(nodes: INodeGraph, connections: IConnectionData[], nodes_data: INodeData[], ext: GraphInfo) {
@@ -55,6 +55,8 @@ export function iEngine() {
                 const m_nodes = modules[node_data.id].nodes
                 const arr_in: DictString = {}
                 const arr_out: DictString = {}
+                // перебираем все ноды модуля и ищем входы/выходы
+                // помечаем для каждой ноды:ключ=ид_ноды и значения [ключ=имя_входа, значение=ид_ноды]
                 for (const module_id_node in m_nodes) {
                     const module_node = m_nodes[module_id_node]
                     if (module_node.name == 'Input' || module_node.name == 'InputAction')
@@ -64,9 +66,12 @@ export function iEngine() {
                 }
                 modules_ids_input[node_data.id] = arr_in
                 modules_ids_output[node_data.id] = arr_out
-                merge_graph(nodes, connections, nodes_data, modules[node_data.id])
+                if (!sub_module)
+                    merge_graph(nodes, connections, nodes_data, modules[node_data.id])
             }
         }
+
+
 
         // а теперь переназначить входы у данных о соединениях
         for (let i = 0; i < connections.length; i++) {
@@ -82,6 +87,7 @@ export function iEngine() {
                 cd.sourceOutput = 'm'
             }
         }
+
 
         // информация о соединениях
         const outputs: { [k: string]: IOutputData } = {}

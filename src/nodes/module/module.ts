@@ -17,7 +17,7 @@ export class ModuleNode
         this.addControl("TitleNode", new TitleNodeControl("Модуль", 'blue'))
 
         this.addControl("name", new Classic.InputControl("text", { initial: path, readonly: true }))
-        this.addControl("OneBtn", new OneButtonControl("Изменить", async () => (window as any).openModule(path)))
+        this.addControl("OneBtn", new OneButtonControl("Изменить", async () => openModule(path)))
         this.update()
     }
 
