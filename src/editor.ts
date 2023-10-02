@@ -14,6 +14,7 @@ import { createNode, exportEditor, importEditor, importPositions } from './utils
 import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './utils/utils'
 
 import { TitleNodeControl, OneButtonControl, TwoButtonControl, addCustomBackground } from "./controls"
+import CustomNode from './components/CustomNode.vue';
 import CustomOneBtn from "./components/CustomOneBtn.vue"
 import CustomTwoBtn from "./components/CustomTwoBtn.vue"
 import TitleNode from "./components/TitleNode.vue"
@@ -142,6 +143,7 @@ export async function createEditor(container: HTMLElement) {
                 label: 'Операторы', key: '1', handler: () => null,
                 subitems: [
                     { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
+                    { label: 'Последоват 2', key: '1', handler: () => addNode("Sequence2", {}) },
                     { label: 'Логировать', key: '1', handler: () => addNode("Log", {}) },
                     { label: 'Задержка', key: '1', handler: () => addNode("Delay", { ms: 1000 }) },
                 ]
@@ -255,6 +257,13 @@ export async function createEditor(container: HTMLElement) {
     render.addPreset(
         VuePresets.classic.setup({
             customize: {
+                node(context){
+                // node(){
+                    if (context.payload.label === 'Sequence2') {
+                        return CustomNode;
+                    }
+                    return VuePresets.classic.Node;
+                },
                 control(data) {
                     if (data.payload instanceof TitleNodeControl) {
                         return TitleNode

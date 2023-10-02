@@ -200,10 +200,29 @@ div[data-swb]:nth-child(1){display: block;}
 }
 .node[data-testid] .input-socket[data-testid] {
   margin-left: 0;
+  display: inline-block;
 }
 .node[data-testid] .output-socket[data-testid] {
   margin-right: 0;
+  display: inline-block;
 }
+.node[data-testid] .input[data-testid] {
+  text-align: left;
+}
+.node[data-testid] .output[data-testid] {
+  text-align: right;
+}
+.node[data-testid] .input-title[data-testid],
+.node[data-testid] .output-title[data-testid] {
+  vertical-align: middle;
+  color: white;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 14px;
+  margin: 6px;
+  line-height: 24px;
+}
+
 .node[data-testid] .socket {
   border: 2px solid var(--nodeChildrenBorderColor);
   background: var(--nodeChildrenBg);
