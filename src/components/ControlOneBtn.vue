@@ -1,10 +1,7 @@
 <template>
-  <div class="btns">
-    <CustomBtn @pointerdown.stop="" @dblclick.stop="" @click="data.onClick1">{{
-      data.label1
-    }}</CustomBtn>
-    <CustomBtn @pointerdown.stop="" @dblclick.stop="" @click="data.onClick2">{{
-      data.label2
+  <div class="flex">
+    <CustomBtn @pointerdown.stop="" @dblclick.stop="" @click="data.onClick">{{
+      data.label
     }}</CustomBtn>
   </div>
 </template>
@@ -13,7 +10,7 @@
 import { Button } from "ant-design-vue"
 
 export default {
-    name: "CustomTwoBtn",
+    name: "CustomOneBtn",
   props: ["data"],
   created() {
    // console.log(this.data)
@@ -25,12 +22,13 @@ export default {
 </script>
 
 <style scoped>
-.btns {
+.flex {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px 0;
 }
-.btns button {
+.flex button {
   margin: 0 5px;
   border: 1px solid var(--nodeChildrenBorderColor);
   background: var(--nodeChildrenBg);

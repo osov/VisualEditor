@@ -1,6 +1,5 @@
 import { ClassicPreset as Classic } from 'rete'
 import { socketAny, socketString } from '../../sockets'
-import { TitleNodeControl } from "../../controls"
 
 
 export class AnyToStringNode extends Classic.Node {
@@ -8,8 +7,8 @@ export class AnyToStringNode extends Classic.Node {
     height = 120;
     constructor() {
         super("AnyToString");
+        this.nodeTitle = {ru: "В строку", type: "green"}
 
-        this.addControl("TitleNode", new TitleNodeControl("В строку"))
         this.addInput("in", new Classic.Input(socketAny, "данные"));
         this.addOutput("out", new Classic.Output(socketString, "Строка"));
     }

@@ -1,16 +1,15 @@
 import { ClassicPreset as Classic } from 'rete'
 
 import { socketAction, socketNumber } from '../sockets';
-import { TitleNodeControl } from '../controls';
 
 
 export class DelayNode extends Classic.Node {
     width = 180;
-    height = 140;
+    height = 160;
     constructor(delay = 500) {
         super("Delay");
+        this.nodeTitle = {ru: "Задержка", type: "green"}
 
-        this.addControl("TitleNode", new TitleNodeControl("Задержка"))
         this.addInput("in", new Classic.Input(socketAction, ""));
         this.addOutput("out", new Classic.Output(socketAction, ""));
 

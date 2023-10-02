@@ -1,6 +1,5 @@
 import { ClassicPreset as Classic } from "rete"
 import { socketAction, socketAny } from "../sockets"
-import { TitleNodeControl } from "../controls"
 
 export class LogNode extends Classic.Node<{ in: Classic.Socket, data: Classic.Socket }, {}, { TitleNode: TitleNodeControl, val: Classic.InputControl<"text"> }> {
     width = 180
@@ -8,7 +7,7 @@ export class LogNode extends Classic.Node<{ in: Classic.Socket, data: Classic.So
 
     constructor(text = '') {
         super("Log")
-        this.addControl("TitleNode", new TitleNodeControl("Логировать"))
+        this.nodeTitle = {ru: "Логировать", type: "green"}
         this.addInput("in", new Classic.Input(socketAction, "", true))
 
         const data = new Classic.Input(socketAny, "данные");

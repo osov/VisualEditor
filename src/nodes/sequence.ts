@@ -1,7 +1,6 @@
 import { ClassicPreset as Classic } from "rete"
 import { socketAction } from "../sockets"
 import { TwoButtonControl } from "../controls"
-import { TitleNodeControl } from "../controls"
 
 export class SequenceNode extends Classic.Node {
   width = 240
@@ -13,6 +12,7 @@ export class SequenceNode extends Classic.Node {
     for (let i = 1; i <= cnt; i++) {
       const out = new Classic.Output(socketAction, `Выход ${i}`)
       this.addOutput(`out${i}`, out)
+      this.outputs2 = Object.entries(this.outputs)
       this.height += this.heightOut
     }
     await this.area.update("node", this.id)
@@ -21,6 +21,7 @@ export class SequenceNode extends Classic.Node {
   async incrementOutput(cnt: number) {
     const out = new Classic.Output(socketAction, `Выход ${cnt}`)
     this.addOutput(`out${cnt}`, out)
+    this.outputs2 = Object.entries(this.outputs)
     this.height += this.heightOut
     await this.area.update("node", this.id)
   }
@@ -33,14 +34,15 @@ export class SequenceNode extends Classic.Node {
     if (itemCon)
       await this.area.removeConnectionView(itemCon.id)
     this.removeOutput(indexOut)
+    this.outputs2 = Object.entries(this.outputs)
     this.height -= this.heightOut
     await this.area.update("node", this.id)
   }
 
   constructor(num_outputs = 2) {
     super("Sequence")
+    this.nodeTitle = {ru: "Последовательность", type: "green"}
     this.area = (window as any).area;
-    this.addControl("TitleNode", new TitleNodeControl("Последовательность"))
 
     this.addInput("in", new Classic.Input(socketAction, "", true))
     this.makeOutputs(num_outputs);
