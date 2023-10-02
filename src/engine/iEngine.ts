@@ -43,51 +43,54 @@ export function iEngine() {
         const data: JsonData = JSON.parse(str)
         const nodes_data = data.nodes
         const connections = data.connections
-        // сначала надо создать все модули
-        const modules: { [k: string]: GraphInfo } = {}
-        const modules_ids_input: { [k: string]: DictString } = {}
-        const modules_ids_output: { [k: string]: DictString } = {}
 
-        for (let i = 0; i < nodes_data.length; i++) {
-            const node_data = nodes_data[i]
-            if (node_data.name == 'Module') {
-                modules[node_data.id] = make_module(node_data.data.name, node_data.id)
-                const m_nodes = modules[node_data.id].nodes
-                const arr_in: DictString = {}
-                const arr_out: DictString = {}
-                // перебираем все ноды модуля и ищем входы/выходы
-                // помечаем для каждой ноды:ключ=ид_ноды и значения [ключ=имя_входа, значение=ид_ноды]
-                for (const module_id_node in m_nodes) {
-                    const module_node = m_nodes[module_id_node]
-                    if (module_node.name == 'Input' || module_node.name == 'InputAction')
-                        arr_in[module_node.node_data.key] = module_id_node
-                    if (module_node.name == 'Output' || module_node.name == 'OutputAction')
-                        arr_out[module_node.node_data.key] = module_id_node
-                }
-                modules_ids_input[node_data.id] = arr_in
-                modules_ids_output[node_data.id] = arr_out
-                if (!sub_module)
+
+        // объединение модулей делаем на верхушке
+        // а также переназначение соединений
+        if (!sub_module) {
+            // сначала надо создать все модули
+            const modules: { [k: string]: GraphInfo } = {}
+            const modules_ids_input: { [k: string]: DictString } = {}
+            const modules_ids_output: { [k: string]: DictString } = {}
+
+            for (let i = 0; i < nodes_data.length; i++) {
+                const node_data = nodes_data[i]
+                // по идее на верхуше модулей будут раскиданы под-модули, которые мы потом проинитим и объединим все
+                if (node_data.name == 'Module') {
+                    modules[node_data.id] = make_module(node_data.data.name, node_data.id)
+                    const m_nodes = modules[node_data.id].nodes
+                    const arr_in: DictString = {}
+                    const arr_out: DictString = {}
+                    // перебираем все ноды модуля и ищем входы/выходы
+                    // помечаем для каждой ноды:ключ=ид_ноды и значения [ключ=имя_входа, значение=ид_ноды]
+                    for (const module_id_node in m_nodes) {
+                        const module_node = m_nodes[module_id_node]
+                        if (module_node.name == 'Input' || module_node.name == 'InputAction')
+                            arr_in[module_node.node_data.key] = module_id_node
+                        if (module_node.name == 'Output' || module_node.name == 'OutputAction')
+                            arr_out[module_node.node_data.key] = module_id_node
+                    }
+                    modules_ids_input[node_data.id] = arr_in
+                    modules_ids_output[node_data.id] = arr_out
                     merge_graph(nodes, connections, nodes_data, modules[node_data.id])
+                }
+            }
+
+            // а теперь переназначить входы у данных о соединениях
+            for (let i = 0; i < connections.length; i++) {
+                const cd = connections[i]
+                // какая-то нода подключена к модулю
+                if (modules_ids_input[cd.target]) {
+                    cd.target = modules_ids_input[cd.target][cd.targetInput]
+                    cd.targetInput = 'm'
+                }
+                // выход модуля подключен к ноде
+                if (modules_ids_output[cd.source]) {
+                    cd.source = modules_ids_output[cd.source][cd.sourceOutput]
+                    cd.sourceOutput = 'm'
+                }
             }
         }
-
-
-
-        // а теперь переназначить входы у данных о соединениях
-        for (let i = 0; i < connections.length; i++) {
-            const cd = connections[i]
-            // какая-то нода подключена к модулю
-            if (modules_ids_input[cd.target]) {
-                cd.target = modules_ids_input[cd.target][cd.targetInput]
-                cd.targetInput = 'm'
-            }
-            // выход модуля подключен к ноде
-            if (modules_ids_output[cd.source]) {
-                cd.source = modules_ids_output[cd.source][cd.sourceOutput]
-                cd.sourceOutput = 'm'
-            }
-        }
-
 
         // информация о соединениях
         const outputs: { [k: string]: IOutputData } = {}
@@ -97,7 +100,6 @@ export function iEngine() {
                 outputs[cd.source] = []
             outputs[cd.source].push({ output: cd.sourceOutput, target: cd.target, targetInput: cd.targetInput })
         }
-
 
         for (let i = 0; i < nodes_data.length; i++) {
             const node_data = nodes_data[i]
