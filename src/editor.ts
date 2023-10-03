@@ -310,9 +310,9 @@ export async function createEditor(container: HTMLElement) {
     const context: Context = { editor, area, modules, comment }
 
     async function openModule(path: string, add_stack = true) {
+        save_module(false)
         const tmp_name = currentModulePath
         currentModulePath = null
-
         await clearEditor(editor)
         comment.clear()
         const module = modules.findModule(path)
@@ -326,6 +326,7 @@ export async function createEditor(container: HTMLElement) {
             //const data = modulesData[path]
             //  await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
             await ZoomNodes()
+
             update_code_editor()
             update_scenes()
         }
@@ -373,11 +374,10 @@ export async function createEditor(container: HTMLElement) {
         e.init(str)
     }
 
-    const save_module = (is_save_cache = true) => {
+    const save_module = (is_save_cache = false) => {
         if (currentModulePath) {
             const data = exportEditor(context)
             modulesData[currentModulePath] = data
-            update_code_editor()
             if (is_save_cache)
                 dataManager.set_modules(JSON.stringify(modulesData))
             return data
@@ -450,8 +450,6 @@ export async function createEditor(container: HTMLElement) {
         const cmd = $(this).attr('data-id')
         if (cmd == 'show_ids')
             showIds(editor, area);
-        else if (cmd == 'update_code')
-            update_code_editor();
         else if (cmd == 'order') {
             reOrderEditor(editor, area as any, comment as any);
             // todo fail is history active
@@ -473,7 +471,7 @@ export async function createEditor(container: HTMLElement) {
             await importEditor({ ...context, editor }, data, true)
             toastr.success('Загружено');
         }
-        else if (cmd == 'save_all') {
+        else if (cmd == 'save') {
             do_save();
         }
     });
@@ -481,6 +479,7 @@ export async function createEditor(container: HTMLElement) {
     editor.addPipe((context) => {
         if (["connectioncreated", "connectionremoved", 'nodecreated', 'noderemoved'].includes(context.type)) {
             update_code_editor()
+            save_module(false)
         }
         return context;
     });
