@@ -8,16 +8,18 @@ export class BooleanNode
     width = 180;
     height = 140;
     private area: any;
-    nodeTitle: { ru: string, type: string }
+    nodeTitle: { ru: string, type: string };
     text: string = "Ложь";
     active: boolean = false;
 
     async toogleCheckbox() {
-        console.log("click");
         
         this.active = !this.active
         this.text = this.text === "Истина" ? "Ложь" : "Истина"
 
+        // this.height += 20  // - это работает
+
+        console.log("click", {a: this.active, t: this.text});
         await this.area.update("node", this.id)
     }
 
@@ -27,11 +29,13 @@ export class BooleanNode
         this.nodeTitle = {ru: "Логическое", type: "yellow"}
         this.area = (window as any).area;
 
-        this.toogleCheckbox()
+        // this.toogleCheckbox()
+        console.log(initial);
+        
         this.addControl("Checkbox", new CheckboxControl(this.text, this.active, async () => { await this.toogleCheckbox() } ))
 
         this.addOutput("out", new Classic.Output(socketBoolean, "логическое"))
-        this.addControl("val", new Classic.InputControl("checkbox", { initial }));
+        // this.addControl("val", new Classic.InputControl("checkbox", { initial }));
     }
 
     serialize() {
