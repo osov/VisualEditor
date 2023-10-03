@@ -1,3 +1,4 @@
+import { register_lua_types } from "./engine/lua_types.ts";
 import { createEditor } from "./editor"
 import { iEngine } from "./engine/iEngine";
 import "./style.css"
@@ -15,5 +16,6 @@ if (!data)
 editor.loadModules(data)
 editor.openModule('global');
 
+register_lua_types();
 (window as any).editor = editor;
 (window as any).e = iEngine();

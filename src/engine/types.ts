@@ -2,10 +2,16 @@ export type GetNodeFnc = (id: string) => INode | undefined
 
 export type INodeGraph = { [k: string]: INode }
 
+export interface IModuleInfo {
+    inputs: DictString;
+    outputs: DictString;
+}
+
 export interface GraphInfo {
     nodes: { [k: string]: INode }
     connections: IConnectionData[]
     nodes_data: INodeData[]
+    module_info: IModuleInfo
 }
 
 export interface IEngine {

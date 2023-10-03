@@ -24,8 +24,9 @@ import DataConnection from "./components/DataConnection.vue";
 
 declare global {
     const e: ReturnType<typeof iEngine>;
-    const activate_node_animation: (source: string, sourceOutput: string, target: string, targetInput: string, source_key?: string, target_key?: string) => void;
     const openModule: (path: string, add_stack?: boolean) => Promise<void>;
+    const activate_node_animation: (source: string, sourceOutput: string, target: string, targetInput: string, source_key?: string, target_key?: string) => void;
+    const clear_nodes_animation: () => void;
 }
 
 
@@ -437,6 +438,7 @@ export async function createEditor(container: HTMLElement) {
     (window as any).modules_stack = modules_stack;
     (window as any).openModule = openModule;
     (window as any).activate_node_animation = activate_node_animation;
+    (window as any).clear_nodes_animation = clear_nodes_animation;
 
     $('.btn_back').click(function () {
         if (modules_stack.length > 0) {
