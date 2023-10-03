@@ -34,3 +34,13 @@ export class OneButtonControl extends Classic.Control {
     super()
   }
 }
+
+export class CheckboxControl extends Classic.Control {
+  constructor(
+    public text: string,
+    public active: boolean,
+    public onClick: () => void
+  ) {
+    super()
+  }
+}

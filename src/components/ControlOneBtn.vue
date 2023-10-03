@@ -10,7 +10,7 @@
 import { Button } from "ant-design-vue"
 
 export default {
-    name: "CustomOneBtn",
+    name: "ControlOneBtn",
   props: ["data"],
   created() {
    // console.log(this.data)

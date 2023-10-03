@@ -3,6 +3,8 @@ import { ClassicPreset } from 'rete'
 // const
 import { NumberNode } from "./constants/number"
 import { StringNode } from "./constants/string"
+import { ColorNode } from "./constants/color"
+import { BooleanNode } from "./constants/boolean"
 
 // modules
 import { ModuleNode } from "./module/module"
@@ -25,7 +27,7 @@ import { AnyToStringNode } from './converts/any_string'
 
 
 export {
-    NumberNode, StringNode,
+    NumberNode, StringNode, ColorNode, BooleanNode,
     EngineReadyNode,
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
     AddNode, SequenceNode, LogNode, DelayNode,
@@ -35,7 +37,7 @@ export {
 
 export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode | ModuleNode | //  modules
     EngineReadyNode | // events
-    NumberNode | StringNode | // const
+    NumberNode | StringNode | ColorNode | BooleanNode | // const
     AnyToNumberNode | AnyToStringNode | // converts
     AddNode | SequenceNode | LogNode | DelayNode
 

@@ -13,7 +13,7 @@
 import { Button } from "ant-design-vue"
 
 export default {
-    name: "CustomTwoBtn",
+    name: "ControlTwoBtn",
   props: ["data"],
   created() {
    // console.log(this.data)

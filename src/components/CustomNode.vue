@@ -1,5 +1,5 @@
 <template>
-    <div class="node" :class="{ selected: data.selected, node__module: data.label == 'Module'}" :style="{ width: data.width + 'px', height: data.height + 'px' }" data-testid="node">
+    <div class="node" :class="{ selected: data.selected, node__module: data.label == 'Module'}" :style="{ width: data.width + 'px', height: data.height + 'px' }" data-testid="node" :data-label="data.label">
 
       <div class="title node__title" :class="[data.nodeTitle.type]" :data-label="data.label" data-testid="title">
         <span>{{ data.nodeTitle.ru }}</span>
@@ -94,6 +94,7 @@
   border-radius: inherit;
   background: linear-gradient(rgba(255, 255, 255, 0.25) 0px, rgba(255, 255, 255, 0.21) 3px, rgba(255, 255, 255, 0.14) 6px, rgba(255, 255, 255, 0.1) 9px, rgba(255, 255, 255, 0.1) 13px, transparent 13px);
   z-index: -1;
+  /* display: none!important; */
 }
 .node[data-testid].selected[data-testid]{
   background-color: var(--nodeBg);
@@ -118,9 +119,14 @@
   display: inline-block;
 }
 .node[data-testid] .input[data-testid] {
-  /* display: flex;
-  flex-wrap: wrap; */
+  display: flex;
+  align-items: center;
   text-align: left;
+}
+.node[data-testid] .input[data-testid] .input-title[data-testid]{
+  display: inline-block!important;
+  margin-left: 0;
+  margin-right: 0;
 }
 .node[data-testid] .output[data-testid] {
   text-align: right;
@@ -234,7 +240,8 @@
   background: #b4e13b;
 }
 
-.node.node__module .node__title{
+
+.node[data-label="Module"] .node__title{
   display: flex;
   flex-direction: column;
 }
@@ -243,7 +250,13 @@
   margin-top: 3px;
   opacity: 0.9;
 }
-.node.node__module .control{
+.node[data-label="Module"] .control{
   order: 1;
+}
+
+.node[data-label="Boolean"] input[type="checkbox"]{
+  /* width: 20px;
+  height: 20px; */
+  background-color: #3dd13f!important;
 }
 </style>

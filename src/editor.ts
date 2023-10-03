@@ -13,10 +13,11 @@ import { Modules } from "./utils/modules"
 import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
 import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './utils/utils'
 
-import { OneButtonControl, TwoButtonControl, addCustomBackground } from "./controls"
+import { OneButtonControl, TwoButtonControl, addCustomBackground, CheckboxControl } from "./controls"
 import CustomNode from './components/CustomNode.vue';
 import ControlOneBtn from "./components/ControlOneBtn.vue"
 import ControlTwoBtn from "./components/ControlTwoBtn.vue"
+import ControlCheckbox from "./components/ControlCheckbox.vue"
 import ActionConnection from "./components/ActionConnection.vue";
 import DataConnection from "./components/DataConnection.vue";
 
@@ -143,8 +144,8 @@ export async function createEditor(container: HTMLElement) {
                 subitems: [
                     { label: 'Число', key: '1', handler: () => addNode("Number", { val: 1 }) },
                     { label: 'Строка', key: '1', handler: () => addNode("String", { val: 'text' }) },
-                    { label: 'Логическое', key: '1', handler: () => addNode("Number", { val: 1 }) },
-                    { label: 'Цвет', key: '1', handler: () => addNode("Number", { val: 1 }) },
+                    { label: 'Логическое', key: '1', handler: () => addNode("Boolean", { val: 1 }) },
+                    { label: 'Цвет', key: '1', handler: () => addNode("Color", { val: 1 }) },
                     { label: 'Вектор3', key: '1', handler: () => addNode("Number", { val: 1 }) },
                 ]
             },
@@ -266,10 +267,10 @@ export async function createEditor(container: HTMLElement) {
         VuePresets.classic.setup({
             customize: {
                 // node(context){
-                //     if (context.payload.label === 'Sequence') {
-                //         return CustomNode;
+                //     if (context.payload.label === 'Boolean') {
+                //         return VuePresets.classic.Node;
                 //     }
-                //     return VuePresets.classic.Node;
+                //     return CustomNode;
                 // },
                 node() {
                     return CustomNode;
@@ -280,6 +281,9 @@ export async function createEditor(container: HTMLElement) {
                     }
                     if (data.payload instanceof OneButtonControl) {
                         return ControlOneBtn
+                    }
+                    if (data.payload instanceof CheckboxControl) {
+                        return ControlCheckbox
                     }
                     if (data.payload)
                         return VuePresets.classic.Control
