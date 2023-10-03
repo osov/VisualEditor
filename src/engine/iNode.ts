@@ -92,7 +92,7 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
 
     async function call_action(id_out: string) {
         if (!config_in_out.out_actions.includes(id_out))
-            return console.error("Выход не найден:", id_out, id_current_node)
+            return error("Выход не найден:", id_out, id_current_node)
         const { data_out } = connections_data
         // выход ни к чему не подключен
         if (!data_out[id_out])

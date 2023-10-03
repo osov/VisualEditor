@@ -7,22 +7,15 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (_, get_in_data) => {
-            const d = get_in_data()
-            // console.log('IN', d)
-            return d
-        }
+        get_out_data: (_, get_in_data) => get_in_data()
     },
     'Output': {
         in_actions: [],
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (_, get_in_data) => {
-            const d = get_in_data()
-            //console.log('OUT', d)
-            return d
-        }
+        get_out_data: (_, get_in_data) => get_in_data()
+
     },
     'InputAction': {
         in_actions: ['m'],
@@ -116,7 +109,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         run: (data, get_in_data, _) => {
             const nodes_data = get_in_data()
             const info_data = nodes_data['data'] != null ? nodes_data['data'] : data.val;
-            console.log(info_data)
+            log(info_data)
         },
     },
     'Delay': {
