@@ -207,7 +207,8 @@ div[data-swb]:nth-child(1){display: block;}
 	    position: fixed;
     top: 10px;
     left: 50%;
-    z-index: 111;
+    z-index: 8;
     font-size: 24px;
     color: #49a3ff;
+    margin-left: -90px;
 }

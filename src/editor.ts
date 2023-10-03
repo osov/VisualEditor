@@ -21,12 +21,15 @@ import ControlCheckbox from "./components/ControlCheckbox.vue"
 import ActionConnection from "./components/ActionConnection.vue";
 import DataConnection from "./components/DataConnection.vue";
 
+type Await<T> = T extends PromiseLike<infer U> ? U : T
 
 declare global {
     const e: ReturnType<typeof iEngine>;
+    const editor: Await<ReturnType<typeof createEditor>>
     const openModule: (path: string, add_stack?: boolean) => Promise<void>;
     const activate_node_animation: (source: string, sourceOutput: string, target: string, targetInput: string, source_key?: string, target_key?: string) => void;
     const clear_nodes_animation: () => void;
+    const makeModule: () => void;
 }
 
 
@@ -45,7 +48,7 @@ import { reOrderEditor, showIds } from './utils/debug'
 import { DictString } from './engine/types'
 import { iEngine } from './engine/iEngine'
 
-let modulesData: { [key in string]: any } = {}
+let modulesData: { [k: string]: any } = {}
 let currentModulePath: null | string = null
 let modules_stack: string[] = []
 
@@ -101,13 +104,11 @@ export async function createEditor(container: HTMLElement) {
 
     const context_menu_items: any[] = [];
     const updateItemsMenu = () => {
-        const module_sub_items: any[] = [
-            { label: 'Новый', key: '1', handler: () => makeModule() },
-        ]
+        let module_sub_items: any[] = []
 
-        if (currentModulePath != 'global') {
+        if (currentModulePath != 'global' && !currentModulePath?.includes('scene_')) {
             module_sub_items.push({
-                label: 'Создать вход/выход', key: '1', handler: () => null, subitems: [
+                label: 'вход/выход', key: '1', handler: () => null, subitems: [
                     { label: 'Вход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
                     { label: 'Выход данные', key: '1', handler: () => addNode("Output", { key: "key" }) },
                     { label: 'Вход действие', key: '1', handler: () => addNode("InputAction", { key: "key" }) },
@@ -116,20 +117,13 @@ export async function createEditor(container: HTMLElement) {
             })
         }
 
-
-        const modules_list_open = [];
-        const modules_list_add = [];
         const list = Object.keys(modulesData);
         for (let i = 0; i < list.length; i++) {
             const it = list[i];
-            if (it != currentModulePath) {
-                modules_list_open.push({ label: it, key: '1', handler: () => openModule(it) })
-                modules_list_add.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
+            if (it != currentModulePath && it != 'global' && !it.includes('scene_')) {
+                module_sub_items.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
             }
         }
-        module_sub_items.push({ label: 'Добавить', key: '1', handler: () => null, subitems: modules_list_add })
-        module_sub_items.push({ label: 'Редактировать', key: '1', handler: () => null, subitems: modules_list_open })
-
 
 
         context_menu_items.splice(0, context_menu_items.length);
@@ -267,12 +261,6 @@ export async function createEditor(container: HTMLElement) {
     render.addPreset(
         VuePresets.classic.setup({
             customize: {
-                // node(context){
-                //     if (context.payload.label === 'Boolean') {
-                //         return VuePresets.classic.Node;
-                //     }
-                //     return CustomNode;
-                // },
                 node() {
                     return CustomNode;
                 },
@@ -333,37 +321,41 @@ export async function createEditor(container: HTMLElement) {
             if (tmp_name && add_stack)
                 modules_stack.push(tmp_name)
             currentModulePath = path
-            $(".title_win").text(path);
+            $(".title_win").text((path.includes('scene_') ? 'Сцена: ' : 'Модуль: ') + path);
             await module.apply(editor)
-            const data = modulesData[path]
-            await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
+            //const data = modulesData[path]
+            //  await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
             await ZoomNodes()
             update_code_editor()
             update_scenes()
         }
     }
 
+    async function removeModule(name: string) {
+        if (!modulesData[name])
+            return toastr.error('Модуль с таким именем не найден');
+        delete modulesData[name];
+        update_scenes()
+    }
+
     function update_scenes() {
         $(".menu_scenes").html('');
-        for (let name in modulesData) {
-            if (name != currentModulePath)
-                $(".menu_scenes").append(`<li><a class="open_scene">` + name + `</a></li>`);
-        }
-        $(".menu_scenes").append(`<li><a class="new_scene">-Новая-</a></li>`);
+        $(".menu_modules").html('<li><a class="new_scene">-Новый-</a></li>');
 
+
+        for (let name in modulesData) {
+            if (name != currentModulePath) {
+                $(name.includes('scene_') ? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene">` + name + `</a></li>`);
+            }
+        }
+        $(".menu_modules").append(`<li><a class="del_module"> -Удалить- </a></li>`);
         if (modules_stack.length > 0)
             $('.btn_back').show()
         else
             $('.btn_back').hide()
     }
 
-    $("body").on("click", ".open_scene", function () {
-        openModule($(this).text());
-    })
 
-    $("body").on("click", ".new_scene", function () {
-        makeModule()
-    })
 
 
     // debug
@@ -381,17 +373,16 @@ export async function createEditor(container: HTMLElement) {
         e.init(str)
     }
 
-    const save_module = (is_notify = false) => {
+    const save_module = (is_save_cache = true) => {
         if (currentModulePath) {
             const data = exportEditor(context)
             modulesData[currentModulePath] = data
             update_code_editor()
-            if (is_notify)
-                toastr.success('Сохранено')
+            if (is_save_cache)
+                dataManager.set_modules(JSON.stringify(modulesData))
             return data
         }
-        if (is_notify)
-            toastr.error('Ошибка сохранения')
+
         return null
     }
 
@@ -431,12 +422,20 @@ export async function createEditor(container: HTMLElement) {
         return console.warn('Данные не найдены', source, sourceOutput, target, targetInput)
     }
 
+    const do_save = () => {
+        if (save_module(true))
+            toastr.success('Сохранено');
+        else
+            toastr.error('Ошибка сохранения');
+    }
+
 
     (window as any).nEditor = editor;
     (window as any).modulesData = modulesData;
     (window as any).area = area;
     (window as any).modules_stack = modules_stack;
     (window as any).openModule = openModule;
+    (window as any).makeModule = makeModule;
     (window as any).activate_node_animation = activate_node_animation;
     (window as any).clear_nodes_animation = clear_nodes_animation;
 
@@ -456,7 +455,7 @@ export async function createEditor(container: HTMLElement) {
         else if (cmd == 'order') {
             reOrderEditor(editor, area as any, comment as any);
             // todo fail is history active
-            //save_module()
+            //save__module()
             //await openModule(currentModulePath!, false)
             showIds(editor, area);
         }
@@ -474,12 +473,8 @@ export async function createEditor(container: HTMLElement) {
             await importEditor({ ...context, editor }, data, true)
             toastr.success('Загружено');
         }
-        else if (cmd == 'save_module') {
-            save_module(true)
-        }
         else if (cmd == 'save_all') {
-            if (save_module(true))
-                localStorage['data'] = JSON.stringify(modulesData)
+            do_save();
         }
     });
 
@@ -529,8 +524,7 @@ export async function createEditor(container: HTMLElement) {
                 await ZoomNodes()
             }
             if (e.code == 'KeyS') {
-                if (save_module(true))
-                    localStorage['data'] = JSON.stringify(modulesData)
+                do_save();
             }
         }
     })
@@ -538,29 +532,9 @@ export async function createEditor(container: HTMLElement) {
 
 
     return {
-        loadModules(data: string) {
-            modulesData = JSON.parse(data)
-        },
-        getModules() {
-            return Object.keys(modulesData)
-        },
-        getModuleString(name: string) {
-            return JSON.stringify(modulesData[name])
-        },
-        saveModule: () => {
-            save_module()
-        },
-        restoreModule: () => {
-            if (currentModulePath) openModule(currentModulePath)
-        },
-        newModule: (path: string) => {
-            modulesData[path] = { nodes: [], connections: [] }
-        },
+        loadModules: (data: string) => modulesData = JSON.parse(data),
         openModule,
-        destroy: () => {
-            console.log("area.destroy", area.nodeViews.size)
-            area.destroy()
-        }
+        removeModule
     }
 }
 
