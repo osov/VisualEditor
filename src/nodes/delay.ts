@@ -15,7 +15,7 @@ export class DelayNode extends Classic.Node {
         this.addInput("in", new Classic.Input(socketAction, ""));
         this.addOutput("out", new Classic.Output(socketAction, ""));
 
-        const time = new Classic.Input(socketNumber, "задержка[мс]");
+        const time = new Classic.Input(socketNumber, "время[мс]");
         time.addControl(new Classic.InputControl("number", { initial: delay, }));
         this.addInput("ms", time);
     }

@@ -6,6 +6,7 @@ export class StringNode
 {
     width = 180;
     height = 140;
+    nodeTitle: { ru: string, type: string }
 
     constructor(initial: string) {
         super("String");

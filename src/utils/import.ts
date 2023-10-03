@@ -1,5 +1,5 @@
 import { Context } from "../editor";
-import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, EngineReadyNode, StringNode, LogNode, InputActionNode, OutputActionNode, AnyToNumberNode, AnyToStringNode, DelayNode } from "../nodes";
+import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, EngineReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, AnyToNumberNode, AnyToStringNode, DelayNode } from "../nodes";
 import { removeConnections } from "./utils";
 
 export async function createNode({ editor, area, modules }: Context, name: string, data: any) {
@@ -15,6 +15,8 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "EngineReady") return new EngineReadyNode()
   if (name === "Number") return new NumberNode(data.val)
   if (name === "String") return new StringNode(data.val)
+  if (name === "Color") return new ColorNode(data.val)
+  if (name === "Boolean") return new BooleanNode(data.val)
   if (name === "AnyToNumber") return new AnyToNumberNode()
   if (name === "AnyToString") return new AnyToStringNode()
   if (name === "Sequence") return new SequenceNode(data.val)
