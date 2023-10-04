@@ -6,11 +6,10 @@ export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket
 {
     width = 180;
     height = 190;
-    nodeTitle: { ru: string, type: string }
+    nodeTitle = { ru: "A + B", type: "green" }
 
     constructor(initial?: { A?: number; B?: number }) {
         super("Add");
-        this.nodeTitle = { ru: "Добавить", type: "green" }
 
         const left = new Classic.Input(socketNumber, "A");
         const right = new Classic.Input(socketNumber, "B");
@@ -20,7 +19,7 @@ export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket
 
         this.addInput("A", left);
         this.addInput("B", right);
-        this.addOutput("sum", new Classic.Output(socketNumber, "A + B"));
+        this.addOutput("sum", new Classic.Output(socketNumber, "Результат"));
     }
 
     serialize() {

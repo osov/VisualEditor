@@ -6,11 +6,11 @@ export class NumberNode
 {
     width = 180;
     height = 140;
-    nodeTitle: { ru: string, type: string }
+    nodeTitle = { ru: "Число", type: "yellow" }
 
     constructor(initial: number) {
         super("Number");
-        this.nodeTitle = {ru: "Число", type: "yellow"}
+
 
         this.addOutput("out", new Classic.Output(socketNumber, "Число"))
         this.addControl("val", new Classic.InputControl("number", { initial }));

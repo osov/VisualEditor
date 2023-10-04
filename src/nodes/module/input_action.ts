@@ -6,11 +6,10 @@ export class InputActionNode
 {
     width = 180;
     height = 140;
-
+    nodeTitle = { ru: "Вход действие", type: "green" }
 
     constructor(initial: string) {
         super("InputAction");
-        this.nodeTitle = { ru: "Вход действие", type: "green" }
 
         this.addControl("key", new Classic.InputControl("text", { initial }));
         this.addOutput("m", new Classic.Output(socketAction, ""));

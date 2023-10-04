@@ -6,7 +6,7 @@ export class BooleanNode extends Classic.Node {
     width = 180;
     height = 140;
     private area: any;
-    nodeTitle: { ru: string, type: string };
+    nodeTitle = { ru: "Логическое", type: "yellow" }
     textFalse: string = "Ложь";
     textTrue: string = "Истина";
     active: boolean = true;
@@ -19,7 +19,6 @@ export class BooleanNode extends Classic.Node {
 
     constructor(initial: boolean) {
         super("Boolean");
-        this.nodeTitle = { ru: "Логическое", type: "yellow" }
         this.area = (window as any).area;
 
         this.active = initial

@@ -140,7 +140,7 @@ export async function createEditor(container: HTMLElement) {
                     { label: 'Число', key: '1', handler: () => addNode("Number", { val: 1 }) },
                     { label: 'Строка', key: '1', handler: () => addNode("String", { val: 'text' }) },
                     { label: 'Логическое', key: '1', handler: () => addNode("Boolean", { val: true }) },
-                    { label: 'Цвет', key: '1', handler: () => addNode("Color", { val: 1 }) },
+                    { label: 'Цвет', key: '1', handler: () => addNode("Color", { val: '#ffffff' }) },
                     { label: 'Вектор3', key: '1', handler: () => addNode("Number", { val: 1 }) },
                 ]
             },
