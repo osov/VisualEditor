@@ -37,7 +37,8 @@ export class OneButtonControl extends Classic.Control {
 
 export class CheckboxControl extends Classic.Control {
   constructor(
-    public text: string,
+    public textFalse: string,
+    public textTrue: string,
     public active: boolean,
     public onClick: () => void
   ) {

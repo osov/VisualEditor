@@ -1,45 +1,60 @@
 <template>
-  <div>
-    <div class="myCheckbox" :class="{active: props.data.active}" @pointerdown.stop="" @dblclick.stop=""  @click="props.data.onClick">
-      {{ props.data.text }} class: {{ props.data.active }}
+  <div class="wr_checkbox">
+    <div class="checkbox" :class="{active: props.data.active}" @pointerdown.stop="" @dblclick.stop="" @click="props.data.onClick">
+      <span class="checkbox__false">{{ props.data.textFalse }}</span>
+      <span class="checkbox__true">{{ props.data.textTrue }}</span>
     </div>
-    <button @pointerdown.stop="" @dblclick.stop="" @click="props.data.onClick">{{ props.data.text }}</button>
   </div>
 </template>
 
 <script lang="ts" setup>
-  // import { toRefs } from 'vue'
-  // import { Button } from "ant-design-vue"
   const props = defineProps(["data"])
-
-  // const {active, text} = toRefs(props.data)
-  // console.log('cc', active, text);
-  
 </script>
-<!-- <script lang="ts">
-import { Button } from "ant-design-vue"
 
-export default {
-    name: "ControlCheckbox",
-  props: ["data"],
-  components: {
-    CustomBtn: Button
-  }
-}
-</script> -->
 
 <style scoped>
-.myCheckbox {
-  padding: 4px 0;
+.wr_checkbox{
+  text-align: center;
+}
+.checkbox{
   color: #fff;
   cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding: 5px 3px 3px 30px;
+  display: inline-block;
+  min-width: 80px;
+  text-align: left;
 }
-.myCheckbox.active{
-  font-size: 20px;
-  color: green;
+.checkbox::before,
+.checkbox::after{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.checkbox::before{
+  left: 0;
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--nodeChildrenBorderColor);
+  background-color: var(--nodeChildrenBg);
+  border-radius: 3px;
+}
+.checkbox.active::before{
+  border-color: #fff;
+}
+.checkbox.active::after{
+  left: 6px;
+  display: block;
+  content: '\2713';
+  color: #fff;
+}
+.checkbox:not(.active) .checkbox__true,
+.checkbox.active .checkbox__false{
+  display: none;
 }
 
-.myCheckbox:hover{
-  color: red;
-}
+
 </style>

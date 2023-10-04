@@ -167,6 +167,7 @@
   padding: 5px 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  user-select: none;
 }
 .node__title.green {
   background: radial-gradient(50% 90%, rgba(48, 180, 36, 0.62) 0%, transparent 80%);
