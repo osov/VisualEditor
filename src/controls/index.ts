@@ -45,3 +45,13 @@ export class CheckboxControl extends Classic.Control {
     super()
   }
 }
+
+export class UserControl extends Classic.Control {
+  constructor(
+    public userList: any,
+    public currentUser: number,
+    public onChange: (e:any) => void
+  ) {
+    super()
+  }
+}
