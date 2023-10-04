@@ -1,25 +1,23 @@
 import { ClassicPreset as Classic } from 'rete'
-// import { socketString } from '../../sockets'
 import { socketColor } from '../../sockets'
 
 export class ColorNode
-    extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }, { val: Classic.InputControl<"color"> }>
+    extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }>
 {
     width = 180;
     height = 140;
-    nodeTitle: { ru: string, type: string }
+    nodeTitle = { ru: "Цвет", type: "yellow" }
 
     constructor(initial: string) {
-        super("String");
-        this.nodeTitle = {ru: "Цвет", type: "yellow"}
+        super("Color");
 
         this.addOutput("out", new Classic.Output(socketColor, "Цвет"))
-        this.addControl("val", new Classic.InputControl("color", { initial }));
+        this.addControl("val", new Classic.InputControl("color" as any, { initial }));
     }
 
     serialize() {
         return {
-            val: this.controls.val.value
+            val: (this.controls as any).val.value
         };
     }
 }

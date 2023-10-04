@@ -6,11 +6,10 @@ export class InputNode
 {
     width = 180;
     height = 140;
-    nodeTitle: { ru: string, type: string }
+    nodeTitle = { ru: "Ввод", type: "green" }
 
     constructor(initial: string) {
         super("Input");
-        this.nodeTitle = { ru: "Ввод", type: "green" }
 
         this.addControl("key", new Classic.InputControl("text", { initial }));
         this.addOutput("m", new Classic.Output(socketAny, "Любой"));

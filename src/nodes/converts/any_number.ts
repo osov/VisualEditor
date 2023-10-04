@@ -5,11 +5,10 @@ import { socketAny, socketNumber } from '../../sockets'
 export class AnyToNumberNode extends Classic.Node {
     width = 180;
     height = 120;
-    nodeTitle: { ru: string, type: string }
-    
+    nodeTitle = { ru: "В число", type: "green" }
+
     constructor() {
         super("AnyToNumber");
-        this.nodeTitle = {ru: "В число", type: "green"}
 
         this.addInput("in", new Classic.Input(socketAny, "данные"));
         this.addOutput("out", new Classic.Output(socketNumber, "Число"));

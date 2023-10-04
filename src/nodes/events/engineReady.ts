@@ -5,11 +5,10 @@ export class EngineReadyNode extends Classic.Node<{ _: Classic.Socket }, { out: 
 {
     width = 180;
     height = 80;
-    nodeTitle: { ru: string, type: string }
-    
+    nodeTitle = { ru: "Движок загружен", type: "red" }
+
     constructor() {
         super("EngineReady");
-        this.nodeTitle = {ru: "Движок загружен", type: "red"}
 
         this.addOutput("out", new Classic.Output(socketAction, ""));
     }
