@@ -4,7 +4,7 @@ import { SelectControl } from '../../controls';
 
 export class FlowStatusNode extends Classic.Node {
     width = 180;
-    height = 140;
+    height = 100;
     private area = (window as any).area;
     nodeTitle = { ru: "Активен блок ?", type: "yellow" }
     listName: { val: string, text: string }[] = []
