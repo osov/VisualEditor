@@ -29,6 +29,13 @@
       <Ref class="control" v-for="[key, control] in controls" :key="'control' + key + seed" :emit="emit"
         :data="{ type: 'control', payload: control }" :data-testid="'control-' + key" />
 
+      <template v-if="data.answers">
+      <!-- answers -->
+        <div class="answers">
+          <input v-for="(item, key) in data.answers" type="text" class="input" :data-item="item" v-model="data.answers[key]" >
+        </div>
+      </template>
+
       <!-- Inputs-->
       <div class="input" v-for="[key, input] in inputs" :key="'input' + key + seed" :data-testid="'input-' + key">
         <Ref class="input-socket" :emit="emit"
@@ -100,7 +107,7 @@
   background-color: var(--nodeBg);
 }
 
-
+.answers input,
 .node.node__module .node__title input,
 .node[data-testid] .control[data-testid] input,
 .node[data-testid] .input-control[data-testid] input{
@@ -163,14 +170,15 @@
   color: white;
   font-size: 18px;
   text-align: center;
-  white-space: nowrap;
   padding: 5px 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   user-select: none;
+  /* white-space: nowrap; */
+  /* overflow: hidden;
+  text-overflow: ellipsis; */
 }
 .node__title.green {
-  background: radial-gradient(50% 90%, rgba(48, 180, 36, 0.62) 0%, transparent 80%);
+  /* background: radial-gradient(50% 90%, rgba(48, 180, 36, 0.62) 0%, transparent 80%); */
+  background: linear-gradient(to right, transparent 0%, rgba(48, 180, 36, 0.62) 50%, transparent 100%);
 }
 .node__title.blue {
   /* background: radial-gradient(50% 90%, rgba(63, 128, 195, 0.62) 0%, transparent 80%); */
@@ -268,5 +276,30 @@
   width: calc(100% - 36px);
   padding: 0 0 0 5px;
   white-space: nowrap;
+}
+
+.node[data-label="Dialog"] .textarea {
+  max-height: 100px;
+  min-height: 100px;
+}
+.node[data-label="Dialog"] .textarea.my_scroll::-webkit-resizer {
+  background-color: transparent;
+}
+.control[data-testid="control-Textarea"] {
+  padding: 10px 18px 10px 10px;
+}
+.answers{
+  order: 2;
+  position: relative;
+  height: 0px;
+  padding: 0px 10px 0;
+  margin-top: 5px;
+  top: 5px;
+}
+.answers .input{
+  padding: 0 5px;
+  height: 20px;
+  margin-bottom: 10px;
+  width: calc(100% - 40px);
 }
 </style>

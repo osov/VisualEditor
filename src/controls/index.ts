@@ -57,6 +57,15 @@ export class SelectControl extends Classic.Control {
   }
 }
 
+export class TextareaControl extends Classic.Control {
+  constructor(
+    public text: string,
+    public onChange: (e:any) => void
+  ) {
+    super()
+  }
+}
+
 export class UserControl extends Classic.Control {
   constructor(
     public userList: any,

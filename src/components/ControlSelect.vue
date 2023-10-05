@@ -14,7 +14,6 @@
   const props = defineProps(["data"])
 
   const changeOption = (event:any) => {
-    console.log('changeOption', event.target.value);
     props.data.onChange(event.target.value)
   }
 </script>

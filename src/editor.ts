@@ -13,12 +13,13 @@ import { Modules } from "./utils/modules"
 import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
 import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './utils/utils'
 
-import { OneButtonControl, TwoButtonControl, addCustomBackground, CheckboxControl, SelectControl, UserControl } from "./controls"
+import { OneButtonControl, TwoButtonControl, addCustomBackground, CheckboxControl, SelectControl, TextareaControl, UserControl } from "./controls"
 import CustomNode from './components/CustomNode.vue';
 import ControlOneBtn from "./components/ControlOneBtn.vue"
 import ControlTwoBtn from "./components/ControlTwoBtn.vue"
 import ControlCheckbox from "./components/ControlCheckbox.vue"
 import ControlSelect from "./components/ControlSelect.vue"
+import ControlTextarea from "./components/ControlTextarea.vue"
 import ControlUser from "./components/ControlUser.vue"
 import ActionConnection from "./components/ActionConnection.vue";
 import DataConnection from "./components/DataConnection.vue";
@@ -280,6 +281,9 @@ export async function createEditor(container: HTMLElement) {
                     }
                     if (data.payload instanceof SelectControl) {
                         return ControlSelect
+                    }
+                    if (data.payload instanceof TextareaControl) {
+                        return ControlTextarea
                     }
                     if (data.payload instanceof UserControl) {
                         return ControlUser

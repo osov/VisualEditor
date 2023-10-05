@@ -24,7 +24,6 @@ export class ControlledBlockNode extends Classic.Node {
 
     async changeName(e: any) {
         this.currentName = e;
-        console.log('changeName',e);
         
         (this.controls as any)['select'].selected = this.currentName;
         await this.area.update("control", (this.controls as any)['select'].id);
