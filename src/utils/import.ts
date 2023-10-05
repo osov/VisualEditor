@@ -1,5 +1,5 @@
 import { Context } from "../editor";
-import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, ControlledBlockNode, EngineReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, AnyToNumberNode, AnyToStringNode, DelayNode } from "../nodes";
+import { Connection, AddNode, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EngineReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, AnyToNumberNode, AnyToStringNode, DelayNode, FlowSetNode, FlowStatusNode } from "../nodes";
 import { removeConnections } from "./utils";
 
 export async function createNode({ editor, area, modules }: Context, name: string, data: any) {
@@ -21,7 +21,9 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "AnyToString") return new AnyToStringNode()
   if (name === "Sequence") return new SequenceNode(data.val)
   if (name === "Dialog") return new DialogNode(data.val)
-  if (name === "ControlledBlock") return new ControlledBlockNode(data.val)
+  if (name === "FlowBlock") return new FlowBlockNode(data)
+  if (name === "FlowSet") return new FlowSetNode(data)
+  if (name === "FlowStatus") return new FlowStatusNode(data.id)
   if (name === "Add") return new AddNode(data)
   if (name === "Log") return new LogNode(data.val)
   if (name === "Delay") return new DelayNode(data.ms)

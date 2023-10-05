@@ -151,7 +151,9 @@ export async function createEditor(container: HTMLElement) {
                 label: 'Операторы', key: '1', handler: () => null,
                 subitems: [
                     { label: 'Диалог', key: '1', handler: () => addNode("Dialog", {}) },
-                    { label: 'Управляемый блок', key: '1', handler: () => addNode("ControlledBlock", {}) },
+                    { label: 'Управляемый блок', key: '1', handler: () => addNode("FlowBlock", {}) },
+                    { label: 'Задать состояние блоку', key: '1', handler: () => addNode("FlowSet", {}) },
+                    { label: 'Получить состояние блока', key: '1', handler: () => addNode("FlowStatus", {}) },
                     { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
                     { label: 'Логировать', key: '1', handler: () => addNode("Log", {}) },
                     { label: 'Задержка', key: '1', handler: () => addNode("Delay", { ms: 1000 }) },

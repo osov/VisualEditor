@@ -1,8 +1,8 @@
 <template>
   <div class="wr_select">
-    <select class="select" name="" id="" @pointerdown.stop="" @dblclick.stop="" @change="changeOption" v-model="props.data.selected">
+    <select class="select" name="" id="" @pointerdown.stop="" @dblclick.stop="" @change="changeOption" @click="clickOption" v-model="props.data.selected">
       <option disabled :selected="props.data.selected === -1" hidden>Выбрать</option>
-      <option v-for="option in props.data.optionList" :key="option.val" :value="option.val - 1" :selected="option.val - 1 === props.data.selected">
+      <option v-for="option in props.data.optionList" :key="option.val" :value="option.val" :selected="option.val == props.data.selected">
         {{ option.text }}
       </option>
     </select>
@@ -16,6 +16,11 @@
   const changeOption = (event:any) => {
     props.data.onChange(event.target.value)
   }
+
+  const clickOption = (_:any) => {
+    if (props.data.onClick)
+      props.data.onClick()
+  }
 </script>
 
 
@@ -25,6 +30,7 @@
   }
 .select{
   width: auto;
+  min-width: 170px;
   display: inline-block;
 }
 </style>

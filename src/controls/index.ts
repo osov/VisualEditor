@@ -51,7 +51,8 @@ export class SelectControl extends Classic.Control {
   constructor(
     public selected: string | number,
     public optionList: any,
-    public onChange: (e:any) => void
+    public onChange: (e: any) => void,
+    public onClick?: () => void
   ) {
     super()
   }
@@ -70,7 +71,7 @@ export class UserControl extends Classic.Control {
   constructor(
     public userList: any,
     public currentUser: number,
-    public onChange: (e:any) => void
+    public onChange: (e: any) => void
   ) {
     super()
   }

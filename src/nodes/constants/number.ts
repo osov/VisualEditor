@@ -11,7 +11,6 @@ export class NumberNode
     constructor(initial: number) {
         super("Number");
 
-
         this.addOutput("out", new Classic.Output(socketNumber, "Число"))
         this.addControl("val", new Classic.InputControl("number", { initial }));
     }

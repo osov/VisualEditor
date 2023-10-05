@@ -19,15 +19,21 @@ export type VarSet = { [k: string]: { type: VarTypes, value: string | number } }
 
 function DataManager() {
     let _cur_scene = 'global';
-    let variables_data: { [k: string]: VarSet } = {
-        'global': {
-            'name 01': { type: VarTypes.NUMBER, value: 123 },
-            'name 02': { type: VarTypes.STRING, value: 'str' },
-            'name 03': { type: VarTypes.BOOLEAN, value: 1 }
-        }
-    };
 
+    function init_test_data() {
+        const data_modules = localStorage['modules']
+        if (!data_modules)
+            localStorage['modules'] = tmp_modules
 
+        const data_vars = localStorage['vars']
+        if (!data_vars)
+            localStorage['vars'] = tmp_vars
+    }
+    //---------------------------------------------------
+
+    function get_all_scenes() {
+        return ['scene_menu', 'scene_game'];
+    }
 
     function set_current_scene(name: string) {
         _cur_scene = name;
@@ -37,37 +43,50 @@ function DataManager() {
         return _cur_scene;
     }
 
-    function get_all_scenes() {
-        return ['scene_menu', 'scene_game'];
-    }
+    //---------------------------------------------------
 
-    function get_scene_variables(name: string): VarSet {
-        let data_vars = localStorage['vars']
-        if (!data_vars)
-            data_vars = tmp_vars
-        variables_data = json.decode(data_vars)
-        if (variables_data[name])
-            return variables_data[name]
+    function get_scene_variables(scene: string): VarSet {
+        const str_vars = localStorage['vars'] || '{}'
+        const variables_data = json.decode(str_vars)
+        if (variables_data[scene])
+            return variables_data[scene]
         else
             return {}
     }
 
-    function set_scene_variables(name: string, variables: VarSet) {
-        variables_data[name] = variables;
+    function set_scene_variables(scene: string, variables: VarSet) {
+        const str_vars = localStorage['vars'] || '{}'
+        const variables_data = json.decode(str_vars)
+        variables_data[scene] = variables;
         localStorage['vars'] = json.encode(variables_data)
     }
 
+    //---------------------------------------------------
+
     function get_modules() {
-        let data_modules = localStorage['data']
-        if (!data_modules)
-            data_modules = tmp_modules
+        const data_modules = localStorage['modules'] || '{}'
         return data_modules;
     }
 
     function set_modules(data: string) {
-        localStorage['data'] = data;
+        localStorage['modules'] = data;
     }
 
-    return { set_current_scene, get_current_scene, get_all_scenes, get_scene_variables, set_scene_variables, get_modules, set_modules }
+    //---------------------------------------------------
+
+    function get_flow_list(): string[] {
+        const str_flows = localStorage['flows'] || '[]'
+        const data_flows = json.decode(str_flows);
+        return data_flows;
+    }
+
+    function add_flow_list(name: string) {
+        const list = get_flow_list();
+        list.push(name);
+        localStorage['flows'] = json.encode(list);
+    }
+
+    init_test_data();
+    return { set_current_scene, get_current_scene, get_all_scenes, get_scene_variables, set_scene_variables, get_modules, set_modules, get_flow_list, add_flow_list }
 }
 

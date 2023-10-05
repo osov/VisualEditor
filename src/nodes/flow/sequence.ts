@@ -1,6 +1,6 @@
 import { ClassicPreset as Classic } from "rete"
-import { socketAction } from "../sockets"
-import { TwoButtonControl } from "../controls"
+import { socketAction } from "../../sockets"
+import { TwoButtonControl } from "../../controls"
 
 export class SequenceNode extends Classic.Node {
   width = 240

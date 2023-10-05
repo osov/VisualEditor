@@ -5,7 +5,7 @@ import { CheckboxControl } from "../../controls"
 export class BooleanNode extends Classic.Node {
     width = 180;
     height = 140;
-    private area: any;
+    private area = (window as any).area;;
     nodeTitle = { ru: "Логическое", type: "yellow" }
     textFalse: string = "Ложь";
     textTrue: string = "Истина";
@@ -19,7 +19,6 @@ export class BooleanNode extends Classic.Node {
 
     constructor(initial: boolean) {
         super("Boolean");
-        this.area = (window as any).area;
 
         this.active = initial
         this.addControl("Checkbox", new CheckboxControl(this.textFalse, this.textTrue, this.active, async () => await this.toogleCheckbox()))

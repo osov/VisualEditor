@@ -17,14 +17,16 @@ import { OutputActionNode } from "./module/output_action"
 import { EngineReadyNode } from './events/engineReady'
 
 // 
-import { AddNode } from "./add";
-import { SequenceNode } from "./sequence"
-import { ControlledBlockNode } from "./controlledBlock"
+import { AddNode } from "./math/add";
+import { SequenceNode } from "./flow/sequence"
+import { FlowBlockNode } from "./flow/flowBlock"
+import { FlowSetNode } from "./flow/flowSet"
 import { DialogNode } from "./dialog"
 import { LogNode } from "./log"
-import { DelayNode } from "./delay"
+import { DelayNode } from "./flow/delay"
 import { AnyToNumberNode } from './converts/any_number'
 import { AnyToStringNode } from './converts/any_string'
+import { FlowStatusNode } from './flow/flowStatus'
 
 
 
@@ -32,7 +34,8 @@ export {
     NumberNode, StringNode, ColorNode, BooleanNode,
     EngineReadyNode,
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
-    AddNode, SequenceNode, LogNode, DelayNode, DialogNode, ControlledBlockNode,
+    AddNode,
+    SequenceNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode,
     AnyToNumberNode, AnyToStringNode
 }
 
@@ -41,7 +44,8 @@ export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode 
     EngineReadyNode | // events
     NumberNode | StringNode | ColorNode | BooleanNode | // const
     AnyToNumberNode | AnyToStringNode | // converts
-    AddNode | SequenceNode | LogNode | DelayNode | DialogNode | ControlledBlockNode
+    AddNode | SequenceNode | LogNode | DelayNode | DialogNode
+    | FlowBlockNode | FlowSetNode | FlowStatusNode
 
 export class Connection<A extends Nodes, B extends Nodes> extends ClassicPreset.Connection<A, B> { }
 export type Conn = Connection<NumberNode, AddNode>

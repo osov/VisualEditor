@@ -1,5 +1,5 @@
 import { ClassicPreset as Classic } from 'rete'
-import { socketNumber } from '../sockets'
+import { socketNumber } from '../../sockets'
 
 
 export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { sum: Classic.Socket }>

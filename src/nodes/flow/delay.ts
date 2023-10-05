@@ -1,6 +1,6 @@
 import { ClassicPreset as Classic } from 'rete'
 
-import { socketAction, socketNumber } from '../sockets';
+import { socketAction, socketNumber } from '../../sockets';
 
 
 export class DelayNode extends Classic.Node {
