@@ -1,5 +1,6 @@
 <template>
   <div class="wr_checkbox">
+    <span v-if="props.data.blockColor" class="blockColor" :class="{active: props.data.active}"></span>
     <div class="checkbox" :class="{active: props.data.active}" @pointerdown.stop="" @dblclick.stop="" @click="props.data.onClick">
       <span class="checkbox__false">{{ props.data.textFalse }}</span>
       <span class="checkbox__true">{{ props.data.textTrue }}</span>
@@ -55,6 +56,18 @@
 .checkbox.active .checkbox__false{
   display: none;
 }
-
+.blockColor{
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background-color: rgba(180, 36, 36, 0.9);
+  margin-right: 7px;
+  border-radius: 3px;
+  position: relative;
+  top: 5px;
+}
+.blockColor.active{
+  background-color: rgba(48, 180, 36, 0.9);
+}
 
 </style>

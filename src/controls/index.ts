@@ -40,7 +40,18 @@ export class CheckboxControl extends Classic.Control {
     public textFalse: string,
     public textTrue: string,
     public active: boolean,
-    public onClick: () => void
+    public onClick: () => void,
+    public blockColor: boolean = false
+  ) {
+    super()
+  }
+}
+
+export class SelectControl extends Classic.Control {
+  constructor(
+    public selected: string | number,
+    public optionList: any,
+    public onChange: (e:any) => void
   ) {
     super()
   }

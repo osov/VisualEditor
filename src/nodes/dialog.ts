@@ -1,5 +1,5 @@
 import { ClassicPreset as Classic } from "rete"
-import { socketAction } from "../sockets"
+// import { socketAction } from "../sockets"
 import { UserControl } from "../controls"
 
 export class DialogNode extends Classic.Node {
@@ -7,7 +7,7 @@ export class DialogNode extends Classic.Node {
     height = 340
     private area: any;
     private heightOut = 36;
-    nodeTitle: { ru: string, type: string }
+    nodeTitle = { ru: "Диалог", type: "green" };
     outputs2: any;
     userList = [
         {id: 1, name: "Tom", ava: "https://dummyimage.com/600x400/000/fff&text=111"},
@@ -17,7 +17,6 @@ export class DialogNode extends Classic.Node {
     currentUser = 0  
 
     async setUser(e: any){
-        console.log('change', e);
         this.currentUser = e;
         (this.controls as any)['User'].currentUser = this.currentUser;
         await this.area.update("control", (this.controls as any)['User'].id);
@@ -25,12 +24,10 @@ export class DialogNode extends Classic.Node {
 
     constructor(num_outputs = 2) {
         super("Dialog")
-        this.nodeTitle = { ru: "Диалог", type: "green" }
         this.area = (window as any).area;
 
         this.addControl("User", new UserControl(this.userList, this.currentUser, async (e) => await this.setUser(e) ))
         // this.addInput("in", new Classic.Input(socketAction, "", true))
-
 
     }
 

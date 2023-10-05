@@ -260,4 +260,13 @@
   height: 20px; */
   background-color: #3dd13f!important;
 }
+
+.node[data-label="ControlledBlock"] [data-testid="control-Checkbox"]{
+  position: relative;
+  margin-top: -25px;
+  top: 29px;
+  width: calc(100% - 36px);
+  padding: 0 0 0 5px;
+  white-space: nowrap;
+}
 </style>

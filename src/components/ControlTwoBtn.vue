@@ -1,27 +1,12 @@
 <template>
   <div class="btns">
-    <CustomBtn @pointerdown.stop="" @dblclick.stop="" @click="data.onClick1">{{
-      data.label1
-    }}</CustomBtn>
-    <CustomBtn @pointerdown.stop="" @dblclick.stop="" @click="data.onClick2">{{
-      data.label2
-    }}</CustomBtn>
+    <button class="btn" @pointerdown.stop="" @dblclick.stop="" @click="props.data.onClick1">{{ props.data.label1 }}</button>
+    <button class="btn" @pointerdown.stop="" @dblclick.stop="" @click="props.data.onClick2">{{ props.data.label2 }}</button>
   </div>
 </template>
 
-<script lang="ts">
-import { Button } from "ant-design-vue"
-
-export default {
-    name: "ControlTwoBtn",
-  props: ["data"],
-  created() {
-   // console.log(this.data)
-  },
-  components: {
-    CustomBtn: Button
-  }
-}
+<script lang="ts" setup>
+const props = defineProps(["data"])
 </script>
 
 <style scoped>
@@ -33,8 +18,5 @@ export default {
 }
 .btns button {
   margin: 0 5px;
-  border: 1px solid var(--nodeChildrenBorderColor);
-  background: var(--nodeChildrenBg);
-  color: var(--nodeChildrenColor);
 }
 </style>
