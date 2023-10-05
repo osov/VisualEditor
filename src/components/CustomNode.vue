@@ -31,20 +31,36 @@
 
       <template v-if="data.answers">
       <!-- answers -->
-        <div class="answers">
+        <div class="answers" :class="{leftInput: data.inputs2}">
           <input v-for="(item, key) in data.answers" type="text" class="input" :data-item="item" v-model="data.answers[key]" >
         </div>
       </template>
 
-      <!-- Inputs-->
-      <div class="input" v-for="[key, input] in inputs" :key="'input' + key + seed" :data-testid="'input-' + key">
-        <Ref class="input-socket" :emit="emit"
+      
+      <template v-if="data.inputs2">
+        <!-- Inputs2 for reactive -->
+        <div class="wr_input">
+          <div class="input" v-for="[key, input] in data.inputs2" :key="'input' + key + seed" :data-testid="'input-' + key">
+            <Ref class="input-socket" :emit="emit"
+            :data="{ type: 'socket', side: 'input', key: key, nodeId: data.id, payload: input.socket }"
+            data-testid="input-socket" />
+            <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">{{ input.label }}</div>
+            <Ref class="input-control" v-show="input.control && input.showControl" :emit="emit"
+            :data="{ type: 'control', payload: input.control }" data-testid="input-control" />
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <!-- Inputs-->
+        <div class="input" v-for="[key, input] in inputs" :key="'input' + key + seed" :data-testid="'input-' + key">
+          <Ref class="input-socket" :emit="emit"
           :data="{ type: 'socket', side: 'input', key: key, nodeId: data.id, payload: input.socket }"
           data-testid="input-socket" />
-        <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">{{ input.label }}</div>
-        <Ref class="input-control" v-show="input.control && input.showControl" :emit="emit"
+          <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">{{ input.label }}</div>
+          <Ref class="input-control" v-show="input.control && input.showControl" :emit="emit"
           :data="{ type: 'control', payload: input.control }" data-testid="input-control" />
-      </div>
+        </div>
+      </template>
       
     </div>
   </template>
@@ -75,6 +91,7 @@
     // return Object.entries(data.outputs)
     return sortByIndex(Object.entries(props.data.outputs))
   })
+console.log('inp2:', props.data.inputs2);
 
 
 </script>
@@ -269,7 +286,7 @@
   background-color: #3dd13f!important;
 }
 
-.node[data-label="ControlledBlock"] [data-testid="control-Checkbox"]{
+.node[data-label="FlowBlock"] [data-testid="control-Checkbox"]{
   position: relative;
   margin-top: -25px;
   top: 29px;
@@ -301,5 +318,21 @@
   height: 20px;
   margin-bottom: 10px;
   width: calc(100% - 40px);
+}
+.answers.leftInput .input{
+  width: calc(100% - 70px);
+  margin-left: 30px;
+}
+.node[data-label="Dialog"] .wr_input{
+  order: 2;
+  height: 0;
+}
+.node[data-label="Dialog"] .input .socket{
+  border-radius: 50%;
+  margin: 4px 0 4px 6px;
+}
+.node[data-label="Dialog"] .output{
+  width: calc(100% - 40px);
+  margin-left: auto;
 }
 </style>

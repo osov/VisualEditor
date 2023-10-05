@@ -1,12 +1,10 @@
 <template>
-  <div class="wr_select">
     <select class="select" name="" id="" @pointerdown.stop="" @dblclick.stop="" @change="changeOption" @click="clickOption" v-model="props.data.selected">
       <option disabled :selected="props.data.selected === -1" hidden>Выбрать</option>
       <option v-for="option in props.data.optionList" :key="option.val" :value="option.val" :selected="option.val == props.data.selected">
         {{ option.text }}
       </option>
     </select>
-  </div>
 </template>
 
 <script lang="ts" setup>
@@ -23,14 +21,3 @@
   }
 </script>
 
-
-<style scoped>
-.wr_select {
-    text-align: right;
-  }
-.select{
-  width: auto;
-  min-width: 170px;
-  display: inline-block;
-}
-</style>
