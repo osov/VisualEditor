@@ -105,7 +105,7 @@
   flex-direction: column;
 }
 .node[data-testid]:hover{
-  box-shadow: rgb(152, 87, 0) 0px 2px 6px 2px, rgb(201, 177, 68) 0px 0px 0px 5px;
+   border: 1px dashed #12ffa5;
   background-color: var(--nodeBg)!important; 
 }
 .node[data-testid]::after{
@@ -120,8 +120,10 @@
   /* display: none!important; */
 }
 .node[data-testid].selected[data-testid]{
-  background-color: var(--nodeBg);
+  border: 1px dashed #12ffa5;
 }
+
+
 
 .answers input,
 .node.node__module .node__title input,
