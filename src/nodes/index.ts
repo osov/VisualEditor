@@ -27,6 +27,8 @@ import { DelayNode } from "./flow/delay"
 import { AnyToNumberNode } from './converts/any_number'
 import { AnyToStringNode } from './converts/any_string'
 import { FlowStatusNode } from './flow/flowStatus'
+import { VarSetNode } from './varSet'
+import { VarGetNode } from './varGet'
 
 
 
@@ -36,7 +38,8 @@ export {
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
     AddNode,
     SequenceNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode,
-    AnyToNumberNode, AnyToStringNode
+    AnyToNumberNode, AnyToStringNode,
+    VarSetNode, VarGetNode
 }
 
 
@@ -45,7 +48,8 @@ export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode 
     NumberNode | StringNode | ColorNode | BooleanNode | // const
     AnyToNumberNode | AnyToStringNode | // converts
     AddNode | SequenceNode | LogNode | DelayNode | DialogNode
-    | FlowBlockNode | FlowSetNode | FlowStatusNode
+    | FlowBlockNode | FlowSetNode | FlowStatusNode |
+    VarSetNode | VarGetNode
 
 export class Connection<A extends Nodes, B extends Nodes> extends ClassicPreset.Connection<A, B> { }
 export type Conn = Connection<NumberNode, AddNode>

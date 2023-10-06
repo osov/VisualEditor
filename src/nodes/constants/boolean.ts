@@ -4,7 +4,7 @@ import { CheckboxControl } from "../../controls"
 
 export class BooleanNode extends Classic.Node {
     width = 180;
-    height = 140;
+    height = 110;
     private area = (window as any).area;;
     nodeTitle = { ru: "Логическое", type: "yellow" }
     textFalse: string = "Ложь";

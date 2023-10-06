@@ -15,8 +15,8 @@ function default_value(type: string | number, value: string | number) {
     else if (type === VarTypes.BOOLEAN) {
         return `
         <select class="value_data">
-            <option value="0"${value === 0 ? 'selected' : ''}>Нет</option>
-            <option value="1"${value === 1 ? 'selected' : ''}>Да</option>
+            <option value="0"${value === 0 ? 'selected' : ''}>Ложь</option>
+            <option value="1"${value === 1 ? 'selected' : ''}>Истина</option>
         </select>
         `
     }
@@ -130,13 +130,13 @@ $("body").on("click", ".debug_btn[data-id='variables']", function () {
     }
     $('.variables_categorys').html(html);
 
-    open_variables_scene(dataManager.get_current_scene())
+    open_variables_scene(gameState.get_current_scene())
 
     $(".mmodal").addClass("active")
 })
 
 $("body").on("click", ".open_scene", function () {
-    openModule($(this).text());
+    openModule($(this).attr('data-name')!);
 })
 
 $("body").on("click", ".new_scene", function () {

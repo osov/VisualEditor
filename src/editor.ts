@@ -28,10 +28,10 @@ type Await<T> = T extends PromiseLike<infer U> ? U : T
 
 declare global {
     const e: ReturnType<typeof iEngine>;
+    const nEditor: NodeEditor<Schemes>;
+    const area: AreaPlugin<Schemes, AreaExtra>
     const editor: Await<ReturnType<typeof createEditor>>
     const openModule: (path: string, add_stack?: boolean) => Promise<void>;
-    const activate_node_animation: (source: string, sourceOutput: string, target: string, targetInput: string, source_key?: string, target_key?: string) => void;
-    const clear_nodes_animation: () => void;
     const makeModule: () => void;
 }
 
@@ -50,6 +50,8 @@ export type Context = {
 import { reOrderEditor, showIds } from './utils/debug'
 import { DictString } from './engine/types'
 import { iEngine } from './engine/iEngine'
+import { GameState } from './engine/game_state'
+import { VarTypes } from './data_manager'
 
 let modulesData: { [k: string]: any } = {}
 let currentModulePath: null | string = null
@@ -105,6 +107,16 @@ export async function createEditor(container: HTMLElement) {
         openModule(name);
     }
 
+    const bindMenuBtnVar = (name: string, type: VarTypes, is_global: boolean, is_set: boolean) => {
+        // VarTypes
+        const types = { 0: 'n', 1: 's', 2: 'b' };
+        if (is_set)
+            addNode("VarSet", { t: types[type], n: name, g: is_global ? 1 : 0 })
+        else
+            addNode("VarGet", { t: types[type], n: name, g: is_global ? 1 : 0 })
+        console.log(name, type, is_global);
+    }
+
     const context_menu_items: any[] = [];
     const updateItemsMenu = () => {
         let module_sub_items: any[] = []
@@ -126,6 +138,33 @@ export async function createEditor(container: HTMLElement) {
             if (it != currentModulePath && it != 'global' && !it.includes('scene_')) {
                 module_sub_items.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
             }
+        }
+
+        const global_vars = dataManager.get_scene_variables('global');
+        const scene_vars = dataManager.get_scene_variables(gameState.get_current_scene());
+        const global_list_set: any = [];
+        const global_list_get: any = [];
+        const scene_list_set: any = [];
+        const scene_list_get: any = [];
+        for (const k in global_vars) {
+            const it = global_vars[k];
+            global_list_set.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, true, true) })
+            global_list_get.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, true, false) })
+        }
+        for (const k in scene_vars) {
+            const it = scene_vars[k];
+            scene_list_set.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, false, true) })
+            scene_list_get.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, false, false) })
+        }
+        const vars_block: any = [
+            { label: 'Общие, задать', key: '1', handler: () => null, subitems: global_list_set },
+            { label: 'Общие, получить', key: '1', handler: () => null, subitems: global_list_get },
+            { label: 'Cцена, задать', key: '1', handler: () => null, subitems: scene_list_set },
+            { label: 'Cцена, получить', key: '1', handler: () => null, subitems: scene_list_get },
+        ];
+        if (gameState.get_current_scene() == 'global') {
+            vars_block.pop();
+            vars_block.pop();
         }
 
 
@@ -185,6 +224,10 @@ export async function createEditor(container: HTMLElement) {
             {
                 label: 'Модуль', key: '1', handler: () => null,
                 subitems: module_sub_items
+            },
+            {
+                label: 'Переменные', key: '1', handler: () => null,
+                subitems: vars_block
             },
         );
     }
@@ -337,7 +380,14 @@ export async function createEditor(container: HTMLElement) {
             if (tmp_name && add_stack)
                 modules_stack.push(tmp_name)
             currentModulePath = path
-            $(".title_win").text((path.includes('scene_') ? 'Сцена: ' : 'Модуль: ') + path);
+            let title_name = path;
+            if (path == 'global')
+                gameState.set_current_scene(path);
+            if (path.includes('scene_')) {
+                gameState.set_current_scene(path);
+                title_name = path.split('scene_').slice(1).join('');
+            }
+            $(".title_win").text((path.includes('scene_') ? 'Сцена: ' : 'Модуль: ') + title_name);
             await module.apply(editor)
             //const data = modulesData[path]
             //  await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
@@ -359,10 +409,14 @@ export async function createEditor(container: HTMLElement) {
         $(".menu_scenes").html('');
         $(".menu_modules").html('<li><a class="new_scene">-Новый-</a></li>');
 
+        if (currentModulePath != 'global') {
+            $('.menu_scenes').append(`<li><a class="open_scene" data-name="global">Мир</a></li>`);
+        }
 
         for (let name in modulesData) {
             if (name != currentModulePath) {
-                $(name.includes('scene_') ? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene">` + name + `</a></li>`);
+                const name_module = name.includes('scene_') ? name.split('scene_').slice(1).join('') : name;
+                $(name.includes('scene_') ? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene" data-name="${name}">` + name_module + `</a></li>`);
             }
         }
         $(".menu_modules").append(`<li><a class="del_module"> -Удалить- </a></li>`);
@@ -402,42 +456,6 @@ export async function createEditor(container: HTMLElement) {
         return null
     }
 
-    const clear_nodes_animation = () => {
-        const connections = editor.getConnections()
-        for (let i = 0; i < connections.length; i++) {
-            const con = connections[i];
-            $(area.connectionViews.get(con.id)!.element).find('path').attr('class', '')
-        }
-    }
-
-    const covert_node_data = (node: string, input: string, key: string) => {
-        if (node.includes('module')) {
-            const tmp = node.split('_module_');
-            if (key != '') {
-                node = tmp[0];
-                input = key;
-            }
-        }
-        return [node, input]
-    }
-
-    const activate_node_animation = (source: string, sourceOutput: string, target: string, targetInput: string, source_key = '', target_key = '') => {
-        const connections = editor.getConnections()
-        //console.log("Activate:", source, sourceOutput, target, targetInput, source_key, target_key)
-        for (let i = 0; i < connections.length; i++) {
-            const con = connections[i];
-            [source, sourceOutput] = covert_node_data(source, sourceOutput, source_key);
-            [target, targetInput] = covert_node_data(target, targetInput, target_key);
-            if (con.source == source && con.target == target && con.sourceOutput == sourceOutput && con.targetInput == targetInput) {
-                $(area.connectionViews.get(con.id)!.element).find('path').attr('class', 'animated')
-                return;
-            }
-        }
-        if (source.includes('module') || target.includes('module'))
-            return;
-        return console.warn('Данные не найдены', source, sourceOutput, target, targetInput)
-    }
-
     const do_save = () => {
         if (save_module(true))
             toastr.success('Сохранено');
@@ -445,15 +463,14 @@ export async function createEditor(container: HTMLElement) {
             toastr.error('Ошибка сохранения');
     }
 
-
     (window as any).nEditor = editor;
     (window as any).modulesData = modulesData;
     (window as any).area = area;
     (window as any).modules_stack = modules_stack;
     (window as any).openModule = openModule;
     (window as any).makeModule = makeModule;
-    (window as any).activate_node_animation = activate_node_animation;
-    (window as any).clear_nodes_animation = clear_nodes_animation;
+    (window as any).gameState = GameState();
+
 
     $('.btn_back').click(function () {
         if (modules_stack.length > 0) {
@@ -507,7 +524,10 @@ export async function createEditor(container: HTMLElement) {
             ZoomNodes()
     })
 
+
     document.addEventListener('keydown', async (e: KeyboardEvent) => {
+        if (e.ctrlKey && e.code == 'KeyS')
+            e.preventDefault();
         // delete
         if (e.key == 'Delete') {
             for (const entity of selector.entities) {
@@ -540,9 +560,16 @@ export async function createEditor(container: HTMLElement) {
             }
             if (e.code == 'KeyS') {
                 do_save();
+                update_code_editor();
             }
         }
-    })
+        if (e.ctrlKey) {
+            if (e.code == 'KeyS') {
+                do_save();
+                update_code_editor();
+            }
+        }
+    }, false)
 
 
 

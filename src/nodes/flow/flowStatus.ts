@@ -1,6 +1,7 @@
 import { ClassicPreset as Classic } from 'rete'
 import { socketBoolean } from '../../sockets'
 import { SelectControl } from '../../controls';
+import { arrayToSelectList } from '../../utils/utils';
 
 export class FlowStatusNode extends Classic.Node {
     width = 180;
@@ -11,12 +12,7 @@ export class FlowStatusNode extends Classic.Node {
     currentIndex = ''
 
     updateList() {
-        this.listName = [];
-        const list = dataManager.get_flow_list();
-        for (let i = 0; i < list.length; i++) {
-            const text = list[i];
-            this.listName.push({ val: i + '', text })
-        }
+        this.listName = arrayToSelectList(dataManager.get_flow_list())
     }
 
     doUpdateList() {
@@ -40,7 +36,7 @@ export class FlowStatusNode extends Classic.Node {
         this.currentIndex = initial || ''
         this.updateList();
         this.addControl("select", new SelectControl(this.currentIndex, this.listName, (e) => this.changeName(e), () => this.doUpdateList()))
-        this.addOutput("out", new Classic.Output(socketBoolean, "Статус"))
+        this.addOutput("out", new Classic.Output(socketBoolean, "Состояние"))
     }
 
     serialize() {

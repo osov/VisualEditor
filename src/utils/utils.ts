@@ -75,3 +75,13 @@ export function isCompatibleSockets(s1: ClassicPreset.Socket, s2: ClassicPreset.
         return true;
     return false;
 }
+
+
+export function arrayToSelectList(list: string[]) {
+    const tmp: { val: string, text: string }[] = [];
+    for (let i = 0; i < list.length; i++) {
+        const text = list[i];
+        tmp.push({ val: i + '', text })
+    }
+    return tmp;
+}

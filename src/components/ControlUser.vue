@@ -1,11 +1,11 @@
 <template>
   <div class="user">
-    <img class="user__avatar" :src="props.data.userList[props.data.currentUser].ava" alt="">
+    <img v-if="props.data.currentUser != ''" class="user__avatar" :src="props.data.userList[props.data.currentUser].ava" alt="">
     <div class="user__info">
-      <div class="user__name">{{ props.data.userList[props.data.currentUser].name }}</div>
+      <div class="user__name">Персонаж:</div>
       <select class="user__list select" name="" id="" @pointerdown.stop="" @dblclick.stop="" @change="changeOption" v-model="props.data.currentUser">
-        <option disabled :selected="props.data.currentUser === -1" hidden>Выбрать персонажа</option>
-        <option v-for="option in props.data.userList" :key="option.id" :value="option.id - 1" :selected="option.id - 1 === props.data.currentUser">
+        <option disabled :selected="props.data.currentUser == ''" hidden>Выбрать персонажа</option>
+        <option v-for="option in props.data.userList" :key="option.id" :value="option.id" :selected="option.id == props.data.currentUser">
           {{ option.name }}
         </option>
       </select>

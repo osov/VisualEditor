@@ -5,7 +5,7 @@ export class StringNode
     extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }, { val: Classic.InputControl<"text"> }>
 {
     width = 180;
-    height = 140;
+    height = 110;
     nodeTitle = { ru: "Строка", type: "yellow" }
 
     constructor(initial: string) {

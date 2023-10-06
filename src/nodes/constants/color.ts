@@ -5,7 +5,7 @@ export class ColorNode
     extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }>
 {
     width = 180;
-    height = 140;
+    height = 110;
     nodeTitle = { ru: "Цвет", type: "yellow" }
 
     constructor(initial: string) {

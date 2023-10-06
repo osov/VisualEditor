@@ -1,5 +1,5 @@
 <template>
-  <textarea class="textarea my_scroll" @pointerdown.stop="" @dblclick.stop="" v-model="props.data.text" @change="changeText"></textarea>
+  <textarea class="textarea my_scroll" @pointerdown.stop="" @dblclick.stop="" v-model="props.data.text" @change="changeText" placeholder="Текст для вывода"></textarea>
 </template>
 
 <script lang="ts" setup>

@@ -2,12 +2,13 @@ import { ClassicPreset as Classic } from "rete"
 import { socketAction, socketBoolean } from "../../sockets"
 import { CheckboxControl } from "../../controls"
 import { SelectControl } from "../../controls"
+import { arrayToSelectList } from "../../utils/utils"
 
 export class FlowSetNode extends Classic.Node {
     width = 180
     height = 160
     private area = (window as any).area;
-    nodeTitle = { ru: "Задать", type: "green" };
+    nodeTitle = { ru: "Задать состояние блока", type: "green" };
     active: boolean = true;
     listName: { val: string, text: string }[] = []
     currentIndex = ''
@@ -27,12 +28,7 @@ export class FlowSetNode extends Classic.Node {
     }
 
     updateList() {
-        const list = dataManager.get_flow_list();
-        this.listName = [];
-        for (let i = 0; i < list.length; i++) {
-            const text = list[i];
-            this.listName.push({ val: i + '', text })
-        }
+        this.listName = arrayToSelectList(dataManager.get_flow_list())
     }
 
     doUpdateList() {
@@ -46,19 +42,12 @@ export class FlowSetNode extends Classic.Node {
         this.currentIndex = initial.id || ''
         this.active = initial.ac || false
         this.updateList();
-        const status = new Classic.Input(socketBoolean, "Активен");
-        status.addControl(new CheckboxControl("нет", "да", this.active, () => this.toogleCheckbox(), false));
+        const status = new Classic.Input(socketBoolean, "Состояние");
+        status.addControl(new CheckboxControl("Выкл", "Вкл", this.active, () => this.toogleCheckbox(), false));
 
         this.addInput("in", new Classic.Input(socketAction, ""));
         this.addControl("select", new SelectControl(this.currentIndex, this.listName, (e) => this.changeName(e), () => this.doUpdateList()))
         this.addInput("status", status);
-
-
-
-
-
-
-
     }
 
     serialize() {

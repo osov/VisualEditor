@@ -41,7 +41,8 @@ export class CheckboxControl extends Classic.Control {
     public textTrue: string,
     public active: boolean,
     public onClick: () => void,
-    public blockColor: boolean = false
+    public blockColor: boolean = false,
+    public hideCheckBox: boolean = false,
   ) {
     super()
   }
@@ -61,7 +62,7 @@ export class SelectControl extends Classic.Control {
 export class TextareaControl extends Classic.Control {
   constructor(
     public text: string,
-    public onChange: (e:any) => void
+    public onChange: (e: any) => void
   ) {
     super()
   }
@@ -70,7 +71,7 @@ export class TextareaControl extends Classic.Control {
 export class UserControl extends Classic.Control {
   constructor(
     public userList: any,
-    public currentUser: number,
+    public currentUser: string,
     public onChange: (e: any) => void
   ) {
     super()

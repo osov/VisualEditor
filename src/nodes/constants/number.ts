@@ -5,7 +5,7 @@ export class NumberNode
     extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }, { val: Classic.InputControl<"number"> }>
 {
     width = 180;
-    height = 140;
+    height = 110;
     nodeTitle = { ru: "Число", type: "yellow" }
 
     constructor(initial: number) {

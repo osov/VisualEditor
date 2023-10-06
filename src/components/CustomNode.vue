@@ -91,7 +91,6 @@
     // return Object.entries(data.outputs)
     return sortByIndex(Object.entries(props.data.outputs))
   })
-console.log('inp2:', props.data.inputs2);
 
 
 </script>

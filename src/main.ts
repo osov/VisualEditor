@@ -4,10 +4,12 @@ import { iEngine } from "./engine/iEngine";
 import "./style.css"
 import "./script.ts"
 import { load_data_manager } from "./data_manager.ts";
+import { init_debug } from "./debug.ts";
 
 // todo insert node, magnetic connection, selectable connections
 
 await load_data_manager();
+init_debug();
 
 const editor = await createEditor(document.getElementById("app")!);
 

@@ -18,7 +18,7 @@ export enum VarTypes {
 export type VarSet = { [k: string]: { type: VarTypes, value: string | number } }
 
 function DataManager() {
-    let _cur_scene = 'global';
+
 
     function init_test_data() {
         const data_modules = localStorage['modules']
@@ -35,12 +35,14 @@ function DataManager() {
         return ['scene_menu', 'scene_game'];
     }
 
-    function set_current_scene(name: string) {
-        _cur_scene = name;
-    }
+    //---------------------------------------------------
 
-    function get_current_scene() {
-        return _cur_scene;
+    function get_all_characters() {
+        return [
+            { id: '0', name: "Tom", ava: "https://dummyimage.com/600x400/000/fff&text=111" },
+            { id: '1', name: "Tom 2", ava: "https://dummyimage.com/500x400/000/fff&text=222" },
+            { id: '2', name: "Tom 3", ava: "https://dummyimage.com/700x400/000/fff&text=333" }
+        ]
     }
 
     //---------------------------------------------------
@@ -86,7 +88,8 @@ function DataManager() {
         localStorage['flows'] = json.encode(list);
     }
 
+
     init_test_data();
-    return { set_current_scene, get_current_scene, get_all_scenes, get_scene_variables, set_scene_variables, get_modules, set_modules, get_flow_list, add_flow_list }
+    return { get_all_scenes, get_all_characters, get_scene_variables, set_scene_variables, get_modules, set_modules, get_flow_list, add_flow_list }
 }
 

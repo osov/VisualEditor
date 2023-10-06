@@ -102,14 +102,16 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
             const connection = out_connections[i]
             const node = get_node(connection.target)!;
             // debug info
-            const cur_node = get_node(id_current_node)!;
-            let source_key = '';
-            let target_key = '';
-            if (["Input", "InputAction", "Output", "OutputAction"].includes(cur_node.name))
-                source_key = cur_node.node_data.key;
-            if (["Input", "InputAction", "Output", "OutputAction"].includes(node.name))
-                target_key = node.node_data.key;
-            activate_node_animation(id_current_node, id_out, connection.target, connection.targetInput, source_key, target_key)
+            if (debugEditor.is_active()) {
+                const cur_node = get_node(id_current_node)!;
+                let source_key = '';
+                let target_key = '';
+                if (["Input", "InputAction", "Output", "OutputAction"].includes(cur_node.name))
+                    source_key = cur_node.node_data.key;
+                if (["Input", "InputAction", "Output", "OutputAction"].includes(node.name))
+                    target_key = node.node_data.key;
+                debugEditor.activate_node_animation(id_current_node, id_out, connection.target, connection.targetInput, source_key, target_key);
+            }
             // ----
             await node.run()
         }
