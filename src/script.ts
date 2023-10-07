@@ -135,6 +135,14 @@ $("body").on("click", ".debug_btn[data-id='variables']", function () {
     $(".mmodal").addClass("active")
 })
 
+$("body").on("click", ".listNodes__btn", function () {
+    $('.listNodes').toggleClass('active')
+})
+
+$("body").on("click", ".accordion__head", function () {
+    $(this).parent().toggleClass('active')
+})
+
 $("body").on("click", ".open_scene", function () {
     openModule($(this).attr('data-name')!);
 })
