@@ -40,7 +40,7 @@
       <template v-if="data.inputs2">
         <!-- Inputs2 for reactive -->
         <div class="wr_input">
-          <div class="input" v-for="[key, input] in data.inputs2" :key="'input' + key + seed" :data-testid="'input-' + key">
+          <div class="input input2" v-for="[key, input] in data.inputs2" :key="'input' + key + seed" :data-testid="'input-' + key">
             <Ref class="input-socket" :emit="emit"
             :data="{ type: 'socket', side: 'input', key: key, nodeId: data.id, payload: input.socket }"
             data-testid="input-socket" />
@@ -50,17 +50,16 @@
           </div>
         </div>
       </template>
-      <template v-else>
-        <!-- Inputs-->
-        <div class="input" v-for="[key, input] in inputs" :key="'input' + key + seed" :data-testid="'input-' + key">
-          <Ref class="input-socket" :emit="emit"
-          :data="{ type: 'socket', side: 'input', key: key, nodeId: data.id, payload: input.socket }"
-          data-testid="input-socket" />
-          <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">{{ input.label }}</div>
-          <Ref class="input-control" v-show="input.control && input.showControl" :emit="emit"
-          :data="{ type: 'control', payload: input.control }" data-testid="input-control" />
-        </div>
-      </template>
+
+      <!-- Inputs-->
+      <div class="input input1" v-for="[key, input] in inputs" :key="'input' + key + seed" :data-testid="'input-' + key">
+        <Ref class="input-socket" :emit="emit"
+        :data="{ type: 'socket', side: 'input', key: key, nodeId: data.id, payload: input.socket }"
+        data-testid="input-socket" />
+        <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">{{ input.label }}</div>
+        <Ref class="input-control" v-show="input.control && input.showControl" :emit="emit"
+        :data="{ type: 'control', payload: input.control }" data-testid="input-control" />
+      </div>
       
     </div>
   </template>
@@ -328,7 +327,14 @@
   order: 2;
   height: 0;
 }
-.node[data-label="Dialog"] .input .socket{
+.node[data-label="Dialog"] .input1{
+  order: 1;
+}
+.node[data-label="Dialog"] .input2[data-testid="input-in"],
+.node[data-label="Dialog"] .input1[data-testid]:not([data-testid="input-in"]){
+  display: none;
+}
+.node[data-label="Dialog"] .input2 .socket{
   border-radius: 50%;
   margin: 4px 0 4px 6px;
 }
