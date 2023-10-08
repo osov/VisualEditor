@@ -3,7 +3,7 @@ import { socketAction, socketAny } from "../sockets"
 
 export class LogNode extends Classic.Node<{ in: Classic.Socket, data: Classic.Socket }, {}, { val: Classic.InputControl<"text"> }> {
     width = 180
-    height = 140
+    height = 100
     nodeTitle = { ru: "Логировать", type: "green" }
 
     constructor(text = '') {

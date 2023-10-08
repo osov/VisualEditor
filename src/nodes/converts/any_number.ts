@@ -4,7 +4,7 @@ import { socketAny, socketNumber } from '../../sockets'
 
 export class AnyToNumberNode extends Classic.Node {
     width = 180;
-    height = 120;
+    height = 110;
     nodeTitle = { ru: "В число", type: "green" }
 
     constructor() {

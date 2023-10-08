@@ -5,7 +5,7 @@ import { socketAction, socketNumber } from '../../sockets';
 
 export class DelayNode extends Classic.Node {
     width = 180;
-    height = 160;
+    height = 130;
     nodeTitle = { ru: "Задержка", type: "green" }
 
     constructor(delay = 500) {

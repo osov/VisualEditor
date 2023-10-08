@@ -4,7 +4,7 @@ import { socketAny, socketString } from '../../sockets'
 
 export class AnyToStringNode extends Classic.Node {
     width = 180;
-    height = 120;
+    height = 110;
     nodeTitle = { ru: "В строку", type: "green" }
 
     constructor() {

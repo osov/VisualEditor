@@ -32,6 +32,7 @@ function DataManager() {
     //---------------------------------------------------
 
     function get_all_scenes() {
+        // todo read from modules
         return ['scene_menu', 'scene_game'];
     }
 

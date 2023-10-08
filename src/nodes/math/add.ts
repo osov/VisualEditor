@@ -5,7 +5,7 @@ import { socketNumber } from '../../sockets'
 export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { sum: Classic.Socket }>
 {
     width = 180;
-    height = 190;
+    height = 140;
     nodeTitle = { ru: "A + B", type: "green" }
 
     constructor(initial?: { A?: number; B?: number }) {

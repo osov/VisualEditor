@@ -5,7 +5,7 @@ import { SelectControl } from "../../controls"
 import { arrayToSelectList } from "../../utils/utils"
 
 export class FlowSetNode extends Classic.Node {
-    width = 180
+    width = 190
     height = 160
     private area = (window as any).area;
     nodeTitle = { ru: "Задать состояние блока", type: "green" };

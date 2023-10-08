@@ -6,7 +6,7 @@ import { arrayToSelectList } from "../../utils/utils"
 
 export class FlowBlockNode extends Classic.Node {
     width = 180
-    height = 160
+    height = 140
     private area = (window as any).area;
     nodeTitle = { ru: "Управляемый блок", type: "green" };
     listName: { val: string, text: string }[] = []
