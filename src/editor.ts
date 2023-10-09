@@ -33,6 +33,7 @@ declare global {
     const editor: Await<ReturnType<typeof createEditor>>
     const openModule: (path: string, add_stack?: boolean) => Promise<void>;
     const makeModule: () => void;
+    const updateItemsMenu: () => void;
 }
 
 
@@ -465,6 +466,7 @@ export async function createEditor(container: HTMLElement) {
     (window as any).modules_stack = modules_stack;
     (window as any).openModule = openModule;
     (window as any).makeModule = makeModule;
+    (window as any).updateItemsMenu = updateItemsMenu;
     (window as any).gameState = GameState();
 
 
