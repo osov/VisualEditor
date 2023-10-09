@@ -409,3 +409,8 @@ div[data-swb]:nth-child(1){display: block;}
 .accordion__list a:hover{
   color: #00ff1f9c;
 }
+.listNodes .my_scroll{
+  max-height: calc(100vh - 150px);
+  overflow-y: scroll;
+  padding-right: 12px;
+}
