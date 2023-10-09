@@ -137,7 +137,7 @@ export async function createEditor(container: HTMLElement) {
         const global_vars = dataManager.get_scene_variables('global');
         const scene_vars = dataManager.get_scene_variables(gameState.get_current_scene());
 
-        let text = `<div class="listNodes__btn" data-title="node"></div>`;
+        let text = '';
         //
         text += make_section('События', false);
         text += make_html_node('Движок загружен', 'EngineReady', {});
@@ -229,7 +229,7 @@ export async function createEditor(container: HTMLElement) {
             text += make_section('', true);
         }
         //
-        $(".listNodes").html(text);
+        $(".listNodes .my_scroll").html(text);
     }
 
 
