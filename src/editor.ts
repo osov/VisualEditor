@@ -33,6 +33,7 @@ declare global {
     const editor: Await<ReturnType<typeof createEditor>>
     const openModule: (path: string, add_stack?: boolean) => Promise<void>;
     const makeModule: () => void;
+    const updateItemsMenu: () => void;
 }
 
 
@@ -71,7 +72,8 @@ export async function createEditor(container: HTMLElement) {
     const addNode = async (name: string, data: any) => {
         const node = await createNode(context, name, data)
         await context.editor.addNode(node)
-        await area.translate(node.id, area.area.pointer)
+        const pos = { x: area.area.pointer.x - node.width / 2, y: area.area.pointer.y - node.height / 2 };
+        await area.translate(node.id, pos)
     }
 
     const deleteNode = async (nodeId: string) => {
@@ -107,140 +109,137 @@ export async function createEditor(container: HTMLElement) {
         openModule(name);
     }
 
-    const bindMenuBtnVar = (name: string, type: VarTypes, is_global: boolean, is_set: boolean) => {
-        // VarTypes
-        const types = { 0: 'n', 1: 's', 2: 'b' };
-        if (is_set)
-            addNode("VarSet", { t: types[type], n: name, g: is_global ? 1 : 0 })
-        else
-            addNode("VarGet", { t: types[type], n: name, g: is_global ? 1 : 0 })
-        console.log(name, type, is_global);
+    const add_node = (name: string) => {
+
     }
 
-    const context_menu_items: any[] = [];
+    const getMenuBtnVar = (name: string, type: VarTypes, is_global: boolean, is_set: boolean) => {
+        // VarTypes
+        const types = { 0: 'n', 1: 's', 2: 'b' };
+        return { name: is_set ? "VarSet" : "VarGet", params: { t: types[type], n: name, g: is_global ? 1 : 0 } }
+    }
+
+    const make_html_node = (label: string, name: string, params: any) => {
+        const pars = encodeURI(JSON.stringify(params));
+        return `<a href="javascript:void(0);" class="add_node" data-name="${name}" data-params="${pars}">${label}</a>`;
+    }
+
+    const make_section = (name: string, is_end: boolean) => {
+        return is_end ?
+            `</div></div>` :
+            `<div class="accordion">
+        <div class="accordion__head">${name}</div>
+        <div class="accordion__list">`
+    }
+
     const updateItemsMenu = () => {
-        let module_sub_items: any[] = []
 
+        const global_vars = dataManager.get_scene_variables('global');
+        const scene_vars = dataManager.get_scene_variables(gameState.get_current_scene());
+
+        let text = `<div class="listNodes__btn" data-title="node"></div>`;
+        //
+        text += make_section('События', false);
+        text += make_html_node('Движок загружен', 'EngineReady', {});
+        text += make_section('', true);
+        //
+        text += make_section('Константы', false);
+        text += make_html_node('Число', 'Number', { val: 1 });
+        text += make_html_node('Строка', 'String', { val: 'text' });
+        text += make_html_node('Логическое', 'Boolean', { val: true });
+        text += make_html_node('Цвет', 'Color', { val: '#ffffff' });
+        text += make_section('', true);
+        //
+        text += make_section('Операторы', false);
+        text += make_html_node('Последовательность', 'Sequence', {});
+        text += make_html_node('Диалог', 'Dialog', {});
+        text += make_html_node('Управляемый блок', 'FlowBlock', {});
+        text += make_html_node('Задать состояние блоку', 'FlowSet', {});
+        text += make_html_node('Получить состояние блока', 'FlowStatus', {});
+        text += make_html_node('Логировать', 'Log', {});
+        text += make_html_node('Задержка', 'Delay', { ms: 1000 });
+        text += make_section('', true);
+        //
+        text += make_section('Преобразования', false);
+        text += make_html_node('В число', 'AnyToNumber', {});
+        text += make_html_node('В строку', 'AnyToString', {});
+        text += make_html_node('В логическое', '', {});  // todo
+        text += make_html_node('В цвет', '', {});  // todo
+        text += make_html_node('Соединить строки', '', {});  // todo
+        text += make_section('', true);
+        //
+        text += make_section('Математика', false);
+        text += make_html_node('Сложить', 'Add', { A: 1, B: 2 });
+        text += make_html_node('Вычесть', '', {}); // todo
+        text += make_html_node('Умножить', '', {});  // todo
+        text += make_html_node('Разделить', '', {});  // todo
+        text += make_html_node('Сменить знак', '', {});  // todo
+        text += make_html_node('Случайное целое', '', {});  // todo
+        text += make_html_node('Случайное число', '', {});  // todo
+        text += make_section('', true);
+        //
         if (currentModulePath != 'global' && !currentModulePath?.includes('scene_')) {
-            module_sub_items.push({
-                label: 'вход/выход', key: '1', handler: () => null, subitems: [
-                    { label: 'Вход данные', key: '1', handler: () => addNode("Input", { key: "key" }) },
-                    { label: 'Выход данные', key: '1', handler: () => addNode("Output", { key: "key" }) },
-                    { label: 'Вход действие', key: '1', handler: () => addNode("InputAction", { key: "key" }) },
-                    { label: 'Выход действие', key: '1', handler: () => addNode("OutputAction", { key: "key" }) },
-                ]
-            })
+            text += make_section('Модуль [вход/выход]', false);
+            text += make_html_node('Вход данные', 'Input', { key: "key" });
+            text += make_html_node('Выход данные', 'Output', { key: "key" });
+            text += make_html_node('Вход действие', 'InputAction', { key: "key" });
+            text += make_html_node('Выход действие', 'OutputAction', { key: "key" });
+            text += make_section('', true);
         }
-
+        //
+        text += make_section('Модули', false);
         const list = Object.keys(modulesData);
         for (let i = 0; i < list.length; i++) {
             const it = list[i];
             if (it != currentModulePath && it != 'global' && !it.includes('scene_')) {
-                module_sub_items.push({ label: it, key: '1', handler: () => addNode("Module", { name: it }) })
+                text += make_html_node(it, 'Module', { name: it });
             }
         }
-
-        const global_vars = dataManager.get_scene_variables('global');
-        const scene_vars = dataManager.get_scene_variables(gameState.get_current_scene());
-        const global_list_set: any = [];
-        const global_list_get: any = [];
-        const scene_list_set: any = [];
-        const scene_list_get: any = [];
+        text += make_section('', true);
+        //
+        text += make_section('Переменные общие', false);
+        text += `<div class='set_block'>Задать:</div>`
         for (const k in global_vars) {
             const it = global_vars[k];
-            global_list_set.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, true, true) })
-            global_list_get.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, true, false) })
+            const set_data = getMenuBtnVar(k, it.type, true, true);
+            text += make_html_node(k, set_data.name, set_data.params);
         }
-        for (const k in scene_vars) {
-            const it = scene_vars[k];
-            scene_list_set.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, false, true) })
-            scene_list_get.push({ label: k, key: '1', handler: () => bindMenuBtnVar(k, it.type, false, false) })
+        text += `<div class='get_block'>Получить:</div>`
+        for (const k in global_vars) {
+            const it = global_vars[k];
+            const get_data = getMenuBtnVar(k, it.type, true, false);
+            text += make_html_node(k, get_data.name, get_data.params);
         }
-        const vars_block: any = [
-            { label: 'Общие, задать', key: '1', handler: () => null, subitems: global_list_set },
-            { label: 'Общие, получить', key: '1', handler: () => null, subitems: global_list_get },
-            { label: 'Cцена, задать', key: '1', handler: () => null, subitems: scene_list_set },
-            { label: 'Cцена, получить', key: '1', handler: () => null, subitems: scene_list_get },
-        ];
-        if (gameState.get_current_scene() == 'global') {
-            vars_block.pop();
-            vars_block.pop();
+        text += make_section('', true);
+        //
+        if (gameState.get_current_scene() != 'global') {
+            text += make_section('Переменные сцены', false);
+            text += `<div class='set_block'>Задать:</div>`
+            for (const k in scene_vars) {
+                const it = scene_vars[k];
+                const set_data = getMenuBtnVar(k, it.type, true, true);
+                text += make_html_node(k, set_data.name, set_data.params);
+            }
+            text += `<div class='get_block'>Получить:</div>`
+            for (const k in scene_vars) {
+                const it = scene_vars[k];
+                const get_data = getMenuBtnVar(k, it.type, true, false);
+                text += make_html_node(k, get_data.name, get_data.params);
+            }
+            text += make_section('', true);
         }
-
-
-        context_menu_items.splice(0, context_menu_items.length);
-        context_menu_items.push(
-            {
-                label: 'События', key: '1', handler: () => null,
-                subitems: [
-                    { label: 'Движок загружен', key: '1', handler: () => addNode("EngineReady", {}) },
-                ]
-            },
-            {
-                label: 'Константы', key: '1', handler: () => null,
-                subitems: [
-                    { label: 'Число', key: '1', handler: () => addNode("Number", { val: 1 }) },
-                    { label: 'Строка', key: '1', handler: () => addNode("String", { val: 'text' }) },
-                    { label: 'Логическое', key: '1', handler: () => addNode("Boolean", { val: true }) },
-                    { label: 'Цвет', key: '1', handler: () => addNode("Color", { val: '#ffffff' }) },
-                    { label: 'Вектор3', key: '1', handler: () => addNode("Number", { val: 1 }) },
-                ]
-            },
-            {
-                label: 'Операторы', key: '1', handler: () => null,
-                subitems: [
-                    { label: 'Диалог', key: '1', handler: () => addNode("Dialog", {}) },
-                    { label: 'Управляемый блок', key: '1', handler: () => addNode("FlowBlock", {}) },
-                    { label: 'Задать состояние блоку', key: '1', handler: () => addNode("FlowSet", {}) },
-                    { label: 'Получить состояние блока', key: '1', handler: () => addNode("FlowStatus", {}) },
-                    { label: 'Последовательность', key: '1', handler: () => addNode("Sequence", {}) },
-                    { label: 'Логировать', key: '1', handler: () => addNode("Log", {}) },
-                    { label: 'Задержка', key: '1', handler: () => addNode("Delay", { ms: 1000 }) },
-                ]
-            },
-            {
-                label: 'Преобразования', key: '1', handler: () => null,
-                subitems: [
-                    { label: 'В число', key: '1', handler: () => addNode("AnyToNumber", {}) },
-                    { label: 'В строку', key: '1', handler: () => addNode("AnyToString", {}) },
-                    { label: 'В логическое', key: '1', handler: () => { } },
-                    { label: 'В цвет', key: '1', handler: () => { } },
-                    { label: 'В вектор', key: '1', handler: () => { } },
-                    { label: 'Соединить строки', key: '1', handler: () => { } },
-                ]
-            },
-            {
-                label: 'Математика', key: '1', handler: () => null,
-                subitems: [
-                    { label: 'Сложить', key: '1', handler: () => addNode("Add", { A: 1, B: 2 }) },
-                    { label: 'Вычесть', key: '1', handler: () => { } },
-                    { label: 'Умножить', key: '1', handler: () => { } },
-                    { label: 'Разделить', key: '1', handler: () => { } },
-                    { label: 'Сменить знак', key: '1', handler: () => { } },
-                    { label: 'Случайное целое', key: '1', handler: () => { } },
-                    { label: 'Случайное число', key: '1', handler: () => { } },
-                ]
-            },
-            {
-                label: 'Модуль', key: '1', handler: () => null,
-                subitems: module_sub_items
-            },
-            {
-                label: 'Переменные', key: '1', handler: () => null,
-                subitems: vars_block
-            },
-        );
+        //
+        $(".listNodes").html(text);
     }
-
 
 
     const contextMenu = new ContextMenuPlugin<Schemes>({
         items(ctx, _) {
             if (ctx === 'root') {
-                updateItemsMenu();
+
                 return {
                     searchBar: false,
-                    list: context_menu_items
+                    list: []
                 }
             }
             return {
@@ -424,10 +423,8 @@ export async function createEditor(container: HTMLElement) {
             $('.btn_back').show()
         else
             $('.btn_back').hide()
+        updateItemsMenu();
     }
-
-
-
 
     // debug
 
@@ -469,7 +466,34 @@ export async function createEditor(container: HTMLElement) {
     (window as any).modules_stack = modules_stack;
     (window as any).openModule = openModule;
     (window as any).makeModule = makeModule;
+    (window as any).updateItemsMenu = updateItemsMenu;
     (window as any).gameState = GameState();
+
+
+    $(".node_helper").hide();
+    let cur_el: JQuery<any> | null = null;
+    $("body").on("dragstart", ".add_node", function () {
+        $(".node_helper").show();
+        cur_el = $(this);
+        return false;
+    });
+
+    document.addEventListener('mouseup', async (e: MouseEvent) => {
+        if (!cur_el)
+            return;
+        const name = cur_el.attr('data-name')!;
+        const params = JSON.parse(decodeURI(cur_el.attr('data-params')!));
+        console.log(name, params)
+        cur_el = null;
+        $(".node_helper").hide();
+        addNode(name, params);
+    })
+
+    document.addEventListener('mousemove', async (e: MouseEvent) => {
+        if (!cur_el)
+            return;
+        $(".node_helper").css({ left: e.pageX - 15 + 'px', top: e.pageY - 15 + 'px' })
+    });
 
 
     $('.btn_back').click(function () {

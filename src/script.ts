@@ -66,8 +66,9 @@ function save_variables() {
             val = parseFloat(val);
         tmp[el.attr('data-name')!] = { type: t as any, value: val as any };
     })
-    variables = tmp
+    variables = tmp;
     dataManager.set_scene_variables(selected_scene, variables);
+    updateItemsMenu();
 }
 
 function open_variables_scene(name: string) {
@@ -118,8 +119,6 @@ $("body").on("keyup", ".value_data", function () {
     $(this).closest('.variable__item').attr('data-value', $(this).val() + '')
     save_variables()
 })
-
-
 
 $("body").on("click", ".debug_btn[data-id='variables']", function () {
     let html = '<a href="javascript:void(0);" class="variable_scene_item" data-name="global">Глобальные переменные</a>';
