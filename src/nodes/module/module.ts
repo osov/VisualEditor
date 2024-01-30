@@ -7,6 +7,7 @@ import { OneButtonControl } from "../../controls"
 export class ModuleNode
     extends Classic.Node<Record<string, Classic.Socket>, Record<string, Classic.Socket>, { name: Classic.InputControl<"text">, OneBtn: OneButtonControl }>
 {
+    add_height = 150 - 90
     width = 180
     height = 160
     module: null | Module<Schemes> = null
@@ -15,7 +16,7 @@ export class ModuleNode
     constructor(public path: string, private findModule: (path: string) => null | Module<Schemes>, private reset: (nodeId: string) => Promise<void>) {
         super("Module")
         this.nodeTitle = { ru: "Модуль", type: "blue", module: path }
-        this.addControl("OneBtn", new OneButtonControl("Изменить", async () => openModule(path)))
+        //this.addControl("OneBtn", new OneButtonControl("Изменить", async () => openModule(path)))
         this.update()
     }
 
@@ -55,7 +56,7 @@ export class ModuleNode
         })
 
 
-        this.height = 150 + 33 * (Object.keys(this.inputs).length + Object.keys(this.outputs).length)
+        this.height = this.add_height + 33 * (Object.keys(this.inputs).length + Object.keys(this.outputs).length)
     }
 
     serialize() {

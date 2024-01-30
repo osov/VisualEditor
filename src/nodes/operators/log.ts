@@ -1,5 +1,5 @@
 import { ClassicPreset as Classic } from "rete"
-import { socketAction, socketAny } from "../sockets"
+import { socketAction, socketAny } from "../../sockets"
 
 export class LogNode extends Classic.Node<{ in: Classic.Socket, data: Classic.Socket }, {}, { val: Classic.InputControl<"text"> }> {
     width = 180

@@ -103,12 +103,12 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_actions: [],
         in_data: ['A', 'B'],
         out_actions: [],
-        out_data: ['sum'],
+        out_data: ['val'],
         get_out_data: (data, get_in_data) => {
             const nodes_data = get_in_data();
             const A = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { sum: A + B };
+            return { val: A + B };
         }
     },
     'EngineReady': {

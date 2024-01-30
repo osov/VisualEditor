@@ -17,39 +17,70 @@ export enum VarTypes {
 
 export type VarSet = { [k: string]: { type: VarTypes, value: string | number } }
 
+export type CharacterInfo = { name: string, ava: string }
+
 function DataManager() {
 
-
     function init_test_data() {
-        const data_modules = localStorage['modules']
-        if (!data_modules)
-            localStorage['modules'] = tmp_modules
+        if (!load_from_storage('modules'))
+            save_to_storage('modules', tmp_modules)
 
-        const data_vars = localStorage['vars']
-        if (!data_vars)
-            localStorage['vars'] = tmp_vars
+        if (!load_from_storage('vars'))
+            save_to_storage('vars', tmp_vars)
     }
+
+    function save_to_storage(key: string, data: string) {
+        localStorage[key] = data
+    }
+
+    function load_from_storage(key: string, def: string | null = null) {
+        const result = localStorage[key];
+        if (result == undefined && def != null)
+            return def;
+        return result;
+    }
+
+    //---------------------------------------------------
+
+    function get_modules() {
+        const data_modules = load_from_storage('modules', '{}')
+        return data_modules;
+    }
+
+    function set_modules(data: string) {
+        save_to_storage('modules', data);
+    }
+
     //---------------------------------------------------
 
     function get_all_scenes() {
-        // todo read from modules
-        return ['scene_menu', 'scene_game'];
+        const modules = json.decode(get_modules());
+        const scenes = [];
+        for (const k in modules) {
+            if (k.includes('scene_'))
+                scenes.push(k);
+        }
+        return scenes;
     }
 
     //---------------------------------------------------
 
-    function get_all_characters() {
-        return [
-            { id: '0', name: "Tom", ava: "https://dummyimage.com/600x400/000/fff&text=111" },
-            { id: '1', name: "Tom 2", ava: "https://dummyimage.com/500x400/000/fff&text=222" },
-            { id: '2', name: "Tom 3", ava: "https://dummyimage.com/700x400/000/fff&text=333" }
-        ]
+    function get_characters() {
+        const str_chars = load_from_storage('characters', '[]')
+        const data_chars = json.decode(str_chars);
+        return data_chars;
+    }
+
+    function add_character(name: string) {
+        const characters = get_characters();
+        characters.push(name);
+        save_to_storage('characters', json.encode(characters));
     }
 
     //---------------------------------------------------
 
     function get_scene_variables(scene: string): VarSet {
-        const str_vars = localStorage['vars'] || '{}'
+        const str_vars = load_from_storage('vars', '{}')
         const variables_data = json.decode(str_vars)
         if (variables_data[scene])
             return variables_data[scene]
@@ -58,27 +89,16 @@ function DataManager() {
     }
 
     function set_scene_variables(scene: string, variables: VarSet) {
-        const str_vars = localStorage['vars'] || '{}'
+        const str_vars = load_from_storage('vars', '{}')
         const variables_data = json.decode(str_vars)
         variables_data[scene] = variables;
-        localStorage['vars'] = json.encode(variables_data)
-    }
-
-    //---------------------------------------------------
-
-    function get_modules() {
-        const data_modules = localStorage['modules'] || '{}'
-        return data_modules;
-    }
-
-    function set_modules(data: string) {
-        localStorage['modules'] = data;
+        save_to_storage('vars', json.encode(variables_data))
     }
 
     //---------------------------------------------------
 
     function get_flow_list(): string[] {
-        const str_flows = localStorage['flows'] || '[]'
+        const str_flows = load_from_storage('flows', '[]')
         const data_flows = json.decode(str_flows);
         return data_flows;
     }
@@ -86,11 +106,11 @@ function DataManager() {
     function add_flow_list(name: string) {
         const list = get_flow_list();
         list.push(name);
-        localStorage['flows'] = json.encode(list);
+        save_to_storage('flows', json.encode(list));
     }
 
 
     init_test_data();
-    return { get_all_scenes, get_all_characters, get_scene_variables, set_scene_variables, get_modules, set_modules, get_flow_list, add_flow_list }
+    return { get_all_scenes, get_characters, add_character, get_scene_variables, set_scene_variables, get_modules, set_modules, get_flow_list, add_flow_list }
 }
 

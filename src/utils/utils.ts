@@ -81,7 +81,7 @@ export function arrayToSelectList(list: string[]) {
     const tmp: { val: string, text: string }[] = [];
     for (let i = 0; i < list.length; i++) {
         const text = list[i];
-        tmp.push({ val: i + '', text })
+        tmp.push({ val: text, text })
     }
     return tmp;
 }

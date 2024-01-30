@@ -146,8 +146,12 @@ $("body").on("click", ".open_scene", function () {
     openModule($(this).attr('data-name')!);
 })
 
-$("body").on("click", ".new_scene", function () {
+$("body").on("click", ".new_module", function () {
     makeModule()
+})
+
+$("body").on("click", ".new_scene", function () {
+    makeScene()
 })
 
 $("body").on("click", ".del_module", function () {
@@ -156,6 +160,15 @@ $("body").on("click", ".del_module", function () {
         return;
     editor.removeModule(name);
 })
+
+$("body").on("click", ".del_scene", function () {
+    let name = prompt('Ввод имени сцены');
+    if (!name)
+        return;
+    name = 'scene_' + name;
+    editor.removeModule(name);
+})
+
 
 $("body").on("click", ".variable_scene_item", function () {
     open_variables_scene($(this).attr('data-name')!);

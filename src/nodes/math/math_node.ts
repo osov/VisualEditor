@@ -2,14 +2,15 @@ import { ClassicPreset as Classic } from 'rete'
 import { socketNumber } from '../../sockets'
 
 
-export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { sum: Classic.Socket }>
+export class MathNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket }, { val: Classic.Socket }>
 {
     width = 180;
     height = 140;
-    nodeTitle = { ru: "A + B", type: "green" }
+    nodeTitle = { ru: "A и B", type: "green" }
 
-    constructor(initial?: { A?: number; B?: number }) {
-        super("Add");
+    constructor(node_name: string, node_title: string, initial?: { A?: number; B?: number }) {
+        super(node_name);
+        this.nodeTitle.ru = node_title;
 
         const left = new Classic.Input(socketNumber, "A");
         const right = new Classic.Input(socketNumber, "B");
@@ -19,7 +20,7 @@ export class AddNode extends Classic.Node<{ A: Classic.Socket; B: Classic.Socket
 
         this.addInput("A", left);
         this.addInput("B", right);
-        this.addOutput("sum", new Classic.Output(socketNumber, "Результат"));
+        this.addOutput("val", new Classic.Output(socketNumber, "Результат"));
     }
 
     serialize() {

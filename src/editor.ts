@@ -33,6 +33,7 @@ declare global {
     const editor: Await<ReturnType<typeof createEditor>>
     const openModule: (path: string, add_stack?: boolean) => Promise<void>;
     const makeModule: () => void;
+    const makeScene: () => void;
     const updateItemsMenu: () => void;
 }
 
@@ -109,6 +110,18 @@ export async function createEditor(container: HTMLElement) {
         openModule(name);
     }
 
+    const makeScene = async () => {
+        let name = prompt('Ввод имени сцены');
+        if (!name)
+            return;
+        name = 'scene_' + name;
+        if (modulesData[name])
+            return toastr.error('Сцена с таким именем уже существует:' + name);
+        modulesData[name] = { "nodes": [], "connections": [], "comments": [] };
+        save_module(true);
+        openModule(name);
+    }
+
     const add_node = (name: string) => {
 
     }
@@ -141,6 +154,17 @@ export async function createEditor(container: HTMLElement) {
         //
         text += make_section('События', false);
         text += make_html_node('Движок загружен', 'EngineReady', {});
+        if (currentModulePath?.includes('scene_')) {
+            text += make_html_node('Сцена загружена', 'SceneReady', {});
+            text += make_html_node('Клик на персонаже', 'OnCharClick', {});
+        }
+        text += make_section('', true);
+        //
+        text += make_section('Взаимодействие', false);
+        text += make_html_node('Диалог', 'Dialog', { si: '', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
+        text += make_html_node('Диалог с доступностью ответа', 'Dialog', { si: 'b', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
+        text += make_html_node('Диалог с переменными ответами', 'Dialog', { si: 's', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
+        text += make_html_node('Загрузить сцену', 'LoadScene', {});
         text += make_section('', true);
         //
         text += make_section('Константы', false);
@@ -152,7 +176,6 @@ export async function createEditor(container: HTMLElement) {
         //
         text += make_section('Операторы', false);
         text += make_html_node('Последовательность', 'Sequence', {});
-        text += make_html_node('Диалог', 'Dialog', {});
         text += make_html_node('Управляемый блок', 'FlowBlock', {});
         text += make_html_node('Задать состояние блоку', 'FlowSet', {});
         text += make_html_node('Получить состояние блока', 'FlowStatus', {});
@@ -163,19 +186,28 @@ export async function createEditor(container: HTMLElement) {
         text += make_section('Преобразования', false);
         text += make_html_node('В число', 'AnyToNumber', {});
         text += make_html_node('В строку', 'AnyToString', {});
-        text += make_html_node('В логическое', '', {});  // todo
-        text += make_html_node('В цвет', '', {});  // todo
-        text += make_html_node('Соединить строки', '', {});  // todo
+        text += make_html_node('В логическое', 'AnyToBoolean', {});
+        text += make_html_node('В цвет', 'AnyToColor', {});
+        text += make_html_node('Соединить строки', 'ConcatStr', {});
         text += make_section('', true);
         //
         text += make_section('Математика', false);
         text += make_html_node('Сложить', 'Add', { A: 1, B: 2 });
-        text += make_html_node('Вычесть', '', {}); // todo
-        text += make_html_node('Умножить', '', {});  // todo
-        text += make_html_node('Разделить', '', {});  // todo
-        text += make_html_node('Сменить знак', '', {});  // todo
-        text += make_html_node('Случайное целое', '', {});  // todo
-        text += make_html_node('Случайное число', '', {});  // todo
+        text += make_html_node('Вычесть', 'Sub', { A: 1, B: 2 });
+        text += make_html_node('Умножить', 'Mul', { A: 1, B: 2 });
+        text += make_html_node('Разделить', 'Div', { A: 1, B: 2 });
+        text += make_html_node('Сменить знак', 'InvNumber', {});
+        text += make_html_node('Случайное целое', 'RandInt', { A: 0, B: 100 });
+        text += make_html_node('Случайное число', 'RandFloat', { A: 0, B: 100 });
+        text += make_section('', true);
+        //
+        text += make_section('Логические операции', false);
+        text += make_html_node('Отрицание', '!', {});
+        text += make_html_node('Больше', '>', {});
+        text += make_html_node('Больше или =', '>=', {});
+        text += make_html_node('Меньше', '<', {});
+        text += make_html_node('Меньше или =', '<=', {});
+        text += make_html_node('Равно', '=', {});
         text += make_section('', true);
         //
         if (currentModulePath != 'global' && !currentModulePath?.includes('scene_')) {
@@ -288,7 +320,7 @@ export async function createEditor(container: HTMLElement) {
                     const sockets = getConnectionSockets(editor, new Connection(editor.getNode(source.nodeId), source.key as never, editor.getNode(target.nodeId), target.key as never));
 
                     if (!isCompatibleSockets(sockets.source, sockets.target)) {
-                        toastr.error('Входы не совместимы:' + sockets.source.name + ' и ' + sockets.target.name);
+                        toastr.error('Входы не совместимы:<br>' + sockets.source.name + ' и ' + sockets.target.name);
                         connection.drop();
                         return false;
                     }
@@ -405,8 +437,8 @@ export async function createEditor(container: HTMLElement) {
     }
 
     function update_scenes() {
-        $(".menu_scenes").html('');
-        $(".menu_modules").html('<li><a class="new_scene">-Новый-</a></li>');
+        $(".menu_scenes").html('<li><a class="new_scene">-Новая-</a></li>');
+        $(".menu_modules").html('<li><a class="new_module">-Новый-</a></li>');
 
         if (currentModulePath != 'global') {
             $('.menu_scenes').append(`<li><a class="open_scene" data-name="global">Мир</a></li>`);
@@ -418,6 +450,7 @@ export async function createEditor(container: HTMLElement) {
                 $(name.includes('scene_') ? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene" data-name="${name}">` + name_module + `</a></li>`);
             }
         }
+        $(".menu_scenes").append(`<li><a class="del_scene"> -Удалить- </a></li>`);
         $(".menu_modules").append(`<li><a class="del_module"> -Удалить- </a></li>`);
         if (modules_stack.length > 0)
             $('.btn_back').show()
@@ -466,6 +499,7 @@ export async function createEditor(container: HTMLElement) {
     (window as any).modules_stack = modules_stack;
     (window as any).openModule = openModule;
     (window as any).makeModule = makeModule;
+    (window as any).makeScene = makeScene;
     (window as any).updateItemsMenu = updateItemsMenu;
     (window as any).gameState = GameState();
 

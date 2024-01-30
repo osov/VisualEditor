@@ -1,12 +1,13 @@
 import { ClassicPreset as Classic } from "rete"
-import { socketAction, socketBoolean } from "../sockets"
-import { UserControl } from "../controls"
-import { TextareaControl } from "../controls"
-import { TwoButtonControl } from "../controls"
+import { socketAction, socketBoolean, socketString } from "../../sockets"
+import { UserControl } from "../../controls"
+import { TextareaControl } from "../../controls"
+import { TwoButtonControl } from "../../controls"
+import { arrayToSelectList } from "../../utils/utils"
 
 interface DialogParams {
   cnt: number,
-  bi: boolean,
+  si: string,
   user: string,
   text: string,
   answers: string[]
@@ -19,17 +20,46 @@ export class DialogNode extends Classic.Node {
   private heightOut = 32;
   nodeTitle = { ru: "Диалог", type: "green" };
   outputs2: any;
-  inputs2: any = null; //  inputBool = false
-  userList = dataManager.get_all_characters();
+  inputs2: any = null;
+  userList: any = [];
   // serialize data
-  booleanInputs = false
+  socketsInputs = ''
   currentUser = ''
   text = ""
   answers: string[] = []
 
   async setUser(id: string) {
+    if (id == 'new') {
+      const v = prompt('Имя для персонажа');
+      if (!v) {
+        id = this.currentUser
+      }
+      else {
+        const characters = dataManager.get_characters();
+        let has = false;
+        for (let i = 0; i < characters.length; i++) {
+          if (characters[i].name == v) {
+            has = true;
+            break;
+          }
+
+        }
+        if (has) {
+          toastr.error('Персонаж с таким именем уже существует !');
+          id = this.currentUser
+        }
+        else {
+          dataManager.add_character(v);
+          this.updateList();
+          id = this.userList[this.userList.length - 1].val;
+        }
+      }
+    }
+
     this.currentUser = id;
+    (this.controls as any)['User'].userList = this.userList;
     (this.controls as any)['User'].currentUser = this.currentUser;
+    (this.controls as any)['User'].ava = './img/avatar.png';
     await this.area.update("control", (this.controls as any)['User'].id);
   }
 
@@ -39,13 +69,13 @@ export class DialogNode extends Classic.Node {
     await this.area.update("control", (this.controls as any)['Textarea'].id);
   }
 
-  async makeOutputs(cnt: number, inpBool: boolean) {
+  async makeOutputs(cnt: number, inpSockets: string) {
     for (let i = 1; i <= cnt; i++) {
       const o = new Classic.Output(socketAction)
       this.addOutput(`o${i}`, o)
       this.outputs2 = Object.entries(this.outputs)
-      if (inpBool) {
-        const inp = new Classic.Input(socketBoolean)
+      if (inpSockets) {
+        const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketString)
         this.addInput(`i${i}`, inp);
         this.inputs2 = Object.entries(this.inputs)
       }
@@ -55,12 +85,12 @@ export class DialogNode extends Classic.Node {
     await this.area.update("node", this.id)
   }
 
-  async incrementOutput(cnt: number, inpBool: boolean) {
+  async incrementOutput(cnt: number, inpSockets: string) {
     const o = new Classic.Output(socketAction)
     this.addOutput(`o${cnt}`, o)
     this.outputs2 = Object.entries(this.outputs)
-    if (inpBool) {
-      const inp = new Classic.Input(socketBoolean)
+    if (inpSockets) {
+      const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketString)
       this.addInput(`i${cnt}`, inp);
       this.inputs2 = Object.entries(this.inputs)
     }
@@ -69,7 +99,7 @@ export class DialogNode extends Classic.Node {
     await this.area.update("node", this.id)
   }
 
-  async decrementOutput(cnt: number, inpBool: boolean) {
+  async decrementOutput(cnt: number, inpSockets: string) {
     const indexOut = `o${cnt}`
     // get id connection this output
     const itemCon = this.area.parent.connections.find((el: any) => el.source === this.id && el.sourceOutput === indexOut)
@@ -78,7 +108,7 @@ export class DialogNode extends Classic.Node {
       await this.area.removeConnectionView(itemCon.id)
     this.removeOutput(indexOut)
     this.outputs2 = Object.entries(this.outputs)
-    if (inpBool) {
+    if (inpSockets) {
       const indexInp = `i${cnt}`
       const inpCon = this.area.parent.connections.find((el: any) => el.target === this.id && el.targetInput === indexInp)
       if (inpCon)
@@ -91,46 +121,51 @@ export class DialogNode extends Classic.Node {
     await this.area.update("node", this.id)
   }
 
+  updateList() {
+    this.userList = arrayToSelectList(dataManager.get_characters())
+    this.userList.unshift({ val: 'new', text: '-НОВЫЙ-' })
+  }
+
   constructor(initial?: DialogParams) {
     super("Dialog")
     if (!initial || Object.keys(initial).length == 0)
-      initial = { cnt: 2, bi: false, user: '', text: '', answers: ['', ''] }
-    let { cnt, bi } = initial;
+      initial = { cnt: 2, si: '', user: '', text: '', answers: ['', ''] }
+    let { cnt, si } = initial;
     this.answers = initial.answers
     this.currentUser = initial.user
-    this.booleanInputs = bi
-
+    this.socketsInputs = si
+    this.text = initial.text
+    this.updateList();
     this.addInput("in", new Classic.Input(socketAction, ""));
-    this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => this.setUser(e)))
-    this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)))
+    this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => this.setUser(e)));
+    this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)));
+    (this.controls as any)['User'].ava = './img/avatar.png';
 
-    this.makeOutputs(cnt, bi);
+    this.makeOutputs(cnt, si);
     this.addControl(
       "TwoBtn",
       new TwoButtonControl("-", "+",
         async () => { // btn -
-          if (cnt > 2) {
-            await this.decrementOutput(cnt, bi);
+          if (cnt > 1) {
+            await this.decrementOutput(cnt, si);
             cnt--;
           }
         },
         async () => {  // btn +
           cnt++;
-          await this.incrementOutput(cnt, bi);
+          await this.incrementOutput(cnt, si);
         }
       )
     )
-
-
   }
 
   serialize(): DialogParams {
 
     return {
       cnt: this.answers.length,
-      bi: this.booleanInputs,
+      si: this.socketsInputs,
       user: this.currentUser,
-      text: (this.controls as any).Textarea.value,
+      text: this.text,
       answers: this.answers
     }
   }

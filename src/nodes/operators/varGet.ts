@@ -1,5 +1,5 @@
 import { ClassicPreset as Classic } from "rete"
-import { socketAction, socketString, socketBoolean, socketNumber, socketColor, socketAny } from "../sockets"
+import { socketAction, socketString, socketBoolean, socketNumber, socketColor, socketAny } from "../../sockets"
 
 export class VarGetNode extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }, { val: Classic.InputControl<"number"> }> {
     width = 180

@@ -4,8 +4,8 @@ declare global {
 }
 
 export function GameState() {
-    const flow_status: { [k: string]: boolean } = {}; // id:val
-    let vars: { [k: string]: { [k: string]: any } } = {}; // scene:var:val
+    const flow_status: { [k: string]: boolean } = {}; // id = val
+    let vars: { [k: string]: { [k: string]: any } } = {}; // scene:var = val
     let _cur_scene = 'global';
 
     //---------------------------------------------------
@@ -13,6 +13,7 @@ export function GameState() {
     function set_current_scene(name: string) {
         _cur_scene = name;
     }
+
     function get_current_scene() {
         return _cur_scene;
     }

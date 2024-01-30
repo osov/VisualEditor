@@ -1,12 +1,12 @@
 <template>
   <div class="user">
-    <img v-if="props.data.currentUser != ''" class="user__avatar" :src="props.data.userList[props.data.currentUser].ava" alt="">
+    <img v-if="props.data.ava" class="user__avatar" :src="props.data.ava" alt="" >
     <div class="user__info">
       <div class="user__name">Персонаж:</div>
       <select class="user__list select" name="" id="" @pointerdown.stop="" @dblclick.stop="" @change="changeOption" v-model="props.data.currentUser">
         <option disabled :selected="props.data.currentUser == ''" hidden>Выбрать персонажа</option>
-        <option v-for="option in props.data.userList" :key="option.id" :value="option.id" :selected="option.id == props.data.currentUser">
-          {{ option.name }}
+        <option v-for="option in props.data.userList" :key="option.val" :value="option.val" :selected="option.val == props.data.currentUser">
+          {{ option.text }}
         </option>
       </select>
     </div>
@@ -29,10 +29,10 @@
   gap: 15px;
 }
 .user__avatar{
-  max-width: 100px;
-  max-height: 100px;
-  width: 100px;
-  height: 100px;
+  max-width: 64px;
+  max-height: 64px;
+  width: 64px;
+  height: 64px;
 }
 .user__info{
   flex-grow: 1;
