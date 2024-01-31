@@ -1,5 +1,5 @@
 import { Context } from "../editor";
-import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EngineReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, AnyToNumberNode, AnyToStringNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, SceneReadyNode, OnCharClickNode, LoadSceneNode, AnyToBooleanNode, AnyToColorNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode } from "../nodes";
+import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EngineReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, SceneReadyNode, OnCharClickNode, LoadSceneNode, AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode } from "../nodes";
 import { MathNode } from "../nodes/math/math_node";
 import { removeConnections } from "./utils";
 
@@ -33,10 +33,10 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "Log") return new LogNode(data.val)
   if (name === "Delay") return new DelayNode(data.ms)
 
-  if (name === "AnyToNumber") return new AnyToNumberNode()
-  if (name === "AnyToString") return new AnyToStringNode()
-  if (name === 'AnyToBoolean') return new AnyToBooleanNode()
-  if (name == 'AnyToColor') return new AnyToColorNode()
+  if (name === "AnyToNumber") return new AnyToCustomNode('number', 'число', 'AnyToNumber', 'В число')
+  if (name === "AnyToString") return new AnyToCustomNode('string', 'строка', 'AnyToString', 'В строку')
+  if (name === 'AnyToBoolean') return new AnyToCustomNode('boolean', 'логическое', 'AnyToBoolean', 'В логическое')
+  if (name == 'AnyToColor') return new AnyToCustomNode('color', 'цвет', 'AnyToColor', 'В цвет')
   if (name == 'ConcatStr') return new ConcatStrNode(data)
 
   if (name === "Add") return new MathNode('Add', 'A + B', data)

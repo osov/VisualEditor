@@ -10,7 +10,7 @@ import { CommentPlugin, CommentExtensions } from "rete-comment-plugin"
 
 import { Nodes, Conn, Connection, } from "./nodes"
 import { Modules } from "./utils/modules"
-import { createNode, exportEditor, importEditor, importPositions } from './utils/import'
+import { createNode, exportEditor, importEditor } from './utils/import'
 import { CommentDeleteAction, clearEditor, getConnectionSockets, isCompatibleSockets } from './utils/utils'
 
 import { OneButtonControl, TwoButtonControl, addCustomBackground, CheckboxControl, SelectControl, TextareaControl, UserControl } from "./controls"
@@ -120,10 +120,6 @@ export async function createEditor(container: HTMLElement) {
         modulesData[name] = { "nodes": [], "connections": [], "comments": [] };
         save_module(true);
         openModule(name);
-    }
-
-    const add_node = (name: string) => {
-
     }
 
     const getMenuBtnVar = (name: string, type: VarTypes, is_global: boolean, is_set: boolean) => {

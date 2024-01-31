@@ -159,9 +159,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['out'],
         out_data: [],
         run: async (data, __, call_action) => {
-            // todo check condition
-            console.log(data.id)
-            await call_action('out')
+            if (gameState.get_flow_status(data.id))
+                await call_action('out')
 
         },
     },

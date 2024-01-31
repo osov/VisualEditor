@@ -24,10 +24,7 @@ import { LogNode } from "./operators/log"
 import { DelayNode } from "./flow/delay"
 
 // converts
-import { AnyToNumberNode } from './converts/any_number'
-import { AnyToStringNode } from './converts/any_string'
-import { AnyToBooleanNode } from './converts/any_boolean'
-import { AnyToColorNode } from './converts/any_to_color'
+import { AnyToCustomNode } from './converts/any_to_custom'
 import { ConcatStrNode } from './converts/concat_str'
 
 //  math
@@ -58,7 +55,7 @@ export {
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
     MathNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode,
     SequenceNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode,
-    AnyToNumberNode, AnyToStringNode, AnyToBooleanNode, AnyToColorNode, ConcatStrNode,
+    AnyToCustomNode, ConcatStrNode,
     VarSetNode, VarGetNode
 }
 
@@ -67,7 +64,7 @@ export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode 
     EngineReadyNode | SceneReadyNode | OnCharClickNode | // events
     DialogNode | LoadSceneNode | // interaction
     NumberNode | StringNode | ColorNode | BooleanNode | // const
-    AnyToNumberNode | AnyToStringNode | AnyToBooleanNode | AnyToColorNode | ConcatStrNode | // converts
+    AnyToCustomNode | ConcatStrNode | // converts
     MathNode | InvertNumberNode | RandomNode | // match
     BoolMathNode | InvertBoolNode | // bool math
     SequenceNode | LogNode | DelayNode | FlowBlockNode | FlowSetNode | FlowStatusNode | // flow
