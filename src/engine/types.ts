@@ -1,3 +1,5 @@
+export type VoidCallback = () => void;
+export type NumberCallback = (id: number) => void;
 export type GetNodeFnc = (id: string) => INode | undefined
 
 export type INodeGraph = { [k: string]: INode }

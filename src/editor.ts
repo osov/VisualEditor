@@ -172,6 +172,7 @@ export async function createEditor(container: HTMLElement) {
         //
         text += make_section('Операторы', false);
         text += make_html_node('Последовательность', 'Sequence', {});
+        text += make_html_node('Соединение', 'InOut', {});
         text += make_html_node('Управляемый блок', 'FlowBlock', {});
         text += make_html_node('Задать состояние блоку', 'FlowSet', {});
         text += make_html_node('Получить состояние блока', 'FlowStatus', {});
@@ -467,7 +468,7 @@ export async function createEditor(container: HTMLElement) {
     const update_code_editor = () => {
         const str = JSON.stringify(exportEditor(context));
         update_modules_editor();
-        e.init(str)
+        (window as any).graph = e.init(str);
     }
 
     const save_module = (is_save_cache = false) => {
@@ -560,6 +561,12 @@ export async function createEditor(container: HTMLElement) {
         }
         else if (cmd == 'save') {
             do_save();
+        }
+        else if (cmd == 'run') {
+            debugEditor.run_debug_game();
+        }
+        else if (cmd == 'clean_ui_nodes') {
+            debugEditor.clear_nodes_animation();
         }
     });
 

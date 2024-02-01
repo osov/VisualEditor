@@ -11,8 +11,7 @@ export function iEngine() {
     }
 
     function init(str: string) {
-        const graph = init_graph(str);
-        (window as any).graph = graph; // todo debug
+        return init_graph(str);
     }
 
     function merge_graph(connections: IConnectionData[], nodes_data: INodeData[], ext: GraphInfo) {

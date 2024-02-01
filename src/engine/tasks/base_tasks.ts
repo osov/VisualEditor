@@ -38,8 +38,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['out'],
         out_data: [],
         run: (_, __, call_action) => {
-            // todo
-            call_action('out');
+            gameState.register_event_on_engine_ready(() => call_action('out'));
         },
     },
     'OnSceneUnloaded': {
@@ -47,9 +46,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: ['out'],
         out_data: [],
-        run: (_, __, call_action) => {
-            // todo
-            call_action('out');
+        run: (data, __, call_action) => {
+            gameState.register_event_on_scene_unloaded(data.id, () => call_action('out'));
         },
     },
     'OnSceneLoaded': {
@@ -58,9 +56,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['out'],
         out_data: [],
         run: (data, __, call_action) => {
-            // todo
-            log(data.id);
-            call_action('out');
+            gameState.register_event_on_scene_loaded(data.id, () => call_action('out'));
         },
     },
     // interactions
@@ -70,7 +66,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: [],
         run: async (data) => {
-            log(data.id);
+            gameState.load_scene(data.id);
         },
     },
     // constants
@@ -111,14 +107,23 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         }
     },
     // operators
+    'InOut': {
+        in_actions: ['in'],
+        in_data: [],
+        out_actions: ['out'],
+        out_data: [],
+        run: async (_, __, call_action) => {
+            await call_action('out');
+        },
+    },
     'Sequence': {
         in_actions: ['in'],
         in_data: [],
-        out_actions: ['out1', 'out2', 'out3', 'out4', 'out5', 'out6', 'out7', 'out8', 'out9', 'out10'],
+        out_actions: ['out0', 'out1', 'out2', 'out3', 'out4', 'out5', 'out6', 'out7', 'out8', 'out9',],
         out_data: [],
         run: async (data, __, call_action) => {
             const cnt: number = data.val;
-            for (let i = 1; i <= cnt; i++)
+            for (let i = 0; i < cnt; i++)
                 await call_action('out' + i);
         },
     },

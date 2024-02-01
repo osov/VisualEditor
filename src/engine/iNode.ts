@@ -122,7 +122,7 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
     }
 
     async function run() {
-        await delay(500) // todo debug
+        await delay(200) // todo debug
         return task_info.run!(node_data, get_in_data, call_action)
     }
 

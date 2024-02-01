@@ -11,7 +11,7 @@ export class SequenceNode extends Classic.Node {
   outputs2: any;
 
   async makeOutputs(cnt: number) {
-    for (let i = 1; i <= cnt; i++) {
+    for (let i = 0; i < cnt; i++) {
       const out = new Classic.Output(socketAction, `Выход ${i}`)
       this.addOutput(`out${i}`, out)
       this.outputs2 = Object.entries(this.outputs)
@@ -22,14 +22,14 @@ export class SequenceNode extends Classic.Node {
 
   async incrementOutput(cnt: number) {
     const out = new Classic.Output(socketAction, `Выход ${cnt}`)
-    this.addOutput(`out${cnt}`, out)
+    this.addOutput(`out${cnt - 1}`, out)
     this.outputs2 = Object.entries(this.outputs)
     this.height += this.heightOut
     await this.area.update("node", this.id)
   }
 
   async decrementOutput(cnt: number) {
-    const indexOut = `out${cnt}`
+    const indexOut = `out${cnt - 1}`
     // get id connection this output
     const itemCon = this.area.parent.connections.find((el: any) => el.source === this.id && el.sourceOutput === indexOut)
     // delete connection если есть

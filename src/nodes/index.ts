@@ -22,6 +22,7 @@ import { FlowSetNode } from "./flow/flow_set"
 import { FlowStatusNode } from './flow/flow_status'
 import { LogNode } from "./operators/log"
 import { DelayNode } from "./flow/delay"
+import { InOutNode } from "./flow/in_out"
 
 // converts
 import { AnyToCustomNode } from './converts/any_to_custom'
@@ -57,7 +58,7 @@ export {
     LoadSceneNode,
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
     MathNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode,
-    SequenceNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode,
+    SequenceNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode, InOutNode,
     AnyToCustomNode, ConcatStrNode,
     VarSetNode, VarGetNode,
     InActionNode, EmptyNode
@@ -71,7 +72,7 @@ export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode 
     AnyToCustomNode | ConcatStrNode | // converts
     MathNode | InvertNumberNode | RandomNode | // math
     BoolMathNode | InvertBoolNode | // bool math
-    SequenceNode | LogNode | DelayNode | FlowBlockNode | FlowSetNode | FlowStatusNode | // flow
+    SequenceNode | LogNode | DelayNode | FlowBlockNode | FlowSetNode | FlowStatusNode | InOutNode | // flow
     VarSetNode | VarGetNode | // vars
     InActionNode | EmptyNode
 

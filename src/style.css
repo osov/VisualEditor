@@ -439,3 +439,51 @@ div[data-swb]:nth-child(1){display: block;}
     width: 100%;
     color: #c28e21;
 }
+
+
+
+/* example page */
+
+#debug_page{
+  position: fixed;
+  width: 30%;
+  top:0;
+  right: 0;
+  height: 50%;
+  background: rgba(0, 0, 0, 0.719);
+  border: 1px dashed #00ff1f;
+  padding: 10px;
+  overflow-y: auto;
+  color: #fff;
+}
+
+#debug_page a{
+  color:#fff;
+}
+
+#debug_dialog{
+  width: 95%;
+  height: 95%;
+  position: absolute;
+  background:#1a1b20da;
+  text-align: center;
+}
+
+#debug_text{
+  width: 80%;
+  height: 120px;
+  border: 1px dashed blanchedalmond;
+  margin: auto;
+}
+
+#debug_buttons{
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#debug_buttons button{
+margin: 2px;
+}

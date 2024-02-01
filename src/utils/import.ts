@@ -1,5 +1,5 @@
 import { Context } from "../editor";
-import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnCharClickNode, LoadSceneNode, AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnSceneEventNode, InActionNode, EmptyNode } from "../nodes";
+import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnCharClickNode, LoadSceneNode, AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnSceneEventNode, InActionNode, EmptyNode, InOutNode } from "../nodes";
 import { MathNode } from "../nodes/math/math_node";
 import { removeConnections } from "./utils";
 
@@ -34,6 +34,7 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "FlowStatus") return new FlowStatusNode(data.id)
   if (name === "Log") return new LogNode(data.val)
   if (name === "Delay") return new DelayNode(data.ms)
+  if (name === 'InOut') return new InOutNode();
 
   if (name === "AnyToNumber") return new AnyToCustomNode('number', 'число', 'AnyToNumber', 'В число')
   if (name === "AnyToString") return new AnyToCustomNode('string', 'строка', 'AnyToString', 'В строку')

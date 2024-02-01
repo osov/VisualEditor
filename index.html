@@ -1,77 +1,114 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Visual Code</title>
-    <link href="./css/toastr.min.css" rel="stylesheet" type="text/css">
-    <script src="./js/1.9.1_jquery.min.js"></script>
-    <script  src="./js/toastr.min.js"></script>
-  </head>
-  <body>
 
-    <ul class="main_menu">
-      <li>
-        <a>Файл</a>
-        <ul class="submenu">
-          <li><a class="debug_btn" data-id="save">Сохранить</a></li>
-          <li><a class="debug_btn" data-id="variables">Переменные</a></li>
-        </ul>
-      </li>
-      <li><a>Вид</a></li>
-      <li>
-        <a>Сцены</a>
-        <ul class="submenu menu_scenes"></ul>
-      </li>
-      <li>
-        <a>Модули</a>
-        <ul class="submenu menu_modules"></ul>
-      </li>
-      <li><a>Отладка</a>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Code</title>
+  <link href="./css/toastr.min.css" rel="stylesheet" type="text/css">
+  <script src="./js/1.9.1_jquery.min.js"></script>
+  <script src="./js/toastr.min.js"></script>
+</head>
+
+<body>
+
+  <ul class="main_menu">
+    <li>
+      <a>Файл</a>
+      <ul class="submenu">
+        <li><a class="debug_btn" data-id="save">Сохранить</a></li>
+        <li><a class="debug_btn" data-id="variables">Переменные</a></li>
+      </ul>
+    </li>
+    <li><a>Вид</a></li>
+    <li>
+      <a>Сцены</a>
+      <ul class="submenu menu_scenes"></ul>
+    </li>
+    <li>
+      <a>Модули</a>
+      <ul class="submenu menu_modules"></ul>
+    </li>
+    <li><a>Отладка</a>
       <ul class="submenu ">
-          <li><a class="debug_btn" data-id="show_ids">Show IDs</a></li>
-          <li><a class="debug_btn" data-id="order">Order</a></li>
-          <li><a class="debug_btn" data-id="save_code">Сохранить</a></li>
-          <li><a class="debug_btn" data-id="load_code">Загрузить</a></li>
-        </ul>
-      </li>
-      <li><a class="btn_back" style='display:none'>Назад</a></li>
-    </ul>
+        <li><a class="debug_btn" data-id="run">ЗАПУСТИТЬ</a></li>
+        <li><a class="debug_btn" data-id="clean_ui_nodes">Сброс UI</a></li>
+        <li><a class="debug_btn" data-id="show_ids">Show IDs</a></li>
+        <li><a class="debug_btn" data-id="order">Order</a></li>
+        <li><a class="debug_btn" data-id="save_code">Сохранить</a></li>
+        <li><a class="debug_btn" data-id="load_code">Загрузить</a></li>
+      </ul>
+    </li>
+    <li><a class="btn_back" style='display:none'>Назад</a></li>
+  </ul>
 
-    <div class="title_win">Title</div>
+  <div class="title_win">Title</div>
 
-    <div class="mmodal ">
-      <a href="javascript:void(0);" class="mmodal__close">x</a>
-      <div class="mmodal__left">
-        <div class="mmodal__menu variables_categorys"></div>
-      </div>
-      <div class="mmodal__right">
-        
-        <div data-swb="1">
-          <div class="variable">
-            <p>
-              <span class="variables_scene_title">Глобальные переменные</span>
-              <button class="add_variable">Добавить</button>
-            </p>
-              <div class="wrTableVariables"></div>
-          </div>
+  <div class="mmodal ">
+    <a href="javascript:void(0);" class="mmodal__close">x</a>
+    <div class="mmodal__left">
+      <div class="mmodal__menu variables_categorys"></div>
+    </div>
+    <div class="mmodal__right">
+
+      <div data-swb="1">
+        <div class="variable">
+          <p>
+            <span class="variables_scene_title">Глобальные переменные</span>
+            <button class="add_variable">Добавить</button>
+          </p>
+          <div class="wrTableVariables"></div>
         </div>
+      </div>
 
-        <div data-swb="1">
-          <div>
-            <p>Список сцен</p>
-          </div>
+      <div data-swb="1">
+        <div>
+          <p>Список сцен</p>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="listNodes">
-      <div class="listNodes__btn" data-title="node"></div>
-      <div class="my_scroll"></div>
+  <div class="listNodes">
+    <div class="listNodes__btn" data-title="node"></div>
+    <div class="my_scroll"></div>
+  </div>
+  <div class="node_helper">+</div>
+
+  <div id="app"></div>
+
+  <div id="debug_page">
+    <div id="debug_dialog" style="display: none;">
+      <h3>Диалоговое окно</h3>
+      <h4>Персонаж:<br><span id="dbg_char">SSSS</span></h4>
+      <div id="debug_text">Здесь текст обращения персонажа</div>
+      <div id="debug_buttons">
+        <button id="btn_yes">Да</button>
+        <button id="btn_no">Нет</button>
+        <button id="btn_cancel">Отмена</button>
+
+      </div>
     </div>
-    <div class="node_helper">+</div> 
+    <div class="scene_list">
+      <h3>Сцены</h3>
+      <h4>Активная сцена:<span id="debug_scene_name">-</span></h4>
+      <ul id="debug_scenes">
+      </ul>
+    </div>
 
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <hr>
+
+    <div class="character_data">
+      <h3>Персонажи</h3>
+      <h4>Выбран:<span id="debug_char_name">-</span></h4>
+      <ul id="debug_chars">
+      </ul>
+    </div>
+
+
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

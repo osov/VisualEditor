@@ -11,7 +11,7 @@ export class EmptyNode extends Classic.Node {
         super('EmptyNode');
         this.nodeTitle.ru = node_title;
         this.data = data;
-        this.addControl("Textarea", new TextareaControl('Нода не найдена:\n' + node_title + '\n\nДанные:' + JSON.stringify(data), (e) => { }));
+        this.addControl("Textarea", new TextareaControl('Нода не найдена:\n' + node_title + '\n\nДанные:' + JSON.stringify(data), () => { }));
     }
 
     serialize() {

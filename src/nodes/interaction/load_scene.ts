@@ -40,7 +40,7 @@ export class LoadSceneNode extends Classic.Node {
         this.currentIndex = initial || ''
         this.updateList();
 
-        this.addInput("in", new Classic.Input(socketAction, ""));
+        this.addInput("in", new Classic.Input(socketAction, "", true));
         this.addControl("select", new SelectControl(this.currentIndex, this.listName, (e) => this.changeName(e), () => this.doUpdateList()))
     }
 

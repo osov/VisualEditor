@@ -136,7 +136,7 @@ export class DialogNode extends Classic.Node {
     this.socketsInputs = si
     this.text = initial.text
     this.updateList();
-    this.addInput("in", new Classic.Input(socketAction, ""));
+    this.addInput("in", new Classic.Input(socketAction, "", true));
     this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => this.setUser(e)));
     if (this.socketsInputs == 's') {
       this.addInput("in_text", new Classic.Input(socketString, "Текст"));

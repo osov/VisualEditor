@@ -7,9 +7,7 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['out'],
         out_data: [],
         run: (data, __, call_action) => {
-            // todo
-            log(data.id);
-            call_action('out');
+            gameState.register_event_on_character_click(data.id, () => call_action('out'));
         },
     },
     'CloseDialog': {
@@ -18,7 +16,7 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: [],
         run: () => {
-            // todo
+            gameState.close_dialog();
         },
     },
     'Dialog': {
@@ -56,8 +54,7 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
                         answers.push({ id: i, answer });
                 }
             }
-            // todo
-            log(user, text, answers)
+            gameState.open_dialog(user, text, answers, (id) => call_action('out' + id));
         },
     },
 
