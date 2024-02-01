@@ -65,6 +65,10 @@ function DebugEditor() {
     // -------------------------------------------------------------------------------------------
 
     function init_debug_game() {
+        $("body").on("click", "#debug_close", function () {
+            stop_debug_game();
+        });
+
         $("body").on("click", ".dbg_open_scene", function () {
             const name = $(this).attr('data-name')!;
             gameState.load_scene(name);
@@ -80,8 +84,8 @@ function DebugEditor() {
     }
 
     async function run_debug_game() {
-        $('debug_page').show();
         stop_debug_game();
+        $('#debug_page').show();
         debugEditor.clear_nodes_animation();
         const scenes = dataManager.get_all_scenes();
         let html = '';
@@ -113,7 +117,7 @@ function DebugEditor() {
 
     function stop_debug_game() {
         gameState.reset_states();
-        $('debug_page').hide();
+        $('#debug_page').hide();
         $("#debug_dialog").hide();
         $("#debug_scene_name").text('');
         $("#debug_char_name").text('');

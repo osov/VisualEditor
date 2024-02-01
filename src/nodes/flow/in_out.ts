@@ -11,8 +11,8 @@ export class InOutNode extends Classic.Node {
     constructor() {
         super("InOut");
 
-        this.addInput("in", new Classic.Input(socketAction, "", true));
-        this.addOutput("out", new Classic.Output(socketAction, ""));
+        this.addInput("in", new Classic.Input(socketAction, "Входы", true));
+        this.addOutput("out", new Classic.Output(socketAction, "Выход"));
     }
 
     serialize() {

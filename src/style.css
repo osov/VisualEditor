@@ -487,3 +487,18 @@ div[data-swb]:nth-child(1){display: block;}
 #debug_buttons button{
 margin: 2px;
 }
+
+#debug_close{
+  position: absolute;
+  z-index: 100;
+  right: 10px;
+  top: 10px;
+  background: red;
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+
+}
