@@ -1,8 +1,10 @@
 
 declare global {
-    const json: ReturnType<typeof json_fake>
     const log: (..._args: any) => void
     const error: (..._args: any) => void
+    const json: ReturnType<typeof json_fake>
+    const math: ReturnType<typeof math_fake>
+    const tonumber: (s: string) => number
 }
 
 function json_fake() {
@@ -15,6 +17,21 @@ function json_fake() {
     }
 
     return { encode, decode }
+}
+
+function math_fake() {
+
+    function get_random_int(min: number, max: number) {
+        const minCeiled = Math.ceil(min);
+        const maxFloored = Math.floor(max);
+        return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled); // The maximum is inclusive and the minimum is inclusive
+    }
+
+    function random(a: number, b: number) {
+        return get_random_int(a, b);
+    }
+
+    return { random }
 }
 
 function get_args_str(..._args: any) {
@@ -34,7 +51,9 @@ function get_args_str(..._args: any) {
 
 
 export function register_lua_types() {
-    (window as any).json = json_fake();
     (window as any).log = (..._args: any) => console.log(get_args_str(..._args));
     (window as any).error = (..._args: any) => console.error(get_args_str(..._args));
+    (window as any).json = json_fake();
+    (window as any).math = math_fake();
+    (window as any).tonumber = (s: string) => Number(s);
 }

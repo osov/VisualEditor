@@ -3,7 +3,7 @@ import { createEditor } from "./editor"
 import { iEngine } from "./engine/iEngine";
 import "./style.css"
 import "./script.ts"
-import { load_data_manager } from "./data_manager.ts";
+import { load_data_manager } from "./engine/data_manager.ts";
 import { init_debug } from "./debug.ts";
 
 // todo insert node, magnetic connection, selectable connections

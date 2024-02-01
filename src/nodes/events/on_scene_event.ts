@@ -1,19 +1,24 @@
 import { ClassicPreset as Classic } from 'rete'
-import { socketAction, socketBoolean } from '../../sockets'
+import { socketAction } from '../../sockets'
 import { arrayToSelectList } from '../../utils/utils';
 import { SelectControl } from '../../controls';
 
-export class OnCharClickNode extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }>
+export class OnSceneEventNode extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }>
 {
     width = 180;
     height = 100;
     private area = (window as any).area;
-    nodeTitle = { ru: "Клик на персонажа", type: "red" }
+    nodeTitle = { ru: "Сцена загружена", type: "red" }
     listName: { val: string, text: string }[] = []
     currentIndex = ''
 
     updateList() {
-        this.listName = arrayToSelectList(dataManager.get_characters())
+        this.listName = arrayToSelectList(dataManager.get_all_scenes())
+        for (let i = 0; i < this.listName.length; i++) {
+            const it = this.listName[i];
+            this.listName[i].text = it.text.substr('scene_'.length);
+        }
+        this.listName.unshift({ val: '*', text: 'Любая' })
     }
 
     doUpdateList() {
@@ -32,8 +37,9 @@ export class OnCharClickNode extends Classic.Node<{ _: Classic.Socket }, { out: 
     }
 
 
-    constructor(initial = '') {
-        super("OnCharClick");
+    constructor(node_name: string, node_title: string, initial = '') {
+        super(node_name);
+        this.nodeTitle.ru = node_title;
         this.currentIndex = initial || ''
         this.updateList();
         this.addControl("select", new SelectControl(this.currentIndex, this.listName, (e) => this.changeName(e), () => this.doUpdateList()))

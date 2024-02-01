@@ -43,8 +43,7 @@ function DataManager() {
     //---------------------------------------------------
 
     function get_modules() {
-        const data_modules = load_from_storage('modules', '{}')
-        return data_modules;
+        return load_from_storage('modules', '{}')
     }
 
     function set_modules(data: string) {
@@ -66,9 +65,7 @@ function DataManager() {
     //---------------------------------------------------
 
     function get_characters() {
-        const str_chars = load_from_storage('characters', '[]')
-        const data_chars = json.decode(str_chars);
-        return data_chars;
+        return json.decode(load_from_storage('characters', '[]'))
     }
 
     function add_character(name: string) {

@@ -16,7 +16,7 @@ interface DialogParams {
 export class DialogNode extends Classic.Node {
   width = 240
   height = 360
-  private area = (window as any).area;;
+  private area = (window as any).area;
   private heightOut = 32;
   nodeTitle = { ru: "Диалог", type: "green" };
   outputs2: any;
@@ -70,13 +70,13 @@ export class DialogNode extends Classic.Node {
   }
 
   async makeOutputs(cnt: number, inpSockets: string) {
-    for (let i = 1; i <= cnt; i++) {
+    for (let i = 0; i < cnt; i++) {
       const o = new Classic.Output(socketAction)
-      this.addOutput(`o${i}`, o)
+      this.addOutput(`out${i}`, o)
       this.outputs2 = Object.entries(this.outputs)
       if (inpSockets) {
         const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketString)
-        this.addInput(`i${i}`, inp);
+        this.addInput(`in${i}`, inp);
         this.inputs2 = Object.entries(this.inputs)
       }
       //  this.answers.push(`ответ ${i}`)
@@ -87,11 +87,11 @@ export class DialogNode extends Classic.Node {
 
   async incrementOutput(cnt: number, inpSockets: string) {
     const o = new Classic.Output(socketAction)
-    this.addOutput(`o${cnt}`, o)
+    this.addOutput(`out${cnt - 1}`, o)
     this.outputs2 = Object.entries(this.outputs)
     if (inpSockets) {
       const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketString)
-      this.addInput(`i${cnt}`, inp);
+      this.addInput(`in${cnt - 1}`, inp);
       this.inputs2 = Object.entries(this.inputs)
     }
     this.answers.push(``)
@@ -100,7 +100,7 @@ export class DialogNode extends Classic.Node {
   }
 
   async decrementOutput(cnt: number, inpSockets: string) {
-    const indexOut = `o${cnt}`
+    const indexOut = `out${cnt - 1}`
     // get id connection this output
     const itemCon = this.area.parent.connections.find((el: any) => el.source === this.id && el.sourceOutput === indexOut)
     // delete connection если есть
@@ -109,7 +109,7 @@ export class DialogNode extends Classic.Node {
     this.removeOutput(indexOut)
     this.outputs2 = Object.entries(this.outputs)
     if (inpSockets) {
-      const indexInp = `i${cnt}`
+      const indexInp = `in${cnt - 1}`
       const inpCon = this.area.parent.connections.find((el: any) => el.target === this.id && el.targetInput === indexInp)
       if (inpCon)
         await this.area.removeConnectionView(inpCon.id)
@@ -138,7 +138,12 @@ export class DialogNode extends Classic.Node {
     this.updateList();
     this.addInput("in", new Classic.Input(socketAction, ""));
     this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => this.setUser(e)));
-    this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)));
+    if (this.socketsInputs == 's') {
+      this.addInput("in_text", new Classic.Input(socketString, "Текст"));
+      this.height -= 110;
+    }
+    else
+      this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)));
     (this.controls as any)['User'].ava = './img/avatar.png';
 
     this.makeOutputs(cnt, si);

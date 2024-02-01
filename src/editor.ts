@@ -53,7 +53,7 @@ import { reOrderEditor, showIds } from './utils/debug'
 import { DictString } from './engine/types'
 import { iEngine } from './engine/iEngine'
 import { GameState } from './engine/game_state'
-import { VarTypes } from './data_manager'
+import { VarTypes } from './engine/data_manager'
 
 let modulesData: { [k: string]: any } = {}
 let currentModulePath: null | string = null
@@ -149,18 +149,18 @@ export async function createEditor(container: HTMLElement) {
         let text = '';
         //
         text += make_section('События', false);
-        text += make_html_node('Движок загружен', 'EngineReady', {});
-        if (currentModulePath?.includes('scene_')) {
-            text += make_html_node('Сцена загружена', 'SceneReady', {});
-            text += make_html_node('Клик на персонаже', 'OnCharClick', {});
-        }
+        text += make_html_node('Движок загружен', 'OnEngineReady', {});
+        text += make_html_node('Сцена выгружена', 'OnSceneUnloaded', {});
+        text += make_html_node('Сцена загружена', 'OnSceneLoaded', {});
+        text += make_html_node('Клик на персонаже', 'OnCharClick', {});
         text += make_section('', true);
         //
         text += make_section('Взаимодействие', false);
+        text += make_html_node('Загрузить сцену', 'LoadScene', {});
         text += make_html_node('Диалог', 'Dialog', { si: '', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
         text += make_html_node('Диалог с доступностью ответа', 'Dialog', { si: 'b', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
-        text += make_html_node('Диалог с переменными ответами', 'Dialog', { si: 's', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
-        text += make_html_node('Загрузить сцену', 'LoadScene', {});
+        text += make_html_node('Диалог с переменными', 'Dialog', { si: 's', cnt: 3, answers: ['', '', ''], user: '', text: '' });
+        text += make_html_node('Закрыть диалог', 'CloseDialog', {});
         text += make_section('', true);
         //
         text += make_section('Константы', false);
@@ -175,8 +175,8 @@ export async function createEditor(container: HTMLElement) {
         text += make_html_node('Управляемый блок', 'FlowBlock', {});
         text += make_html_node('Задать состояние блоку', 'FlowSet', {});
         text += make_html_node('Получить состояние блока', 'FlowStatus', {});
-        text += make_html_node('Логировать', 'Log', {});
         text += make_html_node('Задержка', 'Delay', { ms: 1000 });
+        text += make_html_node('Логировать', 'Log', {});
         text += make_section('', true);
         //
         text += make_section('Преобразования', false);

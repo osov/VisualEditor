@@ -295,13 +295,6 @@
   white-space: nowrap;
 }
 
-.node[data-label="Dialog"] .textarea {
-  max-height: 100px;
-  min-height: 100px;
-}
-.node[data-label="Dialog"] .textarea.my_scroll::-webkit-resizer {
-  background-color: transparent;
-}
 .control[data-testid="control-Textarea"] {
   padding: 10px 18px 10px 10px;
 }
@@ -323,6 +316,15 @@
   width: calc(100% - 70px);
   margin-left: 30px;
 }
+
+.node[data-label="Dialog"] .textarea {
+  max-height: 100px;
+  min-height: 100px;
+}
+.node[data-label="Dialog"] .textarea.my_scroll::-webkit-resizer {
+  background-color: transparent;
+}
+
 .node[data-label="Dialog"] .wr_input{
   order: 2;
   height: 0;
@@ -341,5 +343,12 @@
 .node[data-label="Dialog"] .output{
   width: calc(100% - 40px);
   margin-left: auto;
+}
+
+.node[data-label="Dialog"] .input1[data-testid][data-testid="input-in_text"]{
+    display: flex;
+}
+.node[data-label="Dialog"] .input2[data-testid][data-testid="input-in_text"]{
+    display: none;
 }
 </style>

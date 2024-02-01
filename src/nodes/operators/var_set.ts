@@ -14,15 +14,15 @@ export class VarSetNode extends Classic.Node<{ in: Classic.Socket, data: Classic
         this.addInput("in", new Classic.Input(socketAction, "", true))
 
         if (initial.t == 's')
-            this.addInput("data", new Classic.Input(socketString, "значение", true))
+            this.addInput("data", new Classic.Input(socketString, "значение", false))
         else if (initial.t == 'n')
-            this.addInput("data", new Classic.Input(socketNumber, "значение", true))
+            this.addInput("data", new Classic.Input(socketNumber, "значение", false))
         else if (initial.t == 'b')
-            this.addInput("data", new Classic.Input(socketBoolean, "значение", true))
+            this.addInput("data", new Classic.Input(socketBoolean, "значение", false))
         else if (initial.t == 'c')
-            this.addInput("data", new Classic.Input(socketColor, "значение", true))
+            this.addInput("data", new Classic.Input(socketColor, "значение", false))
         else
-            this.addInput("data", new Classic.Input(socketAny, "значение", true))
+            this.addInput("data", new Classic.Input(socketAny, "значение", false))
     }
 
     serialize() {

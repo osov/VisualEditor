@@ -1,5 +1,6 @@
 import { iNode } from "./iNode"
 import { base_tasks } from "./tasks/base_tasks"
+import { game_tasks } from "./tasks/game_tasks"
 import { DictString, GraphInfo, IConnectionData, INode, INodeData, INodeGraph, IOutputData, ITaskInfo, JsonData } from "./types"
 
 export function iEngine() {
@@ -11,7 +12,7 @@ export function iEngine() {
 
     function init(str: string) {
         const graph = init_graph(str);
-        (window as any).nodes = graph; // todo debug
+        (window as any).graph = graph; // todo debug
     }
 
     function merge_graph(connections: IConnectionData[], nodes_data: INodeData[], ext: GraphInfo) {
@@ -144,6 +145,10 @@ export function iEngine() {
     function attach_task(node: INode, name_node: string) {
         if (name_node in base_tasks) {
             const task_info: ITaskInfo = (base_tasks as any)[name_node]
+            node.set_task_info(task_info)
+        }
+        else if (name_node in game_tasks) {
+            const task_info: ITaskInfo = (game_tasks as any)[name_node]
             node.set_task_info(task_info)
         }
         else

@@ -1,5 +1,5 @@
 import { Context } from "../editor";
-import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EngineReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, SceneReadyNode, OnCharClickNode, LoadSceneNode, AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode } from "../nodes";
+import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnCharClickNode, LoadSceneNode, AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnSceneEventNode, InActionNode, EmptyNode } from "../nodes";
 import { MathNode } from "../nodes/math/math_node";
 import { removeConnections } from "./utils";
 
@@ -14,11 +14,13 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "InputAction") return new InputActionNode(data.key)
   if (name === "OutputAction") return new OutputActionNode(data.key)
 
-  if (name === "EngineReady") return new EngineReadyNode()
-  if (name === "SceneReady") return new SceneReadyNode()
+  if (name === "OnEngineReady") return new EventReadyNode('OnEngineReady', 'Движок загружен')
+  if (name === "OnSceneLoaded") return new OnSceneEventNode('OnSceneLoaded', 'Сцена загружена', data.id)
+  if (name === "OnSceneUnloaded") return new OnSceneEventNode('OnSceneUnloaded', 'Сцена выгружена', data.id)
   if (name === "OnCharClick") return new OnCharClickNode(data.id)
 
   if (name === "Dialog") return new DialogNode(data)
+  if (name === "CloseDialog") return new InActionNode('CloseDialog', 'Закрыть диалог')
   if (name === "LoadScene") return new LoadSceneNode(data.id)
 
   if (name === "Number") return new NumberNode(data.val)
@@ -54,14 +56,12 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "<=") return new BoolMathNode('<=', 'A <= B ?', data)
   if (name === "=") return new BoolMathNode('=', 'A = B ?', data)
 
-
-
-
   if (name === "VarSet") return new VarSetNode(data)
   if (name === "VarGet") return new VarGetNode(data)
 
+  if (name === 'EmptyNode') return new EmptyNode(data.id, data.data)
   toastr.error('Нода не поддерживается:' + name)
-  throw new Error("Unsupported node:" + name)
+  return new EmptyNode(name, data);
 }
 
 
