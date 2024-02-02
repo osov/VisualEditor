@@ -1,5 +1,5 @@
 import { NumberCallback } from "./engine/types";
-import { delay } from "./utils/utils";
+import { delay, getTime } from "./utils/utils";
 
 declare global {
     const debugEditor: ReturnType<typeof DebugEditor>
@@ -116,12 +116,14 @@ function DebugEditor() {
     }
 
     function stop_debug_game() {
+        debugEditor.clear_nodes_animation();
         gameState.reset_states();
         $('#debug_page').hide();
         $("#debug_dialog").hide();
         $("#debug_scene_name").text('');
         $("#debug_char_name").text('');
         $('#debug_scenes').html('');
+        $("#debug_log").html('');
     }
 
     function open_dialog(user: string, text: string, answers: { id: number; answer: string; }[], cb: NumberCallback) {
@@ -149,8 +151,14 @@ function DebugEditor() {
         $("#debug_dialog").hide();
     }
 
+    function add_log(str: string) {
+        $("#debug_log").append(`<div class="debug_log_text">${getTime()}: ${str}</div>`)
+        var objDiv = document.getElementById("debug_log")!;
+        objDiv.scrollTop = objDiv.scrollHeight;
+    }
+
     init_debug_game();
-    return { is_active, clear_nodes_animation, activate_node_animation, update_flow_status, run_debug_game, stop_debug_game, open_dialog, close_dialog }
+    return { is_active, clear_nodes_animation, activate_node_animation, update_flow_status, run_debug_game, stop_debug_game, open_dialog, close_dialog, add_log }
 }
 
 
