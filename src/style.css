@@ -515,3 +515,7 @@ h3,h4{
   overflow-x: hidden;
   overflow-y: scroll;
 }
+
+.logs_data{
+  margin-top: 140px;
+}

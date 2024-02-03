@@ -3,7 +3,7 @@ import { socketString, socketBoolean, socketNumber, socketColor, socketAny } fro
 
 export class VarGetNode extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }, { val: Classic.InputControl<"number"> }> {
     width = 180
-    height = 70
+    height = 90
     nodeTitle = { ru: "Получить", type: "green" }
     params: any
 

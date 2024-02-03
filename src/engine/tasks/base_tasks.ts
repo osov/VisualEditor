@@ -406,7 +406,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: [],
         run: async (data, get_in_data, _) => {
             const nodes_data = get_in_data();
-            gameState.set_scene_var(data.n, nodes_data.data, data.g == 0);
+            gameState.set_scene_var(data.n, nodes_data.data != null ? nodes_data.data : data.v, data.g == 0);
         },
     },
     'VarGet': {

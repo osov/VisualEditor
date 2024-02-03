@@ -171,7 +171,7 @@ export class DialogNode extends Classic.Node {
       si: this.socketsInputs,
       user: this.currentUser,
       text: this.text,
-      answers: this.answers
+      answers: JSON.parse(JSON.stringify(this.answers))
     }
   }
 }

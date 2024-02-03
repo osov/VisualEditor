@@ -20,7 +20,7 @@ import { SequenceNode } from "./flow/sequence"
 import { FlowBlockNode } from "./flow/flow_block"
 import { FlowSetNode } from "./flow/flow_set"
 import { FlowStatusNode } from './flow/flow_status'
-import { LogNode } from "./operators/log"
+import { LogNode } from "./flow/log"
 import { DelayNode } from "./flow/delay"
 import { InOutNode } from "./flow/in_out"
 
@@ -45,8 +45,8 @@ import { OutputNode } from "./module/output"
 import { OutputActionNode } from "./module/output_action"
 
 // vars
-import { VarSetNode } from './operators/var_set'
-import { VarGetNode } from './operators/var_get'
+import { VarSetNode } from './variables/var_set'
+import { VarGetNode } from './variables/var_get'
 
 // custom
 import { InActionNode } from './custom/in_action_node'
