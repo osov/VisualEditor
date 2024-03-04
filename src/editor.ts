@@ -172,7 +172,7 @@ export async function createEditor(container: HTMLElement) {
         //
         text += make_section('Операторы', false);
         text += make_html_node('Последовательность', 'Sequence', {});
-        text += make_html_node('Соединение', 'InOut', {});
+        text += make_html_node('Вход/Выход', 'InOut', {});
         text += make_html_node('Управляемый блок', 'FlowBlock', {});
         text += make_html_node('Задать состояние блоку', 'FlowSet', {});
         text += make_html_node('Получить состояние блока', 'FlowStatus', {});
