@@ -53,6 +53,14 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
                     if (answer != '')
                         answers.push({ id: i, answer });
                 }
+                // если это минимальный
+                else if (si == 'mi') {
+                    // если что-то есть во входе
+                    if (in_data['in' + i] != null)
+                        answer = in_data['in' + i];
+                    if (answer != '')
+                        answers.push({ id: i, answer });
+                }
             }
             gameState.open_dialog(user, text, answers, (id) => call_action('out' + id));
         },
