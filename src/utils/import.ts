@@ -1,5 +1,5 @@
 import { Context } from "../editor";
-import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnCharClickNode, LoadSceneNode, AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnSceneEventNode, InActionNode, EmptyNode, InOutNode } from "../nodes";
+import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode, BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnCharClickNode, LoadSceneNode, AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnSceneEventNode, InActionNode, EmptyNode, InOutNode, IfElseNode } from "../nodes";
 import { MathNode } from "../nodes/math/math_node";
 import { removeConnections } from "./utils";
 
@@ -29,6 +29,7 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "Boolean") return new BooleanNode(data.val)
 
   if (name === "Sequence") return new SequenceNode(data.val)
+  if (name === "IfElse") return new IfElseNode()
   if (name === "FlowBlock") return new FlowBlockNode(data)
   if (name === "FlowSet") return new FlowSetNode(data)
   if (name === "FlowStatus") return new FlowStatusNode(data.id)

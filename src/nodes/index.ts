@@ -16,6 +16,7 @@ import { ColorNode } from "./constants/color"
 import { BooleanNode } from "./constants/boolean"
 
 // operators
+import { IfElseNode } from './flow/if_else'
 import { SequenceNode } from "./flow/sequence"
 import { FlowBlockNode } from "./flow/flow_block"
 import { FlowSetNode } from "./flow/flow_set"
@@ -58,7 +59,7 @@ export {
     LoadSceneNode,
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
     MathNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode,
-    SequenceNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode, InOutNode,
+    SequenceNode, IfElseNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode, InOutNode,
     AnyToCustomNode, ConcatStrNode,
     VarSetNode, VarGetNode,
     InActionNode, EmptyNode

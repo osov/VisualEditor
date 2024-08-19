@@ -1,5 +1,5 @@
 import { ClassicPreset as Classic } from "rete"
-import { socketAction, socketBoolean, socketString } from "../../sockets"
+import { socketAction, socketAny, socketBoolean, socketString } from "../../sockets"
 import { UserControl } from "../../controls"
 import { TextareaControl } from "../../controls"
 import { TwoButtonControl } from "../../controls"
@@ -75,7 +75,7 @@ export class DialogNode extends Classic.Node {
       this.addOutput(`out${i}`, o)
       this.outputs2 = Object.entries(this.outputs)
       if (inpSockets) {
-        const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketString)
+        const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketAny)
         this.addInput(`in${i}`, inp);
         this.inputs2 = Object.entries(this.inputs)
       }
@@ -90,7 +90,7 @@ export class DialogNode extends Classic.Node {
     this.addOutput(`out${cnt - 1}`, o)
     this.outputs2 = Object.entries(this.outputs)
     if (inpSockets) {
-      const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketString)
+      const inp = new Classic.Input(inpSockets == 'b' ? socketBoolean : socketAny)
       this.addInput(`in${cnt - 1}`, inp);
       this.inputs2 = Object.entries(this.inputs)
     }
@@ -137,14 +137,21 @@ export class DialogNode extends Classic.Node {
     this.text = initial.text
     this.updateList();
     this.addInput("in", new Classic.Input(socketAction, "", true));
-    this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => this.setUser(e)));
+    if (this.socketsInputs == 'mi') {
+      this.height -= 220;
+    }
+    else
+      this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => this.setUser(e)));
     if (this.socketsInputs == 's') {
       this.addInput("in_text", new Classic.Input(socketString, "Текст"));
       this.height -= 110;
     }
-    else
-      this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)));
-    (this.controls as any)['User'].ava = './img/avatar.png';
+    else {
+      if (this.socketsInputs != 'mi')
+        this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)));
+    }
+    if ((this.controls as any)['User'])
+      (this.controls as any)['User'].ava = './img/avatar.png';
 
     this.makeOutputs(cnt, si);
     this.addControl(

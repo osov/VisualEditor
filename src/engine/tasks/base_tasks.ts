@@ -116,6 +116,20 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             await call_action('out');
         },
     },
+    'IfElse': {
+        in_actions: ['in'],
+        in_data: ['con'],
+        out_actions: ['out_t', 'out_f'],
+        out_data: [],
+        run: async (data, get_in_data, call_action) => {
+            const nodes_data = get_in_data();
+            const con = nodes_data['con'] != null ? nodes_data['con'] : false;
+            if (con)
+                await call_action('out_t');
+            else
+                await call_action('out_f');
+        },
+    },
     'Sequence': {
         in_actions: ['in'],
         in_data: [],

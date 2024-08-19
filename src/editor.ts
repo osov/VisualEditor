@@ -160,6 +160,7 @@ export async function createEditor(container: HTMLElement) {
         text += make_html_node('Диалог', 'Dialog', { si: '', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
         text += make_html_node('Диалог с доступностью ответа', 'Dialog', { si: 'b', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
         text += make_html_node('Диалог с переменными', 'Dialog', { si: 's', cnt: 3, answers: ['', '', ''], user: '', text: '' });
+        text += make_html_node('Диалог простой', 'Dialog', { si: 'mi', cnt: 3, answers: ['', '', ''], user: '', text: '' });
         text += make_html_node('Закрыть диалог', 'CloseDialog', {});
         text += make_section('', true);
         //
@@ -173,6 +174,7 @@ export async function createEditor(container: HTMLElement) {
         text += make_section('Операторы', false);
         text += make_html_node('Последовательность', 'Sequence', {});
         text += make_html_node('Вход/Выход', 'InOut', {});
+        text += make_html_node('Условный выбор', 'IfElse', {});
         text += make_html_node('Управляемый блок', 'FlowBlock', {});
         text += make_html_node('Задать состояние блоку', 'FlowSet', {});
         text += make_html_node('Получить состояние блока', 'FlowStatus', {});
@@ -561,6 +563,7 @@ export async function createEditor(container: HTMLElement) {
         }
         else if (cmd == 'save') {
             do_save();
+            update_code_editor(); // почему не делал ?
         }
         else if (cmd == 'run') {
             debugEditor.run_debug_game();
@@ -588,6 +591,8 @@ export async function createEditor(container: HTMLElement) {
 
     document.addEventListener('keydown', async (e: KeyboardEvent) => {
         if (e.ctrlKey && e.code == 'KeyS')
+            e.preventDefault();
+        if (e.ctrlKey && e.code == 'KeyR')
             e.preventDefault();
         // delete
         if (e.key == 'Delete') {
@@ -618,10 +623,6 @@ export async function createEditor(container: HTMLElement) {
             if (e.code == 'KeyR') {
                 await ArrangeNodes()
                 await ZoomNodes()
-            }
-            if (e.code == 'KeyS') {
-                do_save();
-                update_code_editor();
             }
         }
         if (e.ctrlKey) {
