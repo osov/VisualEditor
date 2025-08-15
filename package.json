@@ -10,12 +10,12 @@
   },
   "devDependencies": {
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.5.0"
   },
   "dependencies": {
     "@types/jquery": "^3.5.20",
     "@types/toastr": "^2.1.41",
-    "@vitejs/plugin-vue": "^4.3.4",
+    "@vitejs/plugin-vue": "^4.6.0",
     "ant-design-vue": "^4.0.3",
     "rete": "^2.0.2",
     "rete-area-plugin": "^2.0.1",
