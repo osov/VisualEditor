@@ -11,8 +11,8 @@ export class IfElseNode extends Classic.Node {
     constructor() {
         super("IfElse");
         this.addInput("in", new Classic.Input(socketAction, ""));
-        this.addOutput("out_t", new Classic.Output(socketAction, "Истина"));
-        this.addOutput("out_f", new Classic.Output(socketAction, "Ложь"));
+        this.addOutput("then", new Classic.Output(socketAction, "Истина"));
+        this.addOutput("else", new Classic.Output(socketAction, "Ложь"));
         this.addInput("con", new Classic.Input(socketBoolean, "условие"));
     }
 

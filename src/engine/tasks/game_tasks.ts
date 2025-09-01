@@ -1,22 +1,33 @@
 import { ITaskInfo } from "../types";
 
 export const game_tasks: { [k: string]: ITaskInfo } = {
-    'OnCharClick': {
+    'OnRegionEnter': {
         in_actions: [],
         in_data: [],
         out_actions: ['out'],
         out_data: [],
-        run: (data, __, call_action) => {
-            gameState.register_event_on_character_click(data.id, () => call_action('out'));
-        },
+        code: (context) => {
+            const data = context.node_data;
+            return `gameState.register_event_on_reginon_enter('${data.id}',(async() => {\n` + context.next_code('out', 1) + `});`
+        }
+    },
+    'OnRegionLeave': {
+        in_actions: [],
+        in_data: [],
+        out_actions: ['out'],
+        out_data: [],
+        code: (context) => {
+            const data = context.node_data;
+            return `gameState.register_event_on_reginon_leave('${data.id}',(async() => {\n` + context.next_code('out', 1) + `});`
+        }
     },
     'CloseDialog': {
         in_actions: ['in'],
         in_data: [],
         out_actions: [],
         out_data: [],
-        run: () => {
-            gameState.close_dialog();
+        code: () => {
+            return '';
         },
     },
     'Dialog': {
@@ -24,7 +35,7 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in_text', 'in0', 'in1', 'in2', 'in3', 'in4',],
         out_actions: ['out0', 'out1', 'out2', 'out3', 'out4'],
         out_data: [],
-        run: (data, get_in_data, call_action) => {
+        /*run: (data, get_in_data, call_action) => {
             const si = data.si as string;
             const user = data.user as string;
             let text = data.text as string;
@@ -64,6 +75,7 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
             }
             gameState.open_dialog(user, text, answers, (id) => call_action('out' + id));
         },
+        */
     },
 
 }

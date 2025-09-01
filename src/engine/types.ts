@@ -19,6 +19,16 @@ export interface GraphInfo {
 export interface IEngine {
 }
 
+export interface INodeContext {
+    node_data: DictAny
+    get_in_data: () => DictAny
+    get_out_data: () => DictAny
+    next_code(id_out: string, level: number): string
+    code: (level?: number) => string
+    get_in_data_nodes: () => DictInNode
+}
+
+
 export type FncGetDictAny = () => DictAny
 
 export interface ITaskInfo {
@@ -26,8 +36,8 @@ export interface ITaskInfo {
     in_data: string[];
     out_actions: string[];
     out_data: string[];
-    run?: (data: DictAny, get_in_data: FncGetDictAny, call_action: (id_out: string) => void) => void;
     get_out_data?: (data: DictAny, get_in_data: FncGetDictAny) => DictAny;
+    code?: (context:INodeContext) => string;
 }
 
 export interface INodeConfigData {
@@ -46,11 +56,11 @@ export interface INode {
     name: string
     node_data: DictAny
     init: () => void
-    run: () => void
     set_task_info: (task: ITaskInfo) => void
     get_in_data_nodes(): DictInNode
     get_in_data(): DictAny
     get_out_data: () => DictAny
+    code: (level: number) => string
     connections_data: INodeConfigData
     config_in_out: IInOutConfig // debug
 }

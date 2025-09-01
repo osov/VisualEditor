@@ -70,8 +70,18 @@ export async function createEditor(container: HTMLElement) {
     HistoryExtensions.keyboard(history)
     const comment = new CommentPlugin<Schemes, AreaExtra>()
 
+    let node_counter = 0;
+    function find_free_id(){
+        let id = 'n'+(node_counter++);
+        while(editor.getNodes().filter(n => n.id == id).length > 0){
+            id = 'n'+(node_counter++);
+        }
+        return id
+    }
+
     const addNode = async (name: string, data: any) => {
         const node = await createNode(context, name, data)
+        node.id = find_free_id();
         await context.editor.addNode(node)
         const pos = { x: area.area.pointer.x - node.width / 2, y: area.area.pointer.y - node.height / 2 };
         await area.translate(node.id, pos)
@@ -111,12 +121,12 @@ export async function createEditor(container: HTMLElement) {
     }
 
     const makeScene = async () => {
-        let name = prompt('Ввод имени сцены');
+        let name = prompt('Ввод имени квеста');
         if (!name)
             return;
         name = 'scene_' + name;
         if (modulesData[name])
-            return toastr.error('Сцена с таким именем уже существует:' + name);
+            return toastr.error('Квест с таким именем уже существует:' + name);
         modulesData[name] = { "nodes": [], "connections": [], "comments": [] };
         save_module(true);
         openModule(name);
@@ -150,8 +160,8 @@ export async function createEditor(container: HTMLElement) {
         //
         text += make_section('События', false);
         text += make_html_node('Движок загружен', 'OnEngineReady', {});
-        text += make_html_node('Сцена выгружена', 'OnSceneUnloaded', {});
-        text += make_html_node('Сцена загружена', 'OnSceneLoaded', {});
+        text += make_html_node('Вошел в регион', 'OnRegionEnter', {});
+        text += make_html_node('Покинул регион', 'OnRegionLeave', {});
         text += make_html_node('Клик на персонаже', 'OnCharClick', {});
         text += make_section('', true);
         //
@@ -244,17 +254,17 @@ export async function createEditor(container: HTMLElement) {
         text += make_section('', true);
         //
         if (gameState.get_current_scene() != 'global') {
-            text += make_section('Переменные сцены', false);
+            text += make_section('Переменные квеста', false);
             text += `<div class='set_block'>Задать:</div>`
             for (const k in scene_vars) {
                 const it = scene_vars[k];
-                const set_data = getMenuBtnVar(k, it.type, true, true);
+                const set_data = getMenuBtnVar(k, it.type, false, true);
                 text += make_html_node(k, set_data.name, set_data.params);
             }
             text += `<div class='get_block'>Получить:</div>`
             for (const k in scene_vars) {
                 const it = scene_vars[k];
-                const get_data = getMenuBtnVar(k, it.type, true, false);
+                const get_data = getMenuBtnVar(k, it.type, false, false);
                 text += make_html_node(k, get_data.name, get_data.params);
             }
             text += make_section('', true);
@@ -436,7 +446,7 @@ export async function createEditor(container: HTMLElement) {
     }
 
     function update_scenes() {
-        $(".menu_scenes").html('<li><a class="new_scene">-Новая-</a></li>');
+        $(".menu_scenes").html('<li><a class="new_scene">-Новый-</a></li>');
         $(".menu_modules").html('<li><a class="new_module">-Новый-</a></li>');
 
         if (currentModulePath != 'global') {

@@ -57,7 +57,7 @@ function DataManager() {
     //---------------------------------------------------
 
     function get_all_scenes() {
-        const modules = json.decode(get_modules());
+        const modules = JSON.parse(get_modules());
         const scenes = [];
         for (const k in modules) {
             if (k.includes('scene_'))
@@ -69,20 +69,20 @@ function DataManager() {
     //---------------------------------------------------
 
     function get_characters() {
-        return json.decode(load_from_storage('characters', '[]'))
+        return JSON.parse(load_from_storage('characters', '[]'))
     }
 
     function add_character(name: string) {
         const characters = get_characters();
         characters.push(name);
-        save_to_storage('characters', json.encode(characters));
+        save_to_storage('characters', JSON.stringify(characters));
     }
 
     //---------------------------------------------------
 
     function get_scene_variables(scene: string): VarSet {
         const str_vars = load_from_storage('vars', '{}')
-        const variables_data = json.decode(str_vars)
+        const variables_data = JSON.parse(str_vars)
         if (variables_data[scene])
             return variables_data[scene]
         else
@@ -91,23 +91,23 @@ function DataManager() {
 
     function set_scene_variables(scene: string, variables: VarSet) {
         const str_vars = load_from_storage('vars', '{}')
-        const variables_data = json.decode(str_vars)
+        const variables_data = JSON.parse(str_vars)
         variables_data[scene] = variables;
-        save_to_storage('vars', json.encode(variables_data))
+        save_to_storage('vars', JSON.stringify(variables_data))
     }
 
     //---------------------------------------------------
 
     function get_flow_list(): string[] {
         const str_flows = load_from_storage('flows', '[]')
-        const data_flows = json.decode(str_flows);
+        const data_flows = JSON.parse(str_flows);
         return data_flows;
     }
 
     function add_flow_list(name: string) {
         const list = get_flow_list();
         list.push(name);
-        save_to_storage('flows', json.encode(list));
+        save_to_storage('flows', JSON.stringify(list));
     }
 
 

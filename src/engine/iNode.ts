@@ -1,7 +1,4 @@
-import { delay } from "../utils/utils";
-import { DictAny, DictInNode, GetNodeFnc, IInOutConfig, INode, INodeConfigData, IOutputData, ITaskInfo, OutNodeInfo } from "./types";
-
-
+import { DictAny, DictInNode, GetNodeFnc, IInOutConfig, INode, INodeConfigData, INodeContext, IOutputData, ITaskInfo, OutNodeInfo } from "./types";
 
 export function iNode(id_current_node: string, node_data: DictAny, outputs: IOutputData, get_node: GetNodeFnc, name: string): INode {
 
@@ -19,6 +16,14 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
 
     let task_info: ITaskInfo
 
+    const context: INodeContext = {
+        node_data,
+        get_in_data,
+        get_out_data,
+        get_in_data_nodes,
+        next_code,
+        code,
+    }
 
     function init() {
         init_connections()
@@ -90,42 +95,38 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         return list;
     }
 
-    async function call_action(id_out: string) {
-        if (!config_in_out.out_actions.includes(id_out))
-            return error("Выход не найден:", id_out, id_current_node)
+    function next_code(id_out: string, level: number) {
+        if (!config_in_out.out_actions.includes(id_out)) {
+            error("Выход не найден:", id_out, id_current_node);
+            return '';
+        }
         const { data_out } = connections_data
         // выход ни к чему не подключен
         if (!data_out[id_out])
-            return
+            return '';
+        let code = '';
         const out_connections: OutNodeInfo[] = data_out[id_out]
         for (let i = 0; i < out_connections.length; i++) {
             const connection = out_connections[i]
             const node = get_node(connection.target)!;
-            // debug info
-            if (debugEditor.is_active()) {
-                const cur_node = get_node(id_current_node)!;
-                let source_key = '';
-                let target_key = '';
-                if (["Input", "InputAction", "Output", "OutputAction"].includes(cur_node.name))
-                    source_key = cur_node.node_data.key;
-                if (["Input", "InputAction", "Output", "OutputAction"].includes(node.name))
-                    target_key = node.node_data.key;
-                debugEditor.activate_node_animation(id_current_node, id_out, connection.target, connection.targetInput, source_key, target_key);
-            }
-            // ----
-            await node.run()
+            code += node.code(level) + '\n';
         }
+        return code;
     }
 
     function get_out_data() {
         return task_info.get_out_data!(node_data, get_in_data)
     }
 
-    async function run() {
-        await delay(200) // todo debug
-        return task_info.run!(node_data, get_in_data, call_action)
+    function code(level = 0) {
+        return add_tabs_to_text(task_info.code!(context), level);
+    }
+
+    function add_tabs_to_text(text: string, num: number) {
+        const lines = text.split('\n');
+        return lines.map(l => '\t'.repeat(num) + l).join('\n');
     }
 
 
-    return { init, set_task_info, connections_data, run, get_in_data_nodes, get_in_data, get_out_data, config_in_out, name, node_data }
+    return { init, set_task_info, connections_data, get_in_data_nodes, get_in_data, get_out_data, code, config_in_out, name, node_data }
 }

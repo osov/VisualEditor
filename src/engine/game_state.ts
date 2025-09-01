@@ -48,16 +48,20 @@ export function GameState() {
 
     //---------------------------------------------------
 
-    function get_scene_var(name: string, is_cur_scene: boolean) {
-        const scene = is_cur_scene ? get_current_scene() : 'global';
-        const def_vars = dataManager.get_scene_variables(scene);
-        if (def_vars[name] == null) {
-            error('Переменная для чтения не существует:', name, scene);
-            return null;
-        }
-        if (vars[scene] != null && vars[scene][name] != null)
-            return vars[scene][name];
-        return def_vars[name].value;
+    async function get_scene_var(name: string, is_cur_scene: boolean) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const scene = is_cur_scene ? get_current_scene() : 'global';
+                const def_vars = dataManager.get_scene_variables(scene);
+                if (def_vars[name] == null) {
+                    error('Переменная для чтения не существует:', name, scene);
+                    return resolve(null);
+                }
+                if (vars[scene] != null && vars[scene][name] != null)
+                    return resolve(vars[scene][name]);
+                return resolve(def_vars[name].value);
+            }, 100)
+        })
     }
 
     function set_scene_var(name: string, val: any, is_cur_scene: boolean) {

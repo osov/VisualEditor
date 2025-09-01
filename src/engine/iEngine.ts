@@ -55,7 +55,7 @@ export function iEngine() {
             error("Не найдена нода:", id)
         }
 
-        const data: JsonData = json.decode(str)
+        const data: JsonData = JSON.parse(str)
         const nodes_data = data.nodes
         const connections = data.connections
         const module_info = get_module_connections(nodes_data)
@@ -123,7 +123,7 @@ export function iEngine() {
         if (!dc_modules[name])
             error('Модуль не найден:', name)
         // нужно переназначить все входы/выходы на новые ИДы чтобы не было конфликтов
-        const data: JsonData = json.decode(dc_modules[name])
+        const data: JsonData = JSON.parse(dc_modules[name])
         // сначала ноды
         const nodes_data = data.nodes
         for (let i = 0; i < nodes_data.length; i++) {
@@ -137,7 +137,7 @@ export function iEngine() {
             cd.source = id + '_' + 'module_' + cd.source
             cd.target = id + '_' + 'module_' + cd.target
         }
-        const str = json.encode(data)
+        const str = JSON.stringify(data)
         return init_graph(str, true)
     }
 

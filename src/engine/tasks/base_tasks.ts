@@ -1,4 +1,3 @@
-import { delay } from "../../utils/utils";
 import { ITaskInfo } from "../types";
 
 export const base_tasks: { [k: string]: ITaskInfo } = {
@@ -8,14 +7,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (_, get_in_data) => get_in_data()
-    },
+        get_out_data: (_, get_in_data) => get_in_data(),
+     },
     'Output': {
         in_actions: [],
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (_, get_in_data) => get_in_data()
+        get_out_data: (_, get_in_data) => get_in_data(),
 
     },
     'InputAction': {
@@ -23,51 +22,40 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: ['m'],
         out_data: [],
-        run: (_, __, call_action) => call_action('m')
+        code(context) {
+            return '';
+        },
     },
     'OutputAction': {
         in_actions: ['m'],
         in_data: [],
         out_actions: ['m'],
         out_data: [],
-        run: (_, __, call_action) => call_action('m')
+        code(context) {
+            return '';
+        },
     },
     'OnEngineReady': {
         in_actions: [],
         in_data: [],
         out_actions: ['out'],
         out_data: [],
-        run: (_, __, call_action) => {
-            gameState.register_event_on_engine_ready(() => call_action('out'));
-        },
+        code(context) {
+            return `gameState.register_event_on_engine_ready(async() => {\n` + context.next_code('out', 1) + `});`
+        }
     },
-    'OnSceneUnloaded': {
-        in_actions: [],
-        in_data: [],
-        out_actions: ['out'],
-        out_data: [],
-        run: (data, __, call_action) => {
-            gameState.register_event_on_scene_unloaded(data.id, () => call_action('out'));
-        },
-    },
-    'OnSceneLoaded': {
-        in_actions: [],
-        in_data: [],
-        out_actions: ['out'],
-        out_data: [],
-        run: (data, __, call_action) => {
-            gameState.register_event_on_scene_loaded(data.id, () => call_action('out'));
-        },
-    },
-    // interactions
-    'LoadScene': {
+    'Log': {
         in_actions: ['in'],
-        in_data: [],
+        in_data: ['data'],
         out_actions: [],
         out_data: [],
-        run: async (data) => {
-            gameState.load_scene(data.id);
-        },
+        code: (context) => {
+            let text = `'${context.node_data.val}'`;
+            const nodes_data = context.get_in_data();
+            if (nodes_data['data'] != null)
+                text = nodes_data['data'];
+            return `console.log(${text});`;
+        }
     },
     // constants
     'Number': {
@@ -77,7 +65,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (data, _) => {
             return { out: data.val }
-        }
+        },
     },
     'String': {
         in_actions: [],
@@ -85,8 +73,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: ['out'],
         get_out_data: (data, _) => {
-            return { out: data.val }
-        }
+            return { out: `'${data.val}'` }
+        },
     },
     'Boolean': {
         in_actions: [],
@@ -95,7 +83,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (data, _) => {
             return { out: data.val }
-        }
+        },
     },
     'Color': {
         in_actions: [],
@@ -103,7 +91,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: ['out'],
         get_out_data: (data, _) => {
-            return { out: data.val }
+            return { out: `${data.val}` }
         }
     },
     // operators
@@ -112,22 +100,26 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: ['out'],
         out_data: [],
-        run: async (_, __, call_action) => {
-            await call_action('out');
+        code(context) {
+            return context.next_code('out', 1);
         },
     },
     'IfElse': {
         in_actions: ['in'],
         in_data: ['con'],
-        out_actions: ['out_t', 'out_f'],
+        out_actions: ['then', 'else'],
         out_data: [],
-        run: async (data, get_in_data, call_action) => {
-            const nodes_data = get_in_data();
-            const con = nodes_data['con'] != null ? nodes_data['con'] : false;
-            if (con)
-                await call_action('out_t');
-            else
-                await call_action('out_f');
+        code(context) {
+            const nodes_data = context.get_in_data();
+            const cond = nodes_data['con'] != null ? nodes_data['con'] : false;
+            let code = ``;
+            code += "if (" + cond + "){\n";
+            code += context.next_code('then', 1);
+            code += "}";
+            code += "else{\n";
+            code += context.next_code('else', 1);
+            code += "}";
+            return code;
         },
     },
     'Sequence': {
@@ -135,34 +127,36 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: ['out0', 'out1', 'out2', 'out3', 'out4', 'out5', 'out6', 'out7', 'out8', 'out9',],
         out_data: [],
-        run: async (data, __, call_action) => {
-            const cnt: number = data.val;
+        code(context) {
+            const cnt: number = context.node_data.val;
+            let code = '';
             for (let i = 0; i < cnt; i++)
-                await call_action('out' + i);
-        },
+                code += context.next_code('out' + i, 0);
+            return code
+        }
     },
     'FlowBlock': {
         in_actions: ['in'],
         in_data: [],
         out_actions: ['out'],
         out_data: [],
-        run: async (data, __, call_action) => {
-            if (gameState.get_flow_status(data.id))
-                await call_action('out')
-
-        },
+        code(context) {
+            return `if (gameState.get_flow_status('${context.node_data.id}')){\n
+                ${context.next_code('out', 1)}
+            }`;
+        }
     },
     'FlowSet': {
         in_actions: ['in'],
         in_data: ['status'],
         out_actions: [],
         out_data: [],
-        run: async (data, get_in_data, _) => {
-            const nodes_data = get_in_data();
-            const status = nodes_data['status'] != null ? nodes_data['status'] : data.ac;
-            const id = data.id;
-            gameState.set_flow_status(id, status);
-        },
+        code(context) {
+            const id = context.node_data.id;
+            const nodes_data = context.get_in_data();
+            const status = nodes_data['status'] != null ? nodes_data['status'] : context.node_data.ac;
+            return `gameState.set_flow_status('${id}', ${status});`;
+        }
     },
     'FlowStatus': {
         in_actions: [],
@@ -170,7 +164,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: ['out'],
         get_out_data: (data, _) => {
-            return { out: gameState.get_flow_status(data.id) }
+            return { out: `gameState.get_flow_status('${data.id}')` }
         }
     },
     'Delay': {
@@ -178,25 +172,13 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['ms'],
         out_actions: ['out'],
         out_data: [],
-        run: async (data, get_in_data, call_action) => {
-            const in_data = get_in_data();
-            const ms = in_data.ms != null ? in_data.ms : data.ms;
-            await delay(ms);
-            await call_action('out');
+        code(context) {
+            const nodes_data = context.get_in_data();
+            const ms = nodes_data['ms'] != null ? nodes_data['ms'] : context.node_data.ms;
+            return `await delay(${ms});`;
+        }
+    },
 
-        },
-    },
-    'Log': {
-        in_actions: ['in'],
-        in_data: ['data'],
-        out_actions: [],
-        out_data: [],
-        run: (data, get_in_data, _) => {
-            const nodes_data = get_in_data();
-            const info_data = nodes_data['data'] != null ? nodes_data['data'] : data.val;
-            log(info_data);
-        },
-    },
 
     // converts
     'AnyToNumber': {
@@ -206,8 +188,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (_, get_in_data) => {
             const nodes_data = get_in_data();
-            const out = nodes_data['in'] != null ? tonumber(nodes_data['in']) : 0;
-            return { out };
+            const out = nodes_data['in'] != null ? nodes_data['in'] : 0;
+            return { out: `parseInt(${out})` };
         }
     },
     'AnyToString': {
@@ -217,8 +199,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (_, get_in_data) => {
             const nodes_data = get_in_data();
-            const out = nodes_data['in'] != null ? (nodes_data['in'] as string) + '' : '';
-            return { out };
+            const out = nodes_data['in'] != null ? nodes_data['in'] : '';
+            return { out: `(${out}+'')` };
         }
     },
     'AnyToBoolean': {
@@ -228,8 +210,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (_, get_in_data) => {
             const nodes_data = get_in_data();
-            const out = nodes_data['in'] != null ? ((nodes_data['in'] == 1) || (nodes_data['in'] == 'true') || (nodes_data['in'] == true)) : false;
-            return { out };
+            const node = nodes_data['in'];
+            return { out:`(${node} == 1 || ${node} == 'true' || ${node} == true)` };
         }
     },
     'AnyToColor': {
@@ -252,7 +234,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: string = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: string = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A + B };
+            return { val: `${A} + ${B}` }; 
         }
     },
     // math
@@ -263,10 +245,10 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['val'],
         get_out_data: (data, get_in_data) => {
             const nodes_data = get_in_data();
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A + B };
-        }
+            const A = nodes_data['A'] != null ? nodes_data['A'] : data.A;
+            const B = nodes_data['B'] != null ? nodes_data['B'] : data.B;
+            return { val: `${A} + ${B}` };
+        },
     },
     'Sub': {
         in_actions: [],
@@ -277,7 +259,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A - B };
+            return { val: `${A} - ${B}` };
         }
     },
     'Mul': {
@@ -289,7 +271,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A * B };
+            return { val: `${A} * ${B}` };
         }
     },
     'Div': {
@@ -301,7 +283,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A / B };
+            return { val: `${A} / ${B}` };
         }
     },
     'InvNumber': {
@@ -311,8 +293,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (_, get_in_data) => {
             const nodes_data = get_in_data();
-            const out = nodes_data['in'] != null ? -1 * (nodes_data['in'] as number) : 0;
-            return { out };
+            const out = nodes_data['in'] != null ? (nodes_data['in'] as number) : 0;
+            return { out: `(-1 * ${out})` };
         }
     },
     'RandInt': {
@@ -324,7 +306,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: math.random(A, B) };
+            return { val: `math.random({${A}, ${B}})` };
         }
     },
     'RandFloat': {
@@ -337,7 +319,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             const precision = 1000;
-            return { val: math.random(A * precision, B * precision) / precision };
+            return { val: `math.random( ${A} * ${precision}, ${B} * ${precision}) / ${precision}` };
         }
     },
     // bool math
@@ -348,8 +330,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (_, get_in_data) => {
             const nodes_data = get_in_data();
-            const out = nodes_data['in'] != null ? !nodes_data['in'] : false;
-            return { out };
+            return { out:`!${nodes_data['in']}` };
         }
     },
     '>': {
@@ -361,7 +342,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A > B };
+            return { val: `(${A} > ${B})` };
         }
     },
     '>=': {
@@ -373,7 +354,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A >= B };
+            return { val: `(${A} >= ${B})` };
         }
     },
     '<': {
@@ -385,7 +366,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A < B };
+            return { val: `(${A} < ${B})` };
         }
     },
     '<=': {
@@ -397,7 +378,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A <= B };
+            return { val: `(${A} <= ${B})` };
         }
     },
     '=': {
@@ -409,7 +390,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: A == B };
+            return { val: `(${A} == ${B})` };
         }
     },
     // vars
@@ -418,10 +399,12 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['data'],
         out_actions: [],
         out_data: [],
-        run: async (data, get_in_data, _) => {
-            const nodes_data = get_in_data();
-            gameState.set_scene_var(data.n, nodes_data.data != null ? nodes_data.data : data.v, data.g == 0);
-        },
+        code: (context) => {
+            const data = context.node_data;
+            const in_data = context.get_in_data();
+            const val = in_data.data != null ? in_data.data : data.v;
+            return `await gameState.set_scene_var('${data.n}', ${val}, ${data.g == 0});`
+        }
     },
     'VarGet': {
         in_actions: [],
@@ -429,7 +412,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: ['out'],
         get_out_data: (data, _) => {
-            return { out: gameState.get_scene_var(data.n, data.g == 0) }
+            return { out: `(await gameState.get_scene_var('${data.n}', ${data.g == 0}))` };
         }
     },
     'EmptyNode': {
