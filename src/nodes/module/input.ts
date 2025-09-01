@@ -5,7 +5,7 @@ export class InputNode
     extends Classic.Node<{}, { m: Classic.Socket }, { key: Classic.InputControl<"text"> }>
 {
     width = 180;
-    height = 140;
+    height = 105;
     nodeTitle = { ru: "Ввод", type: "green" }
 
     constructor(initial: string) {

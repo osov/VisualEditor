@@ -2,7 +2,7 @@ import { ClassicPreset } from 'rete'
 
 // events
 import { EventReadyNode } from './events/event_ready'
-import { OnCharClickNode } from './events/on_char_click'
+import { OnInteractNPCNode } from './events/on_interact_npc'
 import { OnRegionEventNode } from './events/on_region_event'
 
 // interaction
@@ -55,7 +55,7 @@ import { EmptyNode } from './custom/empty_node'
 
 export {
     NumberNode, StringNode, ColorNode, BooleanNode,
-    EventReadyNode, OnCharClickNode, OnRegionEventNode,
+    EventReadyNode, OnInteractNPCNode, OnRegionEventNode,
     LoadSceneNode,
     ModuleNode, InputNode, OutputNode, InputActionNode, OutputActionNode,
     MathNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode,
@@ -67,7 +67,7 @@ export {
 
 
 export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode | ModuleNode | //  modules
-    EventReadyNode | OnCharClickNode | OnRegionEventNode |// events
+    EventReadyNode | OnInteractNPCNode | OnRegionEventNode |// events
     DialogNode | LoadSceneNode | // interaction
     NumberNode | StringNode | ColorNode | BooleanNode | // const
     AnyToCustomNode | ConcatStrNode | // converts

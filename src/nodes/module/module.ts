@@ -15,7 +15,7 @@ export class ModuleNode
 
     constructor(public path: string, private findModule: (path: string) => null | Module<Schemes>, private reset: (nodeId: string) => Promise<void>) {
         super("Module")
-        this.nodeTitle = { ru: "Модуль", type: "blue", module: path }
+        this.nodeTitle = { ru: "Функция", type: "blue", module: path }
         //this.addControl("OneBtn", new OneButtonControl("Изменить", async () => openModule(path)))
         this.update()
     }

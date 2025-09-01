@@ -1,3 +1,4 @@
+import { add_tabs_to_text, remove_empty_lines } from "./utils";
 import { DictAny, DictInNode, GetNodeFnc, IInOutConfig, INode, INodeConfigData, INodeContext, IOutputData, ITaskInfo, OutNodeInfo } from "./types";
 
 export function iNode(id_current_node: string, node_data: DictAny, outputs: IOutputData, get_node: GetNodeFnc, name: string): INode {
@@ -119,13 +120,10 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
     }
 
     function code(level = 0) {
-        return add_tabs_to_text(task_info.code!(context), level);
+        return remove_empty_lines(add_tabs_to_text(task_info.code!(context), level));
     }
 
-    function add_tabs_to_text(text: string, num: number) {
-        const lines = text.split('\n');
-        return lines.map(l => '\t'.repeat(num) + l).join('\n');
-    }
+
 
 
     return { init, set_task_info, connections_data, get_in_data_nodes, get_in_data, get_out_data, code, config_in_out, name, node_data }

@@ -1,4 +1,4 @@
-import { register_lua_types } from "./engine/lua_types.ts";
+import { register_system } from "./engine/utils.ts";
 import { createEditor } from "./editor"
 import { iEngine } from "./engine/iEngine";
 import "./style.css"
@@ -16,6 +16,6 @@ const editor = await createEditor(document.getElementById("app")!);
 editor.loadModules(dataManager.get_modules())
 editor.openModule('global');
 
-register_lua_types();
+register_system();
 (window as any).editor = editor;
 (window as any).e = iEngine();

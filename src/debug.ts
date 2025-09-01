@@ -72,7 +72,7 @@ function DebugEditor() {
         $("body").on("click", ".dbg_open_scene", function () {
             const name = $(this).attr('data-name')!;
             gameState.load_scene(name);
-            $("#debug_scene_name").text(name.substr('scene_'.length));
+            $("#debug_scene_name").text(name.substr('quest_'.length));
         });
 
 
@@ -91,24 +91,16 @@ function DebugEditor() {
         let html = '';
         for (let i = 0; i < scenes.length; i++) {
             const it = scenes[i];
-            const name = it.substr('scene_'.length);
+            const name = it.substr('quest_'.length);
             html += `<li><a href="javascript:void(0)" class="dbg_open_scene" data-name="${it}">${name}</a></li>`;
         }
         $('#debug_scenes').html(html);
-
-        html = '';
-        const chars = dataManager.get_characters();
-        for (let i = 0; i < chars.length; i++) {
-            const it = chars[i];
-            html += `<li><a href="javascript:void(0)" class="dbg_sel_char">${it}</a></li>`;
-        }
-        $('#debug_chars').html(html);
 
         // configure events
         const nodes = (window as any).graph.nodes;
         for (const n in nodes) {
             const node = nodes[n];
-            if (['OnEngineReady', 'OnSceneUnloaded', 'OnSceneLoaded', 'OnCharClick'].includes(node.name))
+            if (['OnEngineReady', 'OnSceneUnloaded', 'OnSceneLoaded', 'OnInteractNPC'].includes(node.name))
                 node.run();
         }
         await delay(1000);

@@ -75,7 +75,7 @@ function open_variables_scene(name: string) {
     selected_scene = name;
     $(".variable_scene_item").removeClass('active');
     $(`.variable_scene_item[data-name=${name}]`).addClass('active');
-    $(".variables_scene_title").text(name == 'global' ? 'Глобальные переменные' : 'Переменные квеста ' + name.split('scene_')[1])
+    $(".variables_scene_title").text(name == 'global' ? 'Глобальные переменные' : 'Переменные квеста ' + name.split('quest_')[1])
     variables = dataManager.get_scene_variables(name);
     render_variables()
 }
@@ -124,7 +124,7 @@ $("body").on("click", ".debug_btn[data-id='variables']", function () {
     let html = '<a href="javascript:void(0);" class="variable_scene_item" data-name="global">Глобальные переменные</a>';
     const scenes = dataManager.get_all_scenes()
     for (let i = 0; i < scenes.length; i++) {
-        let scene = scenes[i].split('scene_')[1];
+        let scene = scenes[i].split('quest_')[1];
         html += `<a href="javascript:void(0);" class="variable_scene_item" data-name="${scenes[i]}">- ${scene}</a>`
     }
     $('.variables_categorys').html(html);
@@ -155,7 +155,7 @@ $("body").on("click", ".new_scene", function () {
 })
 
 $("body").on("click", ".del_module", function () {
-    const name = prompt('Ввод имени модуля');
+    const name = prompt('Ввод имени функции');
     if (!name)
         return;
     editor.removeModule(name);
@@ -165,7 +165,7 @@ $("body").on("click", ".del_scene", function () {
     let name = prompt('Ввод имени квеста');
     if (!name)
         return;
-    name = 'scene_' + name;
+    name = 'quest_' + name;
     editor.removeModule(name);
 })
 

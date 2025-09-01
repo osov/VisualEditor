@@ -1,6 +1,6 @@
 import { Context } from "../editor";
 import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode, 
-  BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnCharClickNode, LoadSceneNode,
+  BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnInteractNPCNode, LoadSceneNode,
    AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnRegionEventNode, InActionNode, 
    EmptyNode, InOutNode, IfElseNode } from "../nodes";
 import { MathNode } from "../nodes/math/math_node";
@@ -20,7 +20,7 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "OnEngineReady") return new EventReadyNode('OnEngineReady', 'Движок загружен')
   if (name === "OnRegionEnter") return new OnRegionEventNode('OnRegionEnter', 'Вошел в регион', data.id)
   if (name === "OnRegionLeave") return new OnRegionEventNode('OnRegionLeave', 'Покинул регион', data.id)
-  if (name === "OnCharClick") return new OnCharClickNode(data.id)
+  if (name === "OnInteractNPC") return new OnInteractNPCNode(data.id)
 
   if (name === "Dialog") return new DialogNode(data)
   if (name === "CloseDialog") return new InActionNode('CloseDialog', 'Закрыть диалог')

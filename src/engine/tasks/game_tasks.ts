@@ -8,7 +8,7 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
         out_data: [],
         code: (context) => {
             const data = context.node_data;
-            return `gameState.register_event_on_reginon_enter('${data.id}',(async() => {\n` + context.next_code('out', 1) + `});`
+            return `gameState.register_event_on_reginon_enter('${data.id}',(async() => {\n` + context.next_code('out', 1) + `}));`
         }
     },
     'OnRegionLeave': {
@@ -18,7 +18,17 @@ export const game_tasks: { [k: string]: ITaskInfo } = {
         out_data: [],
         code: (context) => {
             const data = context.node_data;
-            return `gameState.register_event_on_reginon_leave('${data.id}',(async() => {\n` + context.next_code('out', 1) + `});`
+            return `gameState.register_event_on_reginon_leave('${data.id}',(async() => {\n` + context.next_code('out', 1) + `}));`
+        }
+    },
+    'OnInteractNPC': {
+        in_actions: [],
+        in_data: [],
+        out_actions: ['out'],
+        out_data: [],
+        code: (context) => {
+            const data = context.node_data;
+            return `gameState.register_event_on_interact_npc('${data.id}',(async() => {\n` + context.next_code('out', 1) + `}));`
         }
     },
     'CloseDialog': {

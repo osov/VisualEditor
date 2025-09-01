@@ -25,7 +25,7 @@ export class LoadSceneNode extends Classic.Node {
         this.listName = arrayToSelectList(dataManager.get_all_scenes())
         for (let i = 0; i < this.listName.length; i++) {
             const it = this.listName[i];
-            this.listName[i].text = it.text.substr('scene_'.length);
+            this.listName[i].text = it.text.substr('quest_'.length);
         }
     }
 

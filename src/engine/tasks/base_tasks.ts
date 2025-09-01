@@ -8,7 +8,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: ['m'],
         get_out_data: (_, get_in_data) => get_in_data(),
-     },
+    },
     'Output': {
         in_actions: [],
         in_data: ['m'],
@@ -22,18 +22,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: ['m'],
         out_data: [],
-        code(context) {
-            return '';
-        },
+        code: (context) => context.next_code('m', 0)
     },
     'OutputAction': {
         in_actions: ['m'],
         in_data: [],
         out_actions: ['m'],
         out_data: [],
-        code(context) {
-            return '';
-        },
+        code: (context) => context.next_code('m', 0)
     },
     'OnEngineReady': {
         in_actions: [],
@@ -141,9 +137,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['out'],
         out_data: [],
         code(context) {
-            return `if (gameState.get_flow_status('${context.node_data.id}')){\n
-                ${context.next_code('out', 1)}
-            }`;
+            return `if (await gameState.get_flow_status('${context.node_data.id}')){\n${context.next_code('out', 1)}}`;
         }
     },
     'FlowSet': {
@@ -211,7 +205,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         get_out_data: (_, get_in_data) => {
             const nodes_data = get_in_data();
             const node = nodes_data['in'];
-            return { out:`(${node} == 1 || ${node} == 'true' || ${node} == true)` };
+            return { out: `(${node} == 1 || ${node} == 'true' || ${node} == true)` };
         }
     },
     'AnyToColor': {
@@ -234,7 +228,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const nodes_data = get_in_data();
             const A: string = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: string = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `${A} + ${B}` }; 
+            return { val: `${A} + ${B}` };
         }
     },
     // math
@@ -330,7 +324,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         get_out_data: (_, get_in_data) => {
             const nodes_data = get_in_data();
-            return { out:`!${nodes_data['in']}` };
+            return { out: `!${nodes_data['in']}` };
         }
     },
     '>': {

@@ -111,11 +111,11 @@ export async function createEditor(container: HTMLElement) {
     }
 
     const makeModule = async () => {
-        const name = prompt('Ввод имени модуля');
+        const name = prompt('Ввод имени функции');
         if (!name)
             return;
         if (modulesData[name])
-            return toastr.error('Модуль с таким именем уже существует:' + name);
+            return toastr.error('Функция с таким именем уже существует:' + name);
         modulesData[name] = { "nodes": [], "connections": [], "comments": [] };
         openModule(name);
     }
@@ -124,7 +124,7 @@ export async function createEditor(container: HTMLElement) {
         let name = prompt('Ввод имени квеста');
         if (!name)
             return;
-        name = 'scene_' + name;
+        name = 'quest_' + name;
         if (modulesData[name])
             return toastr.error('Квест с таким именем уже существует:' + name);
         modulesData[name] = { "nodes": [], "connections": [], "comments": [] };
@@ -162,7 +162,7 @@ export async function createEditor(container: HTMLElement) {
         text += make_html_node('Движок загружен', 'OnEngineReady', {});
         text += make_html_node('Вошел в регион', 'OnRegionEnter', {});
         text += make_html_node('Покинул регион', 'OnRegionLeave', {});
-        text += make_html_node('Клик на персонаже', 'OnCharClick', {});
+        text += make_html_node('Взаимодействие с NPC', 'OnInteractNPC', {});
         text += make_section('', true);
         //
         text += make_section('Взаимодействие', false);
@@ -219,8 +219,8 @@ export async function createEditor(container: HTMLElement) {
         text += make_html_node('Равно', '=', {});
         text += make_section('', true);
         //
-        if (currentModulePath != 'global' && !currentModulePath?.includes('scene_')) {
-            text += make_section('Модуль [вход/выход]', false);
+        if (currentModulePath != 'global' && !currentModulePath?.includes('quest_')) {
+            text += make_section('Функции [вход/выход]', false);
             text += make_html_node('Вход данные', 'Input', { key: "key" });
             text += make_html_node('Выход данные', 'Output', { key: "key" });
             text += make_html_node('Вход действие', 'InputAction', { key: "key" });
@@ -228,11 +228,11 @@ export async function createEditor(container: HTMLElement) {
             text += make_section('', true);
         }
         //
-        text += make_section('Модули', false);
+        text += make_section('Юзер-функции', false);
         const list = Object.keys(modulesData);
         for (let i = 0; i < list.length; i++) {
             const it = list[i];
-            if (it != currentModulePath && it != 'global' && !it.includes('scene_')) {
+            if (it != currentModulePath && it != 'global' && !it.includes('quest_')) {
                 text += make_html_node(it, 'Module', { name: it });
             }
         }
@@ -423,11 +423,11 @@ export async function createEditor(container: HTMLElement) {
             let title_name = path;
             if (path == 'global')
                 gameState.set_current_scene(path);
-            if (path.includes('scene_')) {
+            if (path.includes('quest_')) {
                 gameState.set_current_scene(path);
-                title_name = path.split('scene_').slice(1).join('');
+                title_name = path.split('quest_').slice(1).join('');
             }
-            $(".title_win").text((path.includes('scene_') ? 'Сцена: ' : 'Модуль: ') + title_name);
+            $(".title_win").text((path.includes('quest_') || path == 'global' ? 'Квест: ' : 'Функция: ') + title_name);
             await module.apply(editor)
             //const data = modulesData[path]
             //  await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
@@ -440,23 +440,23 @@ export async function createEditor(container: HTMLElement) {
 
     async function removeModule(name: string) {
         if (!modulesData[name])
-            return toastr.error('Модуль с таким именем не найден');
+            return toastr.error('Функция с таким именем не найден');
         delete modulesData[name];
         update_scenes()
     }
 
     function update_scenes() {
         $(".menu_scenes").html('<li><a class="new_scene">-Новый-</a></li>');
-        $(".menu_modules").html('<li><a class="new_module">-Новый-</a></li>');
+        $(".menu_modules").html('<li><a class="new_module">-Новая-</a></li>');
 
         if (currentModulePath != 'global') {
-            $('.menu_scenes').append(`<li><a class="open_scene" data-name="global">Мир</a></li>`);
+           // $('.menu_scenes').append(`<li><a class="open_scene" data-name="global">Мир</a></li>`);
         }
 
         for (let name in modulesData) {
             if (name != currentModulePath) {
-                const name_module = name.includes('scene_') ? name.split('scene_').slice(1).join('') : name;
-                $(name.includes('scene_') ? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene" data-name="${name}">` + name_module + `</a></li>`);
+                const name_module = name.includes('quest_') ? name.split('quest_').slice(1).join('') : name;
+                $( (name.includes('quest_') || name == 'global')? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene" data-name="${name}">` + name_module + `</a></li>`);
             }
         }
         $(".menu_scenes").append(`<li><a class="del_scene"> -Удалить- </a></li>`);

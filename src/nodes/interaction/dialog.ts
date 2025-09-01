@@ -28,40 +28,6 @@ export class DialogNode extends Classic.Node {
   text = ""
   answers: string[] = []
 
-  async setUser(id: string) {
-    if (id == 'new') {
-      const v = prompt('Имя для персонажа');
-      if (!v) {
-        id = this.currentUser
-      }
-      else {
-        const characters = dataManager.get_characters();
-        let has = false;
-        for (let i = 0; i < characters.length; i++) {
-          if (characters[i].name == v) {
-            has = true;
-            break;
-          }
-
-        }
-        if (has) {
-          toastr.error('Персонаж с таким именем уже существует !');
-          id = this.currentUser
-        }
-        else {
-          dataManager.add_character(v);
-          this.updateList();
-          id = this.userList[this.userList.length - 1].val;
-        }
-      }
-    }
-
-    this.currentUser = id;
-    (this.controls as any)['User'].userList = this.userList;
-    (this.controls as any)['User'].currentUser = this.currentUser;
-    (this.controls as any)['User'].ava = './img/avatar.png';
-    await this.area.update("control", (this.controls as any)['User'].id);
-  }
 
   async setTextarea(text: string) {
     this.text = text;
@@ -122,7 +88,7 @@ export class DialogNode extends Classic.Node {
   }
 
   updateList() {
-    this.userList = arrayToSelectList(dataManager.get_characters())
+    this.userList = arrayToSelectList([])
     this.userList.unshift({ val: 'new', text: '-НОВЫЙ-' })
   }
 
@@ -141,7 +107,7 @@ export class DialogNode extends Classic.Node {
       this.height -= 220;
     }
     else
-      this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => this.setUser(e)));
+      this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => {}));
     if (this.socketsInputs == 's') {
       this.addInput("in_text", new Classic.Input(socketString, "Текст"));
       this.height -= 110;
