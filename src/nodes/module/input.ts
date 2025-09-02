@@ -6,7 +6,7 @@ export class InputNode
 {
     width = 180;
     height = 105;
-    nodeTitle = { ru: "Ввод", type: "green" }
+    nodeTitle = { ru: "Ввод", type: "module" }
 
     constructor(initial: string) {
         super("Input");

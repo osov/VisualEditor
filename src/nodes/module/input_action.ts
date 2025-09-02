@@ -6,7 +6,7 @@ export class InputActionNode
 {
     width = 180;
     height = 105;
-    nodeTitle = { ru: "Вход действие", type: "green" }
+    nodeTitle = { ru: "Вход действие", type: "module" }
 
     constructor(initial: string) {
         super("InputAction");

@@ -210,6 +210,9 @@
   /* background: radial-gradient(50% 90%, rgba(180, 36, 36, 0.62) 0%, transparent 80%); */
   background: linear-gradient(to right, transparent 0%, rgba(249, 181, 38, 0.712) 50%, transparent 100%);
 }
+.node__title.module {
+  background: linear-gradient(to right, transparent 0%, rgba(241, 33, 196, 0.712) 50%, transparent 100%);
+}
 .title[data-testid]{
   order: 0;
 }

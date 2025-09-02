@@ -7,14 +7,30 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (context) => context.get_in_data(),
+        code: (context) => {
+            let code = context.get_prev_vars();
+            let inp = 'null';
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['m'] != null)
+                inp = context.get_var_name(nodes_data['m'].source, nodes_data['m'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'm'), inp);
+            return code;
+        },
     },
     'Output': {
         in_actions: [],
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (context) => context.get_in_data(),
+        code: (context) => {
+            let code = context.get_prev_vars();
+            let inp = 'null';
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['m'] != null)
+                inp = context.get_var_name(nodes_data['m'].source, nodes_data['m'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'm'), inp);
+            return code;
+        },
 
     },
     'InputAction': {
@@ -486,5 +502,6 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: [],
+        code: () => ''
     }
 }

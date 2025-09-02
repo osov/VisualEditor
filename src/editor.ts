@@ -71,10 +71,10 @@ export async function createEditor(container: HTMLElement) {
     const comment = new CommentPlugin<Schemes, AreaExtra>()
 
     let node_counter = 0;
-    function find_free_id(){
-        let id = 'n'+(node_counter++);
-        while(editor.getNodes().filter(n => n.id == id).length > 0){
-            id = 'n'+(node_counter++);
+    function find_free_id() {
+        let id = 'n' + (node_counter++);
+        while (editor.getNodes().filter(n => n.id == id).length > 0) {
+            id = 'n' + (node_counter++);
         }
         return id
     }
@@ -158,6 +158,15 @@ export async function createEditor(container: HTMLElement) {
 
         let text = '';
         //
+        if (currentModulePath != 'global' && !currentModulePath?.includes('quest_')) {
+            text += make_section('Функции [вход/выход]', false);
+            text += make_html_node('Вход данные', 'Input', { key: "key" });
+            text += make_html_node('Выход данные', 'Output', { key: "key" });
+            text += make_html_node('Вход действие', 'InputAction', { key: "key" });
+            text += make_html_node('Выход действие', 'OutputAction', { key: "key" });
+            text += make_section('', true);
+        }
+        //
         text += make_section('События', false);
         text += make_html_node('Квест загружен', 'OnQuestReady', {});
         text += make_html_node('Вошел в регион', 'OnRegionEnter', {});
@@ -218,15 +227,6 @@ export async function createEditor(container: HTMLElement) {
         text += make_html_node('Меньше или =', '<=', {});
         text += make_html_node('Равно', '=', {});
         text += make_section('', true);
-        //
-        if (currentModulePath != 'global' && !currentModulePath?.includes('quest_')) {
-            text += make_section('Функции [вход/выход]', false);
-            text += make_html_node('Вход данные', 'Input', { key: "key" });
-            text += make_html_node('Выход данные', 'Output', { key: "key" });
-            text += make_html_node('Вход действие', 'InputAction', { key: "key" });
-            text += make_html_node('Выход действие', 'OutputAction', { key: "key" });
-            text += make_section('', true);
-        }
         //
         text += make_section('Юзер-функции', false);
         const list = Object.keys(modulesData);
@@ -450,13 +450,13 @@ export async function createEditor(container: HTMLElement) {
         $(".menu_modules").html('<li><a class="new_module">-Новая-</a></li>');
 
         if (currentModulePath != 'global') {
-           // $('.menu_scenes').append(`<li><a class="open_scene" data-name="global">Мир</a></li>`);
+            // $('.menu_scenes').append(`<li><a class="open_scene" data-name="global">Мир</a></li>`);
         }
 
         for (let name in modulesData) {
             if (name != currentModulePath) {
                 const name_module = name.includes('quest_') ? name.split('quest_').slice(1).join('') : name;
-                $( (name.includes('quest_') || name == 'global')? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene" data-name="${name}">` + name_module + `</a></li>`);
+                $((name.includes('quest_') || name == 'global') ? '.menu_scenes' : ".menu_modules").append(`<li><a class="open_scene" data-name="${name}">` + name_module + `</a></li>`);
             }
         }
         $(".menu_scenes").append(`<li><a class="del_scene"> -Удалить- </a></li>`);
@@ -548,7 +548,7 @@ export async function createEditor(container: HTMLElement) {
 
     $(".debug_btn").click(async function () {
         const cmd = $(this).attr('data-id')
-        if (cmd == 'show_ids'){
+        if (cmd == 'show_ids') {
             showIds(editor, area);
             update_code_editor();
         }

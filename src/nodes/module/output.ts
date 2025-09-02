@@ -6,7 +6,7 @@ export class OutputNode
 {
     width = 180;
     height = 140;
-    nodeTitle = { ru: "Вывод", type: "green" }
+    nodeTitle = { ru: "Вывод", type: "module" }
 
     constructor(initial: string) {
         super("Output");

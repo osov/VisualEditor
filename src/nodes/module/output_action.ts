@@ -6,7 +6,7 @@ export class OutputActionNode
 {
     width = 180;
     height = 140;
-    nodeTitle = { ru: "Выход действие", type: "green" }
+    nodeTitle = { ru: "Выход действие", type: "module" }
 
     constructor(initial: string) {
         super("OutputAction");

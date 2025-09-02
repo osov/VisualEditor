@@ -16,13 +16,11 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
     }
 
     let task_info: ITaskInfo
-    let vars_list:{ [key: string]: boolean} = {}
+    let vars_list: { [key: string]: boolean } = {}
 
     const context: INodeContext = {
         id_node: id_current_node,
         node_data,
-        get_in_data,
-        get_out_data,
         get_in_data_nodes,
         next_code,
         code,
@@ -31,7 +29,7 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         get_var_name,
     }
 
-    function init(vars:{ [key: string]: boolean}) {
+    function init(vars: { [key: string]: boolean }) {
         vars_list = vars;
         init_connections()
     }
@@ -83,25 +81,6 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         return list;
     }
 
-    function get_in_data(): DictAny {
-        const nodes_data = get_in_data_nodes();
-        const list: DictAny = {};
-        for (const input_name in nodes_data) {
-            var conn_info = nodes_data[input_name];
-            list[input_name] = null;
-            if (conn_info) {
-                const conn_node = get_node(conn_info.source)
-                if (conn_node != null) {
-                    // вытащим все данные с неё
-                    var src_data = conn_node.get_out_data()
-                    const out_name = conn_info.sourceOutput
-                    list[input_name] = src_data[out_name];
-                }
-            }
-        }
-        return list;
-    }
-
     function next_code(id_out: string, level: number) {
         if (!config_in_out.out_actions.includes(id_out)) {
             error("Выход не найден:", id_out, id_current_node);
@@ -121,19 +100,16 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         return code;
     }
 
-    function get_out_data() {
-        return task_info.get_out_data!(context)
-    }
+
 
     function code(level = 0, with_remove_empty_lines = false) {
-        const code = add_tabs_to_text(task_info.code!(context), level);
+        const code = add_tabs_to_text(task_info.code(context), level);
         return with_remove_empty_lines ? remove_empty_lines(code) : code;
     }
 
     function get_var_name(node: string, output: string) {
         return node + "_" + output;
     }
-
 
     function make_var(name: string, val: any) {
         if (vars_list[name])
@@ -150,7 +126,7 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
             if (conn_info) {
                 const node = get_node(conn_info.source);
                 if (node)
-                    code += node.code!(0);
+                    code += node.code(0);
             }
         }
         return code;
@@ -159,5 +135,5 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
 
 
 
-    return { init, set_task_info, connections_data, get_in_data_nodes, get_in_data, get_out_data, code, config_in_out, name, node_data }
+    return { init, set_task_info, connections_data, get_in_data_nodes, code, config_in_out, name, node_data }
 }
