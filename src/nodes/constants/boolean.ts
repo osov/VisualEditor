@@ -2,7 +2,7 @@ import { ClassicPreset as Classic } from 'rete'
 import { socketBoolean } from '../../sockets'
 import { CheckboxControl } from "../../controls"
 
-export class BooleanNode extends Classic.Node {
+export class BooleanNode extends Classic.Node<{ _: Classic.Socket }, { bol: Classic.Socket }> {
     width = 180;
     height = 110;
     private area = (window as any).area;
@@ -22,7 +22,7 @@ export class BooleanNode extends Classic.Node {
 
         this.active = initial
         this.addControl("Checkbox", new CheckboxControl(this.textFalse, this.textTrue, this.active, async () => await this.toogleCheckbox()))
-        this.addOutput("out", new Classic.Output(socketBoolean, "логическое"))
+        this.addOutput("bol", new Classic.Output(socketBoolean, "логическое"))
     }
 
     serialize() {

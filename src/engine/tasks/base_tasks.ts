@@ -31,74 +31,56 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: [],
         code: (context) => context.next_code('m', 0)
     },
-    'OnEngineReady': {
+    // constants
+    'Number': {
         in_actions: [],
         in_data: [],
-        out_actions: ['out'],
-        out_data: [],
-        code(context) {
-            return `gameState.register_event_on_engine_ready(async() => {\n` + context.next_code('out', 1) + `});`
-        }
+        out_actions: [],
+        out_data: ['int'],
+        code: (context) => context.make_var(context.get_var_name(context.id_node, 'int'), context.node_data.val)
     },
+    'String': {
+        in_actions: [],
+        in_data: [],
+        out_actions: [],
+        out_data: ['str'],
+        code: (context) => context.make_var(context.get_var_name(context.id_node, 'str'), context.node_data.val)
+    },
+    'Boolean': {
+        in_actions: [],
+        in_data: [],
+        out_actions: [],
+        out_data: ['bol'],
+        code: (context) => context.make_var(context.get_var_name(context.id_node, 'bol'), context.node_data.val)
+    },
+    'Color': {
+        in_actions: [],
+        in_data: [],
+        out_actions: [],
+        out_data: ['clr'],
+        code: (context) => context.make_var(context.get_var_name(context.id_node, 'clr'), context.node_data.val)
+    },
+    // operators
     'Log': {
         in_actions: ['in'],
         in_data: ['data'],
         out_actions: [],
         out_data: [],
         code: (context) => {
+            var code = context.get_prev_vars();
             let text = `'${context.node_data.val}'`;
-            const nodes_data = context.get_in_data();
+            const nodes_data = context.get_in_data_nodes();
             if (nodes_data['data'] != null)
-                text = nodes_data['data'];
-            return `console.log(${text});`;
+                text = context.get_var_name(nodes_data['data'].source, nodes_data['data'].sourceOutput);
+            return code + `console.log(${text});`;
         }
     },
-    // constants
-    'Number': {
-        in_actions: [],
-        in_data: [],
-        out_actions: [],
-        out_data: ['out'],
-        get_out_data: (context) => {
-            return { out: context.node_data.val }
-        },
-    },
-    'String': {
-        in_actions: [],
-        in_data: [],
-        out_actions: [],
-        out_data: ['out'],
-        get_out_data: (context) => {
-            return { out: `'${context.node_data.val}'` }
-        },
-    },
-    'Boolean': {
-        in_actions: [],
-        in_data: [],
-        out_actions: [],
-        out_data: ['out'],
-        get_out_data: (context) => {
-            return { out: context.node_data.val }
-        },
-    },
-    'Color': {
-        in_actions: [],
-        in_data: [],
-        out_actions: [],
-        out_data: ['out'],
-        get_out_data: (context) => {
-            return { out: `${context.node_data.val}` }
-        }
-    },
-    // operators
     'InOut': {
         in_actions: ['in'],
         in_data: [],
         out_actions: ['out'],
         out_data: [],
-        code(context) {
-            return context.next_code('out', 1);
-        },
+        code: (context) => context.next_code('out', 1)
     },
     'IfElse': {
         in_actions: ['in'],
@@ -106,9 +88,11 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['then', 'else'],
         out_data: [],
         code(context) {
-            const nodes_data = context.get_in_data();
-            const cond = nodes_data['con'] != null ? nodes_data['con'] : false;
-            let code = ``;
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let cond = 'false';
+            if (nodes_data['con'])
+                cond = context.get_var_name(nodes_data['con'].source, nodes_data['con'].sourceOutput);
             code += "if (" + cond + "){\n";
             code += context.next_code('then', 1);
             code += "}";
@@ -125,40 +109,10 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: [],
         code(context) {
             const cnt: number = context.node_data.val;
-            let code = '';
+            let code = context.get_prev_vars();
             for (let i = 0; i < cnt; i++)
                 code += context.next_code('out' + i, 0);
-            return code
-        }
-    },
-    'FlowBlock': {
-        in_actions: ['in'],
-        in_data: [],
-        out_actions: ['out'],
-        out_data: [],
-        code(context) {
-            return `if (await gameState.get_flow_status('${context.node_data.id}')){\n${context.next_code('out', 1)}}`;
-        }
-    },
-    'FlowSet': {
-        in_actions: ['in'],
-        in_data: ['status'],
-        out_actions: [],
-        out_data: [],
-        code(context) {
-            const id = context.node_data.id;
-            const nodes_data = context.get_in_data();
-            const status = nodes_data['status'] != null ? nodes_data['status'] : context.node_data.ac;
-            return `gameState.set_flow_status('${id}', ${status});`;
-        }
-    },
-    'FlowStatus': {
-        in_actions: [],
-        in_data: [],
-        out_actions: [],
-        out_data: ['out'],
-        get_out_data: (context) => {
-            return { out: `gameState.get_flow_status('${context.node_data.id}')` }
+            return code;
         }
     },
     'Delay': {
@@ -167,23 +121,30 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['out'],
         out_data: [],
         code(context) {
-            const nodes_data = context.get_in_data();
-            const ms = nodes_data['ms'] != null ? nodes_data['ms'] : context.node_data.ms;
-            return `await delay(${ms});`;
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let ms = context.node_data.ms;
+            if (nodes_data['ms'])
+                ms = context.get_var_name(nodes_data['ms'].source, nodes_data['ms'].sourceOutput);
+            code += `await delay(${ms});\n`;
+            code += context.next_code('out', 0);
+            return code;
         }
     },
-
-
     // converts
     'AnyToNumber': {
         in_actions: [],
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
-            const out = nodes_data['in'] != null ? nodes_data['in'] : 0;
-            return { out: `parseInt(${out})` };
+        code(context) {
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let in_name = '0';
+            if (nodes_data['in'] != null)
+                in_name = context.get_var_name(nodes_data['in'].source, nodes_data['in'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `parseInt(${in_name})`);
+            return code;
         }
     },
     'AnyToString': {
@@ -191,10 +152,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
-            const out = nodes_data['in'] != null ? nodes_data['in'] : '';
-            return { out: `(${out}+'')` };
+        code(context) {
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let in_name = '0';
+            if (nodes_data['in'] != null)
+                in_name = context.get_var_name(nodes_data['in'].source, nodes_data['in'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `String(${in_name})`);
+            return code;
         }
     },
     'AnyToBoolean': {
@@ -202,10 +167,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
-            const node = nodes_data['in'];
-            return { out: `(${node} == 1 || ${node} == 'true' || ${node} == true)` };
+        code(context) {
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let in_name = '0';
+            if (nodes_data['in'] != null)
+                in_name = context.get_var_name(nodes_data['in'].source, nodes_data['in'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `(${in_name} == 1 || ${in_name} == 'true' || ${in_name} == true)`);
+            return code;
         }
     },
     'AnyToColor': {
@@ -213,10 +182,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
-            const out = nodes_data['in'] != null && (nodes_data['in'] as string).length > 0 ? nodes_data['in'] : '#000000';
-            return { out };
+        code(context) {
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let in_name = '0';
+            if (nodes_data['in'] != null)
+                in_name = context.get_var_name(nodes_data['in'].source, nodes_data['in'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `(${in_name}).length > 0 ? ${in_name} : '#000000'`);
+            return code;
         }
     },
     'ConcatStr': {
@@ -224,12 +197,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            let code = context.get_prev_vars();
             const data = context.node_data;
-            const A: string = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: string = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `${A} + ${B}` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `String(${A}) + String(${B})`);
+            return code;
         }
     },
     // math
@@ -238,25 +217,37 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            let code = context.get_prev_vars();
             const data = context.node_data;
-            const A = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `${A} + ${B}` };
-        },
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), A + " + " + B);
+            return code;
+        }
     },
     'Sub': {
         in_actions: [],
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `${A} - ${B}` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), A + " - " + B);
+            return code;
         }
     },
     'Mul': {
@@ -264,12 +255,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `${A} * ${B}` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), A + " * " + B);
+            return code;
         }
     },
     'Div': {
@@ -277,12 +274,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `${A} / ${B}` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), A + " / " + B);
+            return code;
         }
     },
     'InvNumber': {
@@ -290,10 +293,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
-            const out = nodes_data['in'] != null ? (nodes_data['in'] as number) : 0;
-            return { out: `(-1 * ${out})` };
+        code(context) {
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let in_name = '0';
+            if (nodes_data['in'] != null)
+                in_name = context.get_var_name(nodes_data['in'].source, nodes_data['in'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `-1 * ${in_name}`);
+            return code;
         }
     },
     'RandInt': {
@@ -301,12 +308,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `math.random({${A}, ${B}})` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `random_int({${A}, ${B}})`);
+            return code;
         }
     },
     'RandFloat': {
@@ -314,13 +327,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            const precision = 1000;
-            return { val: `math.random( ${A} * ${precision}, ${B} * ${precision}) / ${precision}` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `random_float({${A}, ${B}})`);
+            return code;
         }
     },
     // bool math
@@ -329,9 +347,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
-            return { out: `!${nodes_data['in']}` };
+        code(context) {
+            let code = context.get_prev_vars();
+            const nodes_data = context.get_in_data_nodes();
+            let in_name = '0';
+            if (nodes_data['in'] != null)
+                in_name = context.get_var_name(nodes_data['in'].source, nodes_data['in'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `!${in_name}`);
+            return code;
         }
     },
     '>': {
@@ -339,12 +362,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `(${A} > ${B})` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `${A} > ${B}`);
+            return code;
         }
     },
     '>=': {
@@ -352,12 +381,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `(${A} >= ${B})` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `${A} >= ${B}`);
+            return code;
         }
     },
     '<': {
@@ -365,12 +400,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `(${A} < ${B})` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `${A} < ${B}`);
+            return code;
         }
     },
     '<=': {
@@ -378,12 +419,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `(${A} <= ${B})` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `${A} <= ${B}`);
+            return code;
         }
     },
     '=': {
@@ -391,12 +438,18 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (context) => {
-            const nodes_data = context.get_in_data();
+        code: (context) => {
+            var code = context.get_prev_vars();
             const data = context.node_data;
-            const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
-            const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
-            return { val: `(${A} == ${B})` };
+            let A = data.A;
+            let B = data.B;
+            const nodes_data = context.get_in_data_nodes();
+            if (nodes_data['A'] != null)
+                A = context.get_var_name(nodes_data['A'].source, nodes_data['A'].sourceOutput);
+            if (nodes_data['B'] != null)
+                B = context.get_var_name(nodes_data['B'].source, nodes_data['B'].sourceOutput);
+            code += context.make_var(context.get_var_name(context.id_node, 'val'), `${A} == ${B}`);
+            return code;
         }
     },
     // vars
@@ -406,10 +459,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: [],
         out_data: [],
         code: (context) => {
+            let code = context.get_prev_vars();
             const data = context.node_data;
-            const in_data = context.get_in_data();
-            const val = in_data.data != null ? in_data.data : data.v;
-            return `await gameState.set_scene_var('${data.n}', ${val}, ${data.g == 0});`
+            const nodes_data = context.get_in_data_nodes();
+            let val = data.v;
+            if (nodes_data['data'] != null)
+                val = context.get_var_name(nodes_data['data'].source, nodes_data['data'].sourceOutput);
+            code += `await gameState.set_scene_var('${data.n}', ${val}, ${data.g == 0});`
+            return code;
         }
     },
     'VarGet': {
@@ -417,9 +474,11 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (context) => {
+        code(context) {
+            let code = context.get_prev_vars();
             const data = context.node_data;
-            return { out: `(await gameState.get_scene_var('${data.n}', ${data.g == 0}))` };
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `await gameState.get_scene_var('${data.n}', ${data.g == 0})`);
+            return code;
         }
     },
     'EmptyNode': {

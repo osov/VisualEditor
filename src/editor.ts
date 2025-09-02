@@ -159,7 +159,7 @@ export async function createEditor(container: HTMLElement) {
         let text = '';
         //
         text += make_section('События', false);
-        text += make_html_node('Движок загружен', 'OnEngineReady', {});
+        text += make_html_node('Квест загружен', 'OnQuestReady', {});
         text += make_html_node('Вошел в регион', 'OnRegionEnter', {});
         text += make_html_node('Покинул регион', 'OnRegionLeave', {});
         text += make_html_node('Взаимодействие с NPC', 'OnInteractNPC', {});
@@ -548,8 +548,10 @@ export async function createEditor(container: HTMLElement) {
 
     $(".debug_btn").click(async function () {
         const cmd = $(this).attr('data-id')
-        if (cmd == 'show_ids')
+        if (cmd == 'show_ids'){
             showIds(editor, area);
+            update_code_editor();
+        }
         else if (cmd == 'order') {
             reOrderEditor(editor, area as any, comment as any);
             // todo fail is history active
@@ -573,7 +575,7 @@ export async function createEditor(container: HTMLElement) {
         }
         else if (cmd == 'save') {
             do_save();
-            update_code_editor(); // почему не делал ?
+            update_code_editor();
         }
         else if (cmd == 'run') {
             debugEditor.run_debug_game();
@@ -595,7 +597,8 @@ export async function createEditor(container: HTMLElement) {
 
     document.addEventListener('mousedown', async (e: MouseEvent) => {
         if (e.button == 1)
-            ZoomNodes()
+            ZoomNodes();
+        update_code_editor();
     })
 
 

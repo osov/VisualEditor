@@ -1,6 +1,13 @@
 import { ITaskInfo } from "../types";
 
 export const game_tasks: { [k: string]: ITaskInfo } = {
+    'OnQuestReady': {
+        in_actions: [],
+        in_data: [],
+        out_actions: ['out'],
+        out_data: [],
+        code: (context) => `gameState.register_event_on_engine_ready(async() => {\n` + context.next_code('out', 1) + `});`
+    },
     'OnRegionEnter': {
         in_actions: [],
         in_data: [],

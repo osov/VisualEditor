@@ -20,12 +20,16 @@ export interface IEngine {
 }
 
 export interface INodeContext {
+    id_node:string
     node_data: DictAny
     get_in_data: () => DictAny
     get_out_data: () => DictAny
     next_code(id_out: string, level: number): string
     code: (level?: number) => string
     get_in_data_nodes: () => DictInNode
+    get_prev_vars: () => string
+    make_var: (name: string, val: any) => string
+    get_var_name: (node: string, out: string) => string
 }
 
 
@@ -55,7 +59,7 @@ export interface IInOutConfig {
 export interface INode {
     name: string
     node_data: DictAny
-    init: () => void
+    init: (vars:{ [key: string]: boolean}) => void
     set_task_info: (task: ITaskInfo) => void
     get_in_data_nodes(): DictInNode
     get_in_data(): DictAny

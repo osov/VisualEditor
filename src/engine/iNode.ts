@@ -16,17 +16,23 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
     }
 
     let task_info: ITaskInfo
+    let vars_list:{ [key: string]: boolean} = {}
 
     const context: INodeContext = {
+        id_node: id_current_node,
         node_data,
         get_in_data,
         get_out_data,
         get_in_data_nodes,
         next_code,
         code,
+        get_prev_vars,
+        make_var,
+        get_var_name,
     }
 
-    function init() {
+    function init(vars:{ [key: string]: boolean}) {
+        vars_list = vars;
         init_connections()
     }
 
@@ -119,8 +125,35 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
         return task_info.get_out_data!(context)
     }
 
-    function code(level = 0) {
-        return remove_empty_lines(add_tabs_to_text(task_info.code!(context), level));
+    function code(level = 0, with_remove_empty_lines = false) {
+        const code = add_tabs_to_text(task_info.code!(context), level);
+        return with_remove_empty_lines ? remove_empty_lines(code) : code;
+    }
+
+    function get_var_name(node: string, output: string) {
+        return node + "_" + output;
+    }
+
+
+    function make_var(name: string, val: any) {
+        if (vars_list[name])
+            return ''
+        vars_list[name] = true
+        return `const ${name} = ${val};\n`;
+    }
+
+    function get_prev_vars() {
+        let code = "";
+        const nodes_data = get_in_data_nodes();
+        for (const input_name in nodes_data) {
+            var conn_info = nodes_data[input_name];
+            if (conn_info) {
+                const node = get_node(conn_info.source);
+                if (node)
+                    code += node.code!(0);
+            }
+        }
+        return code;
     }
 
 

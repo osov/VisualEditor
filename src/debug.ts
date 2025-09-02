@@ -100,7 +100,7 @@ function DebugEditor() {
         const nodes = (window as any).graph.nodes;
         for (const n in nodes) {
             const node = nodes[n];
-            if (['OnEngineReady', 'OnSceneUnloaded', 'OnSceneLoaded', 'OnInteractNPC'].includes(node.name))
+            if (['OnQuestReady', 'OnSceneUnloaded', 'OnSceneLoaded', 'OnInteractNPC'].includes(node.name))
                 node.run();
         }
         await delay(1000);

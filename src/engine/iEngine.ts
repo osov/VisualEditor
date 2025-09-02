@@ -5,12 +5,14 @@ import { DictString, GraphInfo, IConnectionData, INode, INodeData, INodeGraph, I
 
 export function iEngine() {
     let dc_modules: DictString = {}
+    let vars_list: { [key: string]: boolean } = {};
 
     function set_dc_modules(dc: DictString) {
         dc_modules = dc
     }
 
     function init(str: string) {
+        vars_list = {};
         return init_graph(str);
     }
 
@@ -113,7 +115,7 @@ export function iEngine() {
             for (const key in nodes) {
                 const node = nodes[key]
                 attach_task(node, node.name)
-                node.init()
+                node.init(vars_list)
             }
         }
         return { nodes, connections, nodes_data, module_info }

@@ -2,7 +2,7 @@ import { ClassicPreset as Classic } from 'rete'
 import { socketNumber } from '../../sockets'
 
 export class NumberNode
-    extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }, { val: Classic.InputControl<"number"> }>
+    extends Classic.Node<{ _: Classic.Socket }, { int: Classic.Socket }, { val: Classic.InputControl<"number"> }>
 {
     width = 180;
     height = 110;
@@ -11,7 +11,7 @@ export class NumberNode
     constructor(initial: number) {
         super("Number");
 
-        this.addOutput("out", new Classic.Output(socketNumber, "Число"))
+        this.addOutput("int", new Classic.Output(socketNumber, "Число"))
         this.addControl("val", new Classic.InputControl("number", { initial }));
     }
 

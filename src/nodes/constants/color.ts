@@ -2,7 +2,7 @@ import { ClassicPreset as Classic } from 'rete'
 import { socketColor } from '../../sockets'
 
 export class ColorNode
-    extends Classic.Node<{ _: Classic.Socket }, { out: Classic.Socket }>
+    extends Classic.Node<{ _: Classic.Socket }, { clr: Classic.Socket }>
 {
     width = 180;
     height = 110;
@@ -11,7 +11,7 @@ export class ColorNode
     constructor(initial: string) {
         super("Color");
 
-        this.addOutput("out", new Classic.Output(socketColor, "Цвет"))
+        this.addOutput("clr", new Classic.Output(socketColor, "Цвет"))
         this.addControl("val", new Classic.InputControl("color" as any, { initial }));
     }
 

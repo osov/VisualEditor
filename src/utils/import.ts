@@ -17,7 +17,7 @@ export async function createNode({ editor, area, modules }: Context, name: strin
   if (name === "InputAction") return new InputActionNode(data.key)
   if (name === "OutputAction") return new OutputActionNode(data.key)
 
-  if (name === "OnEngineReady") return new EventReadyNode('OnEngineReady', 'Движок загружен')
+  if (name === "OnQuestReady") return new EventReadyNode('OnQuestReady', 'Квест загружен')
   if (name === "OnRegionEnter") return new OnRegionEventNode('OnRegionEnter', 'Вошел в регион', data.id)
   if (name === "OnRegionLeave") return new OnRegionEventNode('OnRegionLeave', 'Покинул регион', data.id)
   if (name === "OnInteractNPC") return new OnInteractNPCNode(data.id)
