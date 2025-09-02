@@ -50,10 +50,11 @@ export type Context = {
 }
 
 import { reOrderEditor, showIds } from './utils/debug'
-import { DictString } from './engine/types'
+import { DictString, INodeGraph } from './engine/types'
 import { iEngine } from './engine/iEngine'
 import { GameState } from './engine/game_state'
 import { VarTypes } from './engine/data_manager'
+import { remove_empty_lines } from './engine/utils'
 
 let modulesData: { [k: string]: any } = {}
 let currentModulePath: null | string = null
@@ -172,11 +173,11 @@ export async function createEditor(container: HTMLElement) {
         text += make_html_node('Вошел в регион', 'OnRegionEnter', {});
         text += make_html_node('Покинул регион', 'OnRegionLeave', {});
         text += make_html_node('Взаимодействие с NPC', 'OnInteractNPC', {});
-        text += make_html_node('Сменился на этап', 'StageEvent', {id:0});
+        text += make_html_node('Сменился на этап', 'StageEvent', { id: 0 });
         text += make_section('', true);
         //
         text += make_section('Этап квеста', false);
-        text += make_html_node('Сменить', 'StageSet', {id:0});
+        text += make_html_node('Сменить', 'StageSet', { id: 0 });
         text += make_html_node('Получить', 'StageGet', {});
         text += make_section('', true);
         //
@@ -401,17 +402,15 @@ export async function createEditor(container: HTMLElement) {
     AreaExtensions.showInputControl(area,)
     CommentExtensions.selectable(comment, selector, accumulating)
 
-    const modules = new Modules<Schemes>(
-        (path) => modulesData[path],
-        async (path, editor) => {
-            const data = modulesData[path]
-            if (!data) throw new Error("cannot find module")
-            await importEditor({ ...context, editor }, data, path == currentModulePath)
-        }
+    const modules = new Modules<Schemes>((path) => modulesData[path], async (path, editor) => {
+        const data = modulesData[path]
+        if (!data) throw new Error("cannot find module")
+        await importEditor({ ...context, editor }, data, path == currentModulePath)
+    }
     )
     const context: Context = { editor, area, modules, comment }
 
-    async function openModule(path: string, add_stack = true) {
+    async function openModule(path: string, add_stack = true, ignore_zoom = false) {
         save_module(false)
         const tmp_name = currentModulePath
         currentModulePath = null
@@ -432,10 +431,8 @@ export async function createEditor(container: HTMLElement) {
             }
             $(".title_win").text((path.includes('quest_') || path == 'global' ? 'Квест: ' : 'Функция: ') + title_name);
             await module.apply(editor)
-            //const data = modulesData[path]
-            //  await importPositions(context, data) // повторно обновляем позиции т.к. при импорте модулей они имеют одинаковые иды нод и соответственно перебивают позиции текущих нод на экране
-            await ZoomNodes()
-
+            if (!ignore_zoom)
+                await ZoomNodes()
             update_code_editor()
             update_scenes()
         }
@@ -586,7 +583,46 @@ export async function createEditor(container: HTMLElement) {
         else if (cmd == 'clean_ui_nodes') {
             debugEditor.clear_nodes_animation();
         }
+        if (cmd == 'build') {
+            const code = await build_quest(currentModulePath!);
+            log(code);
+        }
+        else if (cmd == 'build_all') {
+            let last_module = currentModulePath;
+            let code = '';
+            let t = Date.now();
+            for (const name in modulesData) {
+                if (name == 'global' || name.includes('quest_')) {
+                    code += '\n// ---------------------------------------------------------------';
+                    code += '\n// ' + name;
+                    code += '\n// ---------------------------------------------------------------\n';
+                    code += await build_quest(name);
+                    code += '\n\n';
+                }
+            }
+            if (last_module != currentModulePath)
+                await openModule(last_module!, false, true);
+            log(code);
+            //console.log('time:', Date.now() - t);
+        }
     });
+
+    const event_nodes = ['OnQuestReady', 'OnRegionEnter', 'OnRegionLeave', 'OnInteractNPC', 'StageEvent'];
+    async function build_quest(name: string) {
+        if (name != currentModulePath)
+            await openModule(name, false, true);
+        const nodes = (window as any).graph.nodes as INodeGraph;
+        let code = ``;
+        for (const n in nodes) {
+            const node = nodes[n];
+            if (event_nodes.includes(node.name)) {
+                code += '\n// ' + node.name + '\n';
+                code += remove_empty_lines(node.code(0));
+                code += '\n';
+            }
+        }
+        return code;
+    }
 
     editor.addPipe((context) => {
         if (["connectioncreated", "connectionremoved", 'nodecreated', 'noderemoved'].includes(context.type)) {
