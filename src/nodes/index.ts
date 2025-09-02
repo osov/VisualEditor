@@ -53,6 +53,11 @@ import { VarGetNode } from './variables/var_get'
 import { InActionNode } from './custom/in_action_node'
 import { EmptyNode } from './custom/empty_node'
 
+// stage
+import { StageSetNode } from './stage/stage_set'
+import { StageGetNode } from './stage/stage_get'
+import { StageEventNode } from './stage/state_event'
+
 export {
     NumberNode, StringNode, ColorNode, BooleanNode,
     EventReadyNode, OnInteractNPCNode, OnRegionEventNode,
@@ -62,7 +67,8 @@ export {
     SequenceNode, IfElseNode, LogNode, DelayNode, DialogNode, FlowBlockNode, FlowSetNode, FlowStatusNode, InOutNode,
     AnyToCustomNode, ConcatStrNode,
     VarSetNode, VarGetNode,
-    InActionNode, EmptyNode
+    InActionNode, EmptyNode,
+    StageSetNode, StageGetNode, StageEventNode
 }
 
 
@@ -75,7 +81,8 @@ export type Nodes = InputNode | OutputNode | InputActionNode | OutputActionNode 
     BoolMathNode | InvertBoolNode | // bool math
     SequenceNode | LogNode | DelayNode | FlowBlockNode | FlowSetNode | FlowStatusNode | InOutNode | // flow
     VarSetNode | VarGetNode | // vars
-    InActionNode | EmptyNode
+    InActionNode | EmptyNode |
+    StageSetNode | StageGetNode | StageEventNode
 
 export class Connection<A extends Nodes, B extends Nodes> extends ClassicPreset.Connection<A, B> { }
 export type Conn = Connection<NumberNode, NumberNode>

@@ -172,6 +172,12 @@ export async function createEditor(container: HTMLElement) {
         text += make_html_node('Вошел в регион', 'OnRegionEnter', {});
         text += make_html_node('Покинул регион', 'OnRegionLeave', {});
         text += make_html_node('Взаимодействие с NPC', 'OnInteractNPC', {});
+        text += make_html_node('Сменился на этап', 'StageEvent', {id:0});
+        text += make_section('', true);
+        //
+        text += make_section('Этап квеста', false);
+        text += make_html_node('Сменить', 'StageSet', {id:0});
+        text += make_html_node('Получить', 'StageGet', {});
         text += make_section('', true);
         //
         text += make_section('Взаимодействие', false);

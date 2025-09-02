@@ -61,8 +61,18 @@ function DataManager() {
         }
         return scenes;
     }
+    //---------------------------------------------------
 
-  
+    function get_characters() {
+        return JSON.parse(load_from_storage('characters', '[]'))
+    }
+
+    function add_character(name: string) {
+        const characters = get_characters();
+        characters.push(name);
+        save_to_storage('characters', JSON.stringify(characters));
+    }
+
     //---------------------------------------------------
 
     function get_scene_variables(scene: string): VarSet {
@@ -97,6 +107,6 @@ function DataManager() {
 
 
     init_test_data();
-    return { get_all_scenes, get_scene_variables, set_scene_variables, get_modules, set_modules, get_flow_list, add_flow_list }
+    return { get_all_scenes, get_scene_variables, set_scene_variables, get_modules, set_modules, get_flow_list, add_flow_list, add_character, get_characters }
 }
 

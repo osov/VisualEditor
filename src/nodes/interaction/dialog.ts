@@ -1,33 +1,63 @@
 import { ClassicPreset as Classic } from "rete"
 import { socketAction, socketAny, socketBoolean, socketString } from "../../sockets"
-import { UserControl } from "../../controls"
+import { SelectControl, UserControl } from "../../controls"
 import { TextareaControl } from "../../controls"
 import { TwoButtonControl } from "../../controls"
 import { arrayToSelectList } from "../../utils/utils"
 
 interface DialogParams {
   cnt: number,
-  si: string,
-  user: string,
   text: string,
   answers: string[]
+  index:string
 }
 
 export class DialogNode extends Classic.Node {
   width = 240
-  height = 360
-  private area = (window as any).area;
+  height = 300
   private heightOut = 32;
+  private area = (window as any).area;
   nodeTitle = { ru: "Диалог", type: "green" };
   outputs2: any;
   inputs2: any = null;
   userList: any = [];
   // serialize data
-  socketsInputs = ''
-  currentUser = ''
+  currentIndex = ''
   text = ""
   answers: string[] = []
 
+  async setUser(id: string) {
+    if (id == 'new') {
+      const v = prompt('Имя для персонажа');
+      if (!v) {
+        id = this.currentIndex
+      }
+      else {
+        const characters = dataManager.get_characters();
+        let has = false;
+        for (let i = 0; i < characters.length; i++) {
+          if (characters[i].name == v) {
+            has = true;
+            break;
+          }
+
+        }
+        if (has) {
+          toastr.error('Персонаж с таким именем уже существует !');
+          id = this.currentIndex
+        }
+        else {
+          dataManager.add_character(v);
+          this.updateList();
+          id = this.userList[this.userList.length - 1].val;
+        }
+      }
+    }
+    this.currentIndex = id;
+    (this.controls as any)['select'].optionList = this.userList;
+    (this.controls as any)['select'].selected = this.currentIndex;
+    await this.area.update("control", (this.controls as any)['select'].id);
+  }
 
   async setTextarea(text: string) {
     this.text = text;
@@ -88,50 +118,37 @@ export class DialogNode extends Classic.Node {
   }
 
   updateList() {
-    this.userList = arrayToSelectList([])
+    this.userList = arrayToSelectList(dataManager.get_characters())
     this.userList.unshift({ val: 'new', text: '-НОВЫЙ-' })
   }
 
   constructor(initial?: DialogParams) {
     super("Dialog")
     if (!initial || Object.keys(initial).length == 0)
-      initial = { cnt: 2, si: '', user: '', text: '', answers: ['', ''] }
-    let { cnt, si } = initial;
+      initial = { cnt: 2, index: '',  text: '', answers: ['', ''] }
+    let { cnt } = initial;
     this.answers = initial.answers
-    this.currentUser = initial.user
-    this.socketsInputs = si
     this.text = initial.text
+    this.currentIndex = initial.index
     this.updateList();
     this.addInput("in", new Classic.Input(socketAction, "", true));
-    if (this.socketsInputs == 'mi') {
-      this.height -= 220;
-    }
-    else
-      this.addControl("User", new UserControl(this.userList, this.currentUser, (e) => {}));
-    if (this.socketsInputs == 's') {
-      this.addInput("in_text", new Classic.Input(socketString, "Текст"));
-      this.height -= 110;
-    }
-    else {
-      if (this.socketsInputs != 'mi')
-        this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)));
-    }
-    if ((this.controls as any)['User'])
-      (this.controls as any)['User'].ava = './img/avatar.png';
+    this.addControl("select", new SelectControl(this.currentIndex, this.userList, (e) => this.setUser(e)))
 
-    this.makeOutputs(cnt, si);
+    this.addControl("Textarea", new TextareaControl(this.text, (e) => this.setTextarea(e)));
+
+    this.makeOutputs(cnt, 's');
     this.addControl(
       "TwoBtn",
       new TwoButtonControl("-", "+",
         async () => { // btn -
           if (cnt > 1) {
-            await this.decrementOutput(cnt, si);
+            await this.decrementOutput(cnt, 's');
             cnt--;
           }
         },
         async () => {  // btn +
           cnt++;
-          await this.incrementOutput(cnt, si);
+          await this.incrementOutput(cnt, 's');
         }
       )
     )
@@ -141,10 +158,9 @@ export class DialogNode extends Classic.Node {
 
     return {
       cnt: this.answers.length,
-      si: this.socketsInputs,
-      user: this.currentUser,
       text: this.text,
-      answers: JSON.parse(JSON.stringify(this.answers))
+      answers: JSON.parse(JSON.stringify(this.answers)),
+      index: this.currentIndex
     }
   }
 }

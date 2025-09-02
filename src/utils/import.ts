@@ -1,8 +1,13 @@
 import { Context } from "../editor";
-import { Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode, 
+import {
+  Connection, InputNode, ModuleNode, NumberNode, OutputNode, SequenceNode, DialogNode, FlowBlockNode, EventReadyNode, StringNode, ColorNode,
   BooleanNode, LogNode, InputActionNode, OutputActionNode, DelayNode, FlowSetNode, FlowStatusNode, VarSetNode, VarGetNode, OnInteractNPCNode, LoadSceneNode,
-   AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnRegionEventNode, InActionNode, 
-   EmptyNode, InOutNode, IfElseNode } from "../nodes";
+  AnyToCustomNode, ConcatStrNode, InvertNumberNode, BoolMathNode, RandomNode, InvertBoolNode, OnRegionEventNode, InActionNode,
+  EmptyNode, InOutNode, IfElseNode,
+  StageEventNode,
+  StageSetNode,
+  StageGetNode
+} from "../nodes";
 import { MathNode } from "../nodes/math/math_node";
 import { removeConnections } from "./utils";
 
@@ -63,6 +68,10 @@ export async function createNode({ editor, area, modules }: Context, name: strin
 
   if (name === "VarSet") return new VarSetNode(data)
   if (name === "VarGet") return new VarGetNode(data)
+
+  if (name == 'StageEvent') return new StageEventNode(data.id)
+  if (name == 'StageSet') return new StageSetNode(data.id)
+  if (name == 'StageGet') return new StageGetNode()
 
   if (name === 'EmptyNode') return new EmptyNode(data.id, data.data)
   toastr.error('Нода не поддерживается:' + name)

@@ -11,6 +11,7 @@ export class FlowBlockNode extends Classic.Node {
     nodeTitle = { ru: "Управляемый блок", type: "green" };
     listName: { val: string, text: string }[] = []
     currentIndex = ''
+    active: boolean = true;
 
     public async changeName(id: string) {
         if (id == 'new') {
@@ -42,20 +43,27 @@ export class FlowBlockNode extends Classic.Node {
         this.listName.unshift({ val: 'new', text: '-НОВЫЙ-' })
     }
 
-    constructor(initial: { id: string, ac: boolean }) {
+    async toogleCheckbox() {
+        this.active = !this.active;
+        (this.controls as any)['Checkbox'].active = this.active;
+        await this.area.update("control", (this.controls as any)['Checkbox'].id);
+    }
+
+    constructor(initial: { id: string, active: boolean }) {
         super("FlowBlock")
         this.currentIndex = initial.id || ''
+        this.active = initial.active
         this.updateList();
         this.addInput("in", new Classic.Input(socketAction, ""));
         this.addOutput("out", new Classic.Output(socketAction, ""));
         this.addControl("select", new SelectControl(this.currentIndex, this.listName, (e) => this.changeName(e)))
-        this.addControl("Checkbox", new CheckboxControl("", "", false, () => { }, true, true))
-
+        this.addControl("Checkbox", new CheckboxControl('Если ложь', 'Если истина', this.active, async () => await this.toogleCheckbox()))
     }
 
     serialize() {
         return {
             id: this.currentIndex,
+            active:this.active
         }
     }
 }
