@@ -182,10 +182,7 @@ export async function createEditor(container: HTMLElement) {
         //
         text += make_section('Взаимодействие', false);
         text += make_html_node('Загрузить сцену', 'LoadScene', {});
-        text += make_html_node('Диалог', 'Dialog', { si: '', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
-        text += make_html_node('Диалог с доступностью ответа', 'Dialog', { si: 'b', cnt: 3, answers: ['', '', ''], user: '', text: 'Привет' });
-        text += make_html_node('Диалог с переменными', 'Dialog', { si: 's', cnt: 3, answers: ['', '', ''], user: '', text: '' });
-        text += make_html_node('Диалог простой', 'Dialog', { si: 'mi', cnt: 3, answers: ['', '', ''], user: '', text: '' });
+        text += make_html_node('Диалог', 'Dialog', { cnt: 3, answers: ['', '', ''], index: '', text: 'Привет' });
         text += make_html_node('Закрыть диалог', 'CloseDialog', {});
         text += make_section('', true);
         //

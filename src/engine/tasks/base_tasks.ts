@@ -137,7 +137,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_actions: ['out'],
         out_data: [],
         code(context) {
-            return `if (await gameState.get_flow_status('${context.node_data.id}', ${context.node_data.active})){\n${context.next_code('out', 1)}}`;
+            return `if (await get_flow_status('${context.node_data.id}', ${context.node_data.active})){\n${context.next_code('out', 1)}}`;
         }
     },
     'FlowSet': {
@@ -150,7 +150,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
             const id = context.node_data.id;
             const nodes_data = context.get_in_data_nodes();
             const status = nodes_data['status'] != null ? context.get_var_name(nodes_data['status'].source, nodes_data['status'].sourceOutput) : context.node_data.ac;
-            code += `gameState.set_flow_status('${id}', ${status});`;
+            code += `await set_flow_status('${id}', ${status});`;
             return code;
         }
     },
@@ -161,7 +161,7 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         out_data: ['out'],
         code: (context) => {
             let code = context.get_prev_vars();
-            code += context.make_var(context.get_var_name(context.id_node, 'out'), `await gameState.get_flow_status('${context.node_data.id}')`);
+            code += context.make_var(context.get_var_name(context.id_node, 'out'), `await get_flow_status('${context.node_data.id}')`);
             return code;
         }
     },
