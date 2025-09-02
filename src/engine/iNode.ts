@@ -116,7 +116,7 @@ export function iNode(id_current_node: string, node_data: DictAny, outputs: IOut
     }
 
     function get_out_data() {
-        return task_info.get_out_data!(node_data, get_in_data)
+        return task_info.get_out_data!(context)
     }
 
     function code(level = 0) {

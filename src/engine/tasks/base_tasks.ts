@@ -7,14 +7,14 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (_, get_in_data) => get_in_data(),
+        get_out_data: (context) => context.get_in_data(),
     },
     'Output': {
         in_actions: [],
         in_data: ['m'],
         out_actions: [],
         out_data: ['m'],
-        get_out_data: (_, get_in_data) => get_in_data(),
+        get_out_data: (context) => context.get_in_data(),
 
     },
     'InputAction': {
@@ -59,8 +59,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (data, _) => {
-            return { out: data.val }
+        get_out_data: (context) => {
+            return { out: context.node_data.val }
         },
     },
     'String': {
@@ -68,8 +68,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (data, _) => {
-            return { out: `'${data.val}'` }
+        get_out_data: (context) => {
+            return { out: `'${context.node_data.val}'` }
         },
     },
     'Boolean': {
@@ -77,8 +77,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (data, _) => {
-            return { out: data.val }
+        get_out_data: (context) => {
+            return { out: context.node_data.val }
         },
     },
     'Color': {
@@ -86,8 +86,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (data, _) => {
-            return { out: `${data.val}` }
+        get_out_data: (context) => {
+            return { out: `${context.node_data.val}` }
         }
     },
     // operators
@@ -157,8 +157,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (data, _) => {
-            return { out: `gameState.get_flow_status('${data.id}')` }
+        get_out_data: (context) => {
+            return { out: `gameState.get_flow_status('${context.node_data.id}')` }
         }
     },
     'Delay': {
@@ -180,8 +180,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (_, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
             const out = nodes_data['in'] != null ? nodes_data['in'] : 0;
             return { out: `parseInt(${out})` };
         }
@@ -191,8 +191,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (_, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
             const out = nodes_data['in'] != null ? nodes_data['in'] : '';
             return { out: `(${out}+'')` };
         }
@@ -202,8 +202,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (_, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
             const node = nodes_data['in'];
             return { out: `(${node} == 1 || ${node} == 'true' || ${node} == true)` };
         }
@@ -213,8 +213,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (_, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
             const out = nodes_data['in'] != null && (nodes_data['in'] as string).length > 0 ? nodes_data['in'] : '#000000';
             return { out };
         }
@@ -224,8 +224,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: string = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: string = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `${A} + ${B}` };
@@ -237,8 +238,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `${A} + ${B}` };
@@ -249,8 +251,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `${A} - ${B}` };
@@ -261,8 +264,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `${A} * ${B}` };
@@ -273,8 +277,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `${A} / ${B}` };
@@ -285,8 +290,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (_, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
             const out = nodes_data['in'] != null ? (nodes_data['in'] as number) : 0;
             return { out: `(-1 * ${out})` };
         }
@@ -296,8 +301,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `math.random({${A}, ${B}})` };
@@ -308,8 +314,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             const precision = 1000;
@@ -322,8 +329,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['in'],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (_, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
             return { out: `!${nodes_data['in']}` };
         }
     },
@@ -332,8 +339,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `(${A} > ${B})` };
@@ -344,8 +352,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `(${A} >= ${B})` };
@@ -356,8 +365,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `(${A} < ${B})` };
@@ -368,8 +378,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `(${A} <= ${B})` };
@@ -380,8 +391,9 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: ['A', 'B'],
         out_actions: [],
         out_data: ['val'],
-        get_out_data: (data, get_in_data) => {
-            const nodes_data = get_in_data();
+        get_out_data: (context) => {
+            const nodes_data = context.get_in_data();
+            const data = context.node_data;
             const A: number = nodes_data['A'] != null ? nodes_data['A'] : data.A;
             const B: number = nodes_data['B'] != null ? nodes_data['B'] : data.B;
             return { val: `(${A} == ${B})` };
@@ -405,7 +417,8 @@ export const base_tasks: { [k: string]: ITaskInfo } = {
         in_data: [],
         out_actions: [],
         out_data: ['out'],
-        get_out_data: (data, _) => {
+        get_out_data: (context) => {
+            const data = context.node_data;
             return { out: `(await gameState.get_scene_var('${data.n}', ${data.g == 0}))` };
         }
     },

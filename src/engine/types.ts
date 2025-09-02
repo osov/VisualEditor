@@ -36,7 +36,7 @@ export interface ITaskInfo {
     in_data: string[];
     out_actions: string[];
     out_data: string[];
-    get_out_data?: (data: DictAny, get_in_data: FncGetDictAny) => DictAny;
+    get_out_data?: (context:INodeContext) => DictAny;
     code?: (context:INodeContext) => string;
 }
 
