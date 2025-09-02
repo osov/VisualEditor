@@ -123,7 +123,7 @@ export function iEngine() {
 
     function make_module(name: string, id: string) {
         if (!dc_modules[name])
-            error('Функция не найдена:', name)
+            error('Функция не найдена:', name);
         // нужно переназначить все входы/выходы на новые ИДы чтобы не было конфликтов
         const data: JsonData = JSON.parse(dc_modules[name])
         // сначала ноды
