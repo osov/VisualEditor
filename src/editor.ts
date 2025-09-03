@@ -607,6 +607,14 @@ export async function createEditor(container: HTMLElement) {
         }
     });
 
+    function find_comment(id_node: string) {
+        for (const [c, com] of comment.comments) {
+            if (com.links.includes(id_node))
+                return com.text;
+        }
+        return '';
+    }
+
     const event_nodes = ['OnQuestReady', 'OnRegionEnter', 'OnRegionLeave', 'OnInteractNPC', 'StageEvent'];
     async function build_quest(name: string) {
         if (name != currentModulePath)
@@ -616,7 +624,7 @@ export async function createEditor(container: HTMLElement) {
         for (const n in nodes) {
             const node = nodes[n];
             if (event_nodes.includes(node.name)) {
-                code += '\n// ' + node.name + '\n';
+                code += '\n// ' + find_comment(n) + ' ['+node.name + ']\n';
                 code += remove_empty_lines(node.code(0));
                 code += '\n';
             }
