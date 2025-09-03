@@ -1,5 +1,5 @@
 import { GetSchemes, NodeEditor } from 'rete'
-import { Area2D, AreaExtensions, AreaPlugin } from 'rete-area-plugin'
+import { Area2D, AreaExtensions, AreaPlugin, Drag } from 'rete-area-plugin'
 import { ClassicFlow, ConnectionPlugin, getSourceTarget } from 'rete-connection-plugin'
 import { VuePlugin, VueArea2D, Presets as VuePresets } from 'rete-vue-plugin'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
@@ -309,8 +309,32 @@ export async function createEditor(container: HTMLElement) {
     })
     const minimap = new MinimapPlugin<Schemes>()
 
-    addCustomBackground(area)
+    addCustomBackground(area);
 
+    // Отключаем zoom только по dblclick через pipeline
+    area.addPipe((context) => {
+        if (context.type === 'zoom' && context.data.source === 'dblclick') return;
+        return context;
+    });
+
+    // таскание только ПКМ, ЛКМ отключаем для таскания сцены
+    area.area.setDragHandler(new Drag({
+        down: e => {
+            // Только ПКМ
+            if (e.pointerType === 'mouse' && e.button !== 2) return false;
+
+            // Если курсор на ноде или input — запрещаем drag
+            const target = e.target as HTMLElement;
+            if (target.closest('.node') || target.closest('input') || target.closest('textarea')) return false;
+
+
+            e.preventDefault();
+            return true;
+        },
+        move: () => true
+    }));
+    
+    
     editor.use(area)
     area.use(render)
     area.use(contextMenu)

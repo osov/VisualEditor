@@ -39,7 +39,7 @@
       <template v-if="data.answers">
       <!-- answers -->
         <div class="answers" :class="{leftInput: data.inputs2}">
-          <input v-for="(item, key) in data.answers" type="text" class="input" :data-item="item" v-model="data.answers[key]" >
+          <input v-for="(item, key) in data.answers" @dblclick.stop="" type="text" class="input" :data-item="item" v-model="data.answers[key]" >
         </div>
       </template>
 
