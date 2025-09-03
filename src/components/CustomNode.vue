@@ -8,7 +8,10 @@
 
       <template v-if="data.outputs2">
         <!-- Outputs 2 for reactive outputs -->
-        <div class="output" v-for="[key, output] in data.outputs2" :key="'output' + key + seed" :data-testid="'output-' + key">
+        <div v-for="[key, output] in data.outputs2" :key="'output' + key + seed" :data-testid="'output-' + key"
+          class="output"
+          :class="{outAction: output.socket.name == 'action', outAny: output.socket.name == 'any'}"
+        >
           <div class="output-title" data-testid="output-title">{{ output.label }}</div>
           <Ref class="output-socket" :emit="emit"
           :data="{ type: 'socket', side: 'output', key: key, nodeId: data.id, payload: output.socket }"
@@ -17,11 +20,15 @@
       </template>
       <template v-else>
         <!-- Outputs-->
-        <div class="output" v-for="[key, output] in outputs" :key="'output' + key + seed" :data-testid="'output-' + key">
+        <div  v-for="[key, output] in outputs" :key="'output' + key + seed" :data-testid="'output-' + key"
+          class="output" 
+          :class="{outAction: output.socket.name == 'action', outAny: output.socket.name == 'any'}"
+        >
           <div class="output-title" data-testid="output-title">{{ output.label }}</div>
           <Ref class="output-socket" :emit="emit"
             :data="{ type: 'socket', side: 'output', key: key, nodeId: data.id, payload: output.socket }"
             data-testid="output-socket" />
+            <!-- <pre style="color: white;">{{ output }}</pre> -->
         </div>
       </template>
 
@@ -40,7 +47,10 @@
       <template v-if="data.inputs2">
         <!-- Inputs2 for reactive -->
         <div class="wr_input">
-          <div class="input input2" v-for="[key, input] in data.inputs2" :key="'input' + key + seed" :data-testid="'input-' + key">
+          <div v-for="[key, input] in data.inputs2" :key="'input' + key + seed" :data-testid="'input-' + key"
+            class="input input2"
+            :class="{inpAction: input.socket.name == 'action', inpAny: input.socket.name == 'any'}"
+          >
             <Ref class="input-socket" :emit="emit"
             :data="{ type: 'socket', side: 'input', key: key, nodeId: data.id, payload: input.socket }"
             data-testid="input-socket" />
@@ -52,13 +62,17 @@
       </template>
 
       <!-- Inputs-->
-      <div class="input input1" v-for="[key, input] in inputs" :key="'input' + key + seed" :data-testid="'input-' + key">
+      <div v-for="[key, input] in inputs" :key="'input' + key + seed" :data-testid="'input-' + key"
+        class="input input1" 
+        :class="{inpAction: input.socket.name == 'action', inpAny: input.socket.name == 'any'}"
+      >
         <Ref class="input-socket" :emit="emit"
         :data="{ type: 'socket', side: 'input', key: key, nodeId: data.id, payload: input.socket }"
         data-testid="input-socket" />
         <div class="input-title" v-show="!input.control || !input.showControl" data-testid="input-title">{{ input.label }}</div>
         <Ref class="input-control" v-show="input.control && input.showControl" :emit="emit"
         :data="{ type: 'control', payload: input.control }" data-testid="input-control" />
+        
       </div>
       
     </div>
@@ -213,18 +227,9 @@
 .node__title.module {
   background: linear-gradient(to right, transparent 0%, rgba(241, 33, 196, 0.712) 50%, transparent 100%);
 }
-.title[data-testid]{
-  order: 0;
-}
-.input[data-testid]{
-  order: 1;
-}
-.control[data-testid]{
-  order: 2;
-  padding: 5px;
-}
-.output[data-testid]{
-  order: 3;
+
+.control[data-testid]{ 
+  padding: 5px; 
 }
 
 .node[data-testid] .socket[title="action"] {
@@ -279,9 +284,6 @@
   margin-top: 3px;
   opacity: 0.9;
 }
-.node[data-label="Module"] .control{
-  order: 1;
-}
 
 .node[data-label="Boolean"] input[type="checkbox"]{
   /* width: 20px;
@@ -302,7 +304,6 @@
   padding: 10px 18px 10px 10px;
 }
 .answers{
-  order: 2;
   position: relative;
   height: 0px;
   padding: 0px 10px 0;
@@ -328,13 +329,10 @@
   background-color: transparent;
 }
 
-.node[data-label="Dialog"] .wr_input{
-  order: 2;
+.node[data-label="Dialog"] .wr_input{ 
   height: 0;
 }
-.node[data-label="Dialog"] .input1{
-  order: 1;
-}
+
 .node[data-label="Dialog"] .input2[data-testid="input-in"],
 .node[data-label="Dialog"] .input1[data-testid]:not([data-testid="input-in"]){
   display: none;
@@ -354,4 +352,25 @@
 .node[data-label="Dialog"] .input2[data-testid][data-testid="input-in_text"]{
     display: none;
 }
+
+
+/* *** all orders *** */
+.title[data-testid]{ order: 0; }
+
+.node[data-label="Module"] .control{ order: 1; }
+.node[data-label="Dialog"] .input1{ order: 1; }
+.input[data-testid].inpAction{ order: 1; }
+
+.input[data-testid].inpAny{ order: 2; }
+.input[data-testid]{ order: 3; }
+
+.answers{ order: 5; }
+.control[data-testid]{ order: 5; }
+.node[data-label="Dialog"] .wr_input{ order: 5; }
+
+.output[data-testid]{ order: 8; }
+.output[data-testid].outAction{ order: 9; }
+.output[data-testid].outAny{ order: 10; }
+/* *** all orders *** */
+
 </style>
