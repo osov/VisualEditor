@@ -116,6 +116,7 @@
   background-color: var(--nodeBg);
   display: flex;
   flex-direction: column;
+  user-select: none;
 }
 .node[data-testid]:hover{
    border: 1px dashed #12ffa5;

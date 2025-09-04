@@ -59,6 +59,7 @@ import { remove_empty_lines } from './engine/utils'
 let modulesData: { [k: string]: any } = {}
 let currentModulePath: null | string = null
 let modules_stack: string[] = []
+let copiedNodes: { name: string; data: any; position: { x: number; y: number } }[] = []
 
 export async function createEditor(container: HTMLElement) {
 
@@ -86,6 +87,48 @@ export async function createEditor(container: HTMLElement) {
         await context.editor.addNode(node)
         const pos = { x: area.area.pointer.x - node.width / 2, y: area.area.pointer.y - node.height / 2 };
         await area.translate(node.id, pos)
+    }
+
+    const copySelectedNodes = () => {
+        copiedNodes = []
+
+        for (const [, entity] of selector.entities) {
+            if (entity.label === 'node') {
+            const node = nEditor.getNode(entity.id)
+            if (node) {
+                const view = area.nodeViews.get(node.id)
+                copiedNodes.push({
+                    name: node.label,
+                    data: node.serialize(),
+                    position: view ? { ...view.position } : { x: 0, y: 0 }
+                })
+            }
+            }
+        }
+
+        console.log('Copied nodes:', copiedNodes.length)
+    }
+
+    const pasteCopiedNodes = async () => {
+        if (!copiedNodes.length) return
+
+        // смещение, чтобы вся группа легла под курсор
+        const minX = Math.min(...copiedNodes.map(n => n.position.x))
+        const minY = Math.min(...copiedNodes.map(n => n.position.y))
+
+        for (const { name, data, position } of copiedNodes) {
+            const node = await createNode(context, name, data)
+            node.id = find_free_id()
+            await context.editor.addNode(node)
+
+            const base = {
+            x: area.area.pointer.x + (position.x - minX),
+            y: area.area.pointer.y + (position.y - minY)
+            }
+            await area.translate(node.id, base)
+        }
+
+        console.log('Pasted', copiedNodes.length)
     }
 
     const deleteNode = async (nodeId: string) => {
@@ -674,48 +717,75 @@ export async function createEditor(container: HTMLElement) {
 
 
     document.addEventListener('keydown', async (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.code == 'KeyS')
+        const target = e.target as HTMLElement;
+        if (['INPUT', 'TEXTAREA'].includes(target.tagName)) return;
+
+        // --- системные блокировки ---
+        if (e.ctrlKey && ['KeyS', 'KeyR'].includes(e.code)) {
             e.preventDefault();
-        if (e.ctrlKey && e.code == 'KeyR')
+        }
+
+
+        // --- Ctrl+C ---
+        if (e.ctrlKey && e.code === 'KeyC') {
             e.preventDefault();
-        // delete
-        if (e.key == 'Delete') {
+            copySelectedNodes();
+            return
+        }
+
+        // --- Ctrl+V ---
+        if (e.ctrlKey && e.code === 'KeyV') {
+            e.preventDefault();
+            if (!copiedNodes.length) return
+            pasteCopiedNodes();
+            return
+        }
+
+        // --- Delete ---
+        if (e.key === 'Delete') {
             for (const entity of selector.entities) {
-                if (entity[1].label == 'comment') {
-                    const data = comment.comments.get(entity[1].id)
-                    if (data)
-                        history.add(new CommentDeleteAction(comment, data.id, data.text, data.links))
-                    comment.delete(entity[1].id)
+                if (entity[1].label === 'comment') {
+                    const data = comment.comments.get(entity[1].id);
+                    if (data) {
+                        history.add(new CommentDeleteAction(comment, data.id, data.text, data.links));
+                    }
+                    comment.delete(entity[1].id);
+                } else {
+                    await deleteNode(entity[1].id);
                 }
-                else
-                    await deleteNode(entity[1].id)
             }
-            selector.unselectAll()
+            selector.unselectAll();
             return;
         }
+
+        // --- Shift-команды ---
         if (e.shiftKey) {
-            // comment
-            if (e.code == 'KeyC') {
+            if (e.code === 'KeyC') {
                 const nodes_ids = []
                 for (const entity of selector.entities) {
                     nodes_ids.push(entity[1].id)
                 }
                 const pn = prompt('Ввод комментария', 'Комментарий')
-                if (pn)
-                    comment.addFrame(pn, nodes_ids)
+                if (pn) comment.addFrame(pn, nodes_ids)
             }
-            if (e.code == 'KeyR') {
-                await ArrangeNodes()
-                await ZoomNodes()
+            if (e.code === 'KeyR') {
+                await ArrangeNodes();
+                await ZoomNodes();
             }
         }
+
+        // --- Ctrl-команды ---
         if (e.ctrlKey) {
-            if (e.code == 'KeyS') {
+            if (e.code === 'KeyS') {
                 do_save();
                 update_code_editor();
             }
+            if (e.code === 'KeyR') {
+                await ArrangeNodes();
+                await ZoomNodes();
+            }
         }
-    }, false)
+    }, false);
 
 
 
