@@ -766,7 +766,10 @@ export async function createEditor(container: HTMLElement) {
                     nodes_ids.push(entity[1].id)
                 }
                 const pn = prompt('Ввод комментария', 'Комментарий')
-                if (pn) comment.addFrame(pn, nodes_ids)
+                if (pn) {
+                    const frame = comment.addFrame(pn, nodes_ids);
+                    frame.nested.innerHTML = getHtmlCommentTitle(pn, frame?.id);
+                }
             }
             if (e.code === 'KeyR') {
                 await ArrangeNodes();
@@ -786,6 +789,75 @@ export async function createEditor(container: HTMLElement) {
             }
         }
     }, false);
+
+
+
+function getHtmlCommentTitle(text: string, id: string = new Date().getTime().toString()) {
+    return `
+        <span class="frame-comment__title">
+            <span class="frame-comment__btn" data-id="${id}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M493.26 56.26l-37.51-37.51C443.25 6.25 426.87 0 410.49 0s-32.76 6.25-45.25 18.74l-74.49 74.49L256 127.98 12.85 371.12.15 485.34C-1.45 499.72 9.88 512 23.95 512c.89 0 1.79-.05 2.69-.15l114.14-12.61L384.02 256l34.74-34.74 74.49-74.49c25-25 25-65.52.01-90.51zM118.75 453.39l-67.58 7.46 7.53-67.69 231.24-231.24 31.02-31.02 60.14 60.14-31.02 31.02-231.33 231.33zm340.56-340.57l-44.28 44.28-60.13-60.14 44.28-44.28c4.08-4.08 8.84-4.69 11.31-4.69s7.24.61 11.31 4.69l37.51 37.51c6.24 6.25 6.24 16.4 0 22.63z"/></svg></span>
+            <span class="frame-comment__text">${text}</span>
+        </span>`
+}
+
+    // обновление комментариев for span
+const patchComments = () => {
+  for (const comm of comment.comments.values()) {
+    if (!comm.nested) continue;
+
+    const el = comm.nested;
+    // если уже есть наш span — пропускаем
+    if (el.querySelector('.frame-comment__text')) continue;
+
+    el.innerHTML = getHtmlCommentTitle(comm.text, comm.id);
+  }
+};
+
+
+const observer = new MutationObserver(() => {
+
+  patchComments();
+
+  document.querySelectorAll<HTMLElement>('.frame-comment').forEach(el => {
+    if ((el as any)._mouseEventsAttached) return;
+
+    // Contextmenu — блокируем стандартное меню для .frame-comment
+    el.addEventListener('contextmenu', (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+    });
+
+    el.addEventListener('mouseup', (e: MouseEvent) => {
+        if (e.button !== 0) return; // только ЛКМ
+        const btnComment = (e.target as HTMLElement).closest('.frame-comment__btn');
+        if (!btnComment) return;
+        
+        const idComment = btnComment.getAttribute('data-id');
+        if (!idComment) return;
+        const comm = Array.from(comment.comments.values())
+          .find(frame => frame.id === idComment);
+        if (!comm) return;
+
+        const newText = prompt('Переименовать комментарий', comm.text);
+        if (newText && newText !== comm.text) {
+            comm.text = newText; // переименовываем объект
+            const textComment = el.querySelector('.frame-comment__text');
+            if (!textComment) return;
+            textComment.textContent = newText;
+        }
+    });
+
+
+    (el as any)._mouseEventsAttached = true;
+  });
+
+
+});
+
+// Наблюдаем за контейнером, чтобы ловить новые комментарии
+observer.observe(area.container, { childList: true, subtree: true });
+patchComments();
 
 
 
